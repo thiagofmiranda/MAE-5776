@@ -2,6 +2,7 @@
 title: 'MAE5776 - 1º Sem/2022 – Comparação de 2 Populações Np'
 output:
   pdf_document: 
+    latex_engine: lualatex
     pandoc_args: --listings
     includes:
       in_header: 
@@ -10,8 +11,25 @@ geometry: columnsep=3em
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,warning=FALSE,message=FALSE)
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning=FALSE,
+  message=FALSE, 
+  comment=">",
+  prompt=T,
+  fig.align='center',
+  size="small")
+
+
+
 options(scipen=999)
+
+
 
 library(kableExtra)
 library(tidyverse)
@@ -19,6 +37,7 @@ library(GGally)
 library(ggpubr)
 library(biotools)
 library(formatR)
+library(xtable)
 
 # Funções
 
@@ -43,7 +62,7 @@ texMatrix <- function(matrix, round = 2){
 
 Gerar uma amostra aleatória de ng observações de duas populações Normais tridimensionais, $N_{3}(\mu_{g}; \Sigma_{g})$, envolvendo as variáveis Y1, Y2 e Y3. Preencha a tabela a seguir com os parâmetros adotados na simulação dos dados.
 
-```{r}
+```{r Q1 - Simulação}
 # Vetor de médias
 media_pop_1 <- c(5.0, 5.7, 5.5)
 media_pop_2 <- c(5.8, 5.1, 5.7)
@@ -127,13 +146,13 @@ tb_1 %>%
 
 1.1 - Contextualize, com uma situação prática hipotética, os dados gerados. Caracterize a estrutura dos dados (amostras balanceadas, observações independentes, tipo de variável, dimensão dos dados, etc). Defina o objetivo do estudo.
 
-R: Podemos contextualizar os dados com sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.
+R: Podemos contextualizar os dados com sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.[validar]
 
 \pagebreak
 
 1.2 - Realize uma análise descritiva dos dados (calcule estatísticas descritivas, construa gráficos apropriados). Comente os resultados de acordo com o objetivo do estudo.
 
-```{r}
+```{r Q1 - Descritivas, out.width = '80%',}
 
 media_amostra_1 <- colMeans(pop[pop$Pop == "Escola 1", -4])
 media_amostra_2 <- colMeans(pop[pop$Pop == "Escola 2", -4])
@@ -174,30 +193,33 @@ ggpairs(pop, ggplot2::aes(colour=Pop))
 
 ```
 
-R:
+R: [responder]
 
 \pagebreak
 
 1.3 - De acordo com as premissas adotadas na simulação dos dados, qual é a distribuição amostral da estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$? Justifique. Com base nos dados simulados, construa um gráfico de quantis da Normal para validar os resultados.
 
-R: Os dados foram simulados com base em duas nomais multivariadas, a estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ terá como distribuição amostral uma normal multivariada, pois qualquer combinação linear entre distribuições multivariada resultará em uma distribuição normal multivariada. Verificaremos se cada amostra tem distribuição normal multivariada, para tal, avaliaremos se soma das notas de português, matemática e história segue um distribuição normal.
+R: Os dados foram simulados com base em duas nomais multivariadas, a estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ terá como distribuição amostral uma normal multivariada, pois qualquer combinação linear entre distribuições multivariada resultará em uma distribuição normal multivariada. Verificaremos se cada amostra tem distribuição normal multivariada, para tal, avaliaremos se soma das notas de português, matemática e história segue um distribuição normal.[validar]
 
 Hipóteses para a amostra da Escola 1:
 $$H_{0}: Por_{1} + Mat_{1} + His_{1} \sim N(\mu_{1}, \sigma^2_{1})$$
 $$H_{1}: Por_{1} + Mat_{1} + His_{1} \nsim N(\mu_{1}, \sigma^2_{1})$$
 
-```{r,out.width = '40%',fig.align='center'}
+```{r Q1 - QQplot amostra 1,out.width = '40%'}
 Amostra_1 <- pop |> 
   filter(Pop=="Escola 1") |> 
   mutate(PMH = Por + Mat + His)
 
 ggqqplot(Amostra_1, x = "PMH")
 ```
+
 Hipóteses para a amostra da Escola 2:
+
 $$H_{0}: Por_{2} + Mat_{2} + His_{2} \sim N(\mu_{2}, \sigma^2_{2})$$
+
 $$H_{1}: Por_{2} + Mat_{2} + His_{2} \nsim N(\mu_{2}, \sigma^2_{2})$$
 
-```{r,out.width = '40%',fig.align='center'}
+```{r Q1 - QQplot amostra 2,out.width = '40%'}
 Amostra_2 <- pop |> 
   filter(Pop=="Escola 2") |> 
   mutate(PMH = Por + Mat + His)
@@ -207,61 +229,62 @@ ggqqplot(Amostra_2, x = "PMH")
 
 A partir dos QQ-plots apresentados, verificamos que as soma das variáveis nas duas escolas têm distribuições amostrais normais, evidenciando que, conjutamente, cada escola tem distribuição amostral multivariada nas notas de português, matemática e história. Consequentemente, $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ também resultará em uma $N(\mu_{1}-\mu_{2}, \sigma^2_{1}-\sigma^2_{2})$. 
 
-\pagebreak
-
 1.4 - Há evidência amostral de diferença significante entre os vetores de Médias das duas populações? Justifique.
 
-R:
+R: [validar]
 
-```{r echo=FALSE}
+```{r Q1 - Teste M de Box, echo=FALSE}
 teste_boxM <- boxM(data = pop[,-4], grouping = pop$Pop) 
 teste_boxM
 ```
 
-Como o p-valor de `r round(teste_boxM$p.value,4)` é maior que o nível de significância de 5%. Não rejeitamos a hipótese nula de que
-as matrizes de covariancias são iguais.
+Como o p-valor de `r round(teste_boxM$p.value,4)` é maior que o nível de significância de 5%. Não rejeitamos a hipótese nula de que as matrizes de covariâncias são iguais.
 
-```{r echo=FALSE}
+```{r  Q1 - Teste de Hotelling, echo=FALSE}
 library(Hotelling)
 teste_t2_hotelling <- hotelling.test(pop[pop$Pop=="Escola 1",-4],pop[pop$Pop=="Escola 2",-4], var.equal = TRUE)
 teste_t2_hotelling
 ```
-Como o p-valor de `r round(teste_t2_hotelling$pval,4)` é menor que o nível de significância de 5%. Rejeitamos a hipótese nula 
-e concluímos que há algumas diferença entre as médias das escolas para as disciplinas de português, matemática e história.
+
+Como o p-valor de `r round(teste_t2_hotelling$pval,4)` é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há algumas diferença entre as médias das escolas para as disciplinas de português, matemática e história.
 
 
 
 1.5 - Para cada variável, compare as médias das duas populações. Utilize correções de Bonferroni e FDR na conclusão dessas comparações. Qual variável mais contribui para a possível diferença entre as populações?
 
-```{r echo=FALSE}
+R: [validar]
+
+```{r Q1 - Teste de Médias Por, echo=FALSE}
 por_bartlettteste <- bartlett.test(pop$Por ~ pop$Pop) 
 por_bartlettteste
 por_ttteste <- t.test(pop$Por ~ pop$Pop, conf.level=0.95, var.equal=TRUE)
 por_ttteste 
 ```
+
 Como o p-valor do teste T de `r round(por_bartlettteste$p.value,4)` é maior que o nível de significância de 5%, não rejeitamos a hipóteses nula e concluímos que as variâncias das notas de português entre os grupos são homogêneas. E como o p-valor do teste T de `r round(por_ttteste$p.value,4)` é menor que o nível de significância de 5%, rejeitamos a hipóteses nula e concluímos que as médias das notas de português entre as escolas 1 e 2 são diferentes,ao nível de 95% de confiança. 
 
 
-```{r echo=FALSE}
+```{r Q1 - Teste de Médias Mat, echo=FALSE}
 mat_bartlettteste <- bartlett.test(pop$Mat ~ pop$Pop) 
 mat_bartlettteste
 mat_ttteste <- t.test(pop$Mat ~ pop$Pop,conf.level=0.95,var.equal=TRUE)
 mat_ttteste
 ```
+
 Como o p-valor do teste T de `r round(mat_bartlettteste$p.value,4)` é maior que o nível de significância de 5%, não rejeitamos a hipóteses nula e concluímos que as variâncias das notas de matemática entre os grupos são homogêneas. E como o p-valor do teste T de `r round(mat_ttteste$p.value,4)` é menor que o nível de significância de 5%, rejeitamos a hipóteses nula e concluímos que as médias das notas de matemática entre as escolas 1 e 2 são diferentes,ao nível de 95% de confiança. 
 
-```{r echo=FALSE, message=TRUE}
+```{r  Q1 - Teste de Médias His, echo=FALSE}
 his_bartlettteste <- bartlett.test(pop$His ~ pop$Pop) 
 his_bartlettteste
 his_ttteste <- t.test(pop$His ~ pop$Pop,conf.level=0.95,var.equal=TRUE)
 his_ttteste
 ```
-Como o p-valor do teste T de `r round(his_bartlettteste$p.value,4)` é maior que o nível de significância de 5%, não rejeitamos a hipóteses nula e concluímos que as variâncias das notas de história entre os grupos são homogêneas. E como o p-valor do teste T de `r round(his_ttteste$p.value,4)` é menor que o nível de significância de 5%, rejeitamos a hipóteses nula e concluímos que as médias das notas de história entre as escolas 1 e 2 são diferentes,ao nível de 95% de confiança. 
 
-```{r}
+Como o p-valor do teste T de `r round(his_bartlettteste$p.value,4)` é maior que o nível de significância de 5%, não rejeitamos a hipóteses nula e concluímos que as variâncias das notas de história entre os grupos são homogêneas. E como o p-valor do teste T de `r round(his_ttteste$p.value,4)` é menor que o nível de significância de 5%, rejeitamos a hipóteses nula e concluímos que as médias das notas de história entre as escolas 1 e 2 são diferentes,ao nível de 95% de confiança.
+
+```{r Q1 - Ajuste no P-Valor}
 #Obter os p-valores (bicaudal) individuais com correção para múltiplos testes
 p.result <- c(por_ttteste$p.value,mat_ttteste$p.value,his_ttteste$p.value)
-p.result  
 
 padjustB <- p.adjust(p.result,method="bonferroni")
 padjustFDR <- p.adjust(p.result,method="fdr")
@@ -277,14 +300,13 @@ padjusts %>%
       booktabs = TRUE,longtable = T)
 ```
 
-
-
+\pagebreak
 
 2 - Comparação de vetores de Médias de Normais tridimensionais, $N_{3}$, em Delineamentos Completamente Aleatorizados com Estrutura Fatorial Cruzado 2x2 - MANOVA
 
 Gerar dados da N3 de acordo com um Delineamento Completamente Aleatorizado (DCA) Fatorial Cruzado 2x2. Considerando os Fatores F1 e F2, cada um em dois níveis, 0 e 1, preencha a tabela a seguir com os parâmetros adotados na simulação dos dados.
 
-```{r}
+```{r Q2 - Parâmetros}
 media_pop_1 <- c(12, 15, 23)
 media_pop_2 <- c(13, 15, 22)
 media_pop_3 <- c(9, 14, 18)
@@ -294,6 +316,31 @@ cov_pop <- matrix(c(3, 1.2, 1.9,
                     1.2, 2, 1.5,
                     1.9, 1.5, 3),3,3,byrow=T)
 
+# outputs para a tabela em latex
+media_pop_1_tex <- paste0("$\\mu_{1,0}=(",paste(media_pop_1,collapse = ", "),"),"," \\Sigma_{1,0}=",texMatrix(cov_pop),"$")
+media_pop_2_tex <- paste0("$\\mu_{1,1}=(",paste(media_pop_2,collapse = ", "),"),"," \\Sigma_{1,1}=",texMatrix(cov_pop),"$")
+media_pop_3_tex <- paste0("$\\mu_{0,0}=(",paste(media_pop_3,collapse = ", "),"),"," \\Sigma_{0,0}=",texMatrix(cov_pop),"$")
+media_pop_4_tex <- paste0("$\\mu_{0,1}=(",paste(media_pop_4,collapse = ", "),"),"," \\Sigma_{0,1}=",texMatrix(cov_pop),"$")
+
+cov_pop_tex <- paste0("$\\Sigma_{1}=",texMatrix(cov_pop),"$")
+
+# Tabela resumo
+tb_2 <- tibble(
+  `Fator 1` = c(0, 1),
+  `0` = c(media_pop_3_tex, media_pop_1_tex),
+  `1` = c(media_pop_4_tex, media_pop_2_tex),
+  )
+
+tb_2 %>%
+  kbl(format = "latex",
+      escape = FALSE,
+      booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=8) |> 
+  add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
+```
+
+
+```{r Q2 - Simulação}
 cor_pop <- matrix(
   c(cov_pop_2[1,1]/(sqrt(cov_pop_2[1,1])*sqrt(cov_pop_2[1,1])),
     cov_pop_2[1,2]/(sqrt(cov_pop_2[1,1])*sqrt(cov_pop_2[2,2])),
@@ -307,16 +354,16 @@ cor_pop <- matrix(
   3,3,byrow=T)
 
 set.seed(123)
-pop_1 <- MASS::mvrnorm(50,media_pop_1,cov_pop) |> 
+pop_1 <- MASS::mvrnorm(12,media_pop_1,cov_pop) |> 
   as_tibble() |>
   mutate(F1 = 1,F2 = 0)
-pop_2 <- MASS::mvrnorm(50,media_pop_2,cov_pop) |> 
+pop_2 <- MASS::mvrnorm(12,media_pop_2,cov_pop) |> 
   as_tibble() |>
   mutate(F1 = 1,F2 = 1)
-pop_3 <- MASS::mvrnorm(50,media_pop_3,cov_pop) |> 
+pop_3 <- MASS::mvrnorm(12,media_pop_3,cov_pop) |> 
   as_tibble() |>
   mutate(F1 = 0,F2 = 0)
-pop_4 <- MASS::mvrnorm(50,media_pop_4,cov_pop) |> 
+pop_4 <- MASS::mvrnorm(12,media_pop_4,cov_pop) |> 
   as_tibble() |>
   mutate(F1 = 0,F2 = 1)
 
@@ -324,22 +371,21 @@ pop <- bind_rows(pop_1, pop_2, pop_3, pop_4) |>
   rename(uva = V1, banana = V2, laranja = V3)
 ```
 
-
-\[tabela\]
-
 2.1 - Contextualize, com uma situação prática hipotética, os dados gerados. Caracterize a estrutura dos dados e defina o objetivo do estudo.
 
-R: Os dados são referentes a um experimento fatorial 2x2, onde averiguou-se a produção em toneladas por hectare de três tipos de frutas (uva, banana e laranja) sob o efeito de dois tipos de adubos (F1 e F2). O objetivo principal do estudo é verifical qual adubo tem melhor efeito sobre a produção das frutas. 
+R: Os dados são referentes a um experimento fatorial 2x2, onde averiguou-se a produção, em toneladas por hectare, de três tipos de frutas (uva, banana e laranja) sob o efeito de dois tipos de adubos (F1 e F2). O objetivo principal do estudo é verifical qual adubo tem melhor efeito sobre a produção das três frutas. [validar]
+
+\newpage
 
 2.2 - Realize uma análise descritiva dos dados (calcule estatísticas descritivas, construa gráficos apropriados). Comente os resultados de acordo com o objetivo do estudo.
 
-```{r}
-medias <- pop |> 
-  group_by(F1, F2) |> 
-  dplyr::summarise(med_uva = mean(uva),
-                   med_banana = mean(banana),
-                   med_laranja = mean(laranja))
-medias
+R: [responder]
+
+```{r Q2 - Descritivas}
+media_amostra_1 <- colMeans(pop[pop$F1==1 & pop$F2==0, -c(4,5)])
+media_amostra_2 <- colMeans(pop[pop$F1==1 & pop$F2==1, -c(4,5)])
+media_amostra_3 <- colMeans(pop[pop$F1==0 & pop$F2==0, -c(4,5)])
+media_amostra_4 <- colMeans(pop[pop$F1==0 & pop$F2==1, -c(4,5)])
 
 cov_amostra_1 <- cov(pop[pop$F1==1 & pop$F2==0, -c(4,5)])
 cov_amostra_2 <- cov(pop[pop$F1==1 & pop$F2==1, -c(4,5)])
@@ -350,35 +396,186 @@ cor_amostra_1 <- cor(pop[pop$F1==1 & pop$F2==0, -c(4,5)])
 cor_amostra_2 <- cor(pop[pop$F1==1 & pop$F2==1, -c(4,5)])
 cor_amostra_3 <- cor(pop[pop$F1==0 & pop$F2==0, -c(4,5)])
 cor_amostra_4 <- cor(pop[pop$F1==0 & pop$F2==1, -c(4,5)])
+
+# outputs para a tabela em latex
+media_amostra_1_tex <- paste0("$\\bar{Y}_{1,0}=(",paste(round(media_amostra_1,2),collapse = ", "),")$")
+media_amostra_2_tex <- paste0("$\\bar{Y}_{1,1}=(",paste(round(media_amostra_2,2),collapse = ", "),")$")
+media_amostra_3_tex <- paste0("$\\bar{Y}_{0,0}=(",paste(round(media_amostra_3,2),collapse = ", "),")$")
+media_amostra_4_tex <- paste0("$\\bar{Y}_{0,1}=(",paste(round(media_amostra_4,2),collapse = ", "),")$")
+
+cov_amostra_1_tex <- paste0("$S_{1,0}=",texMatrix(cov_amostra_1),"$")
+cov_amostra_2_tex <- paste0("$S_{1,1}=",texMatrix(cov_amostra_2),"$")
+cov_amostra_3_tex <- paste0("$S_{0,0}=",texMatrix(cov_amostra_3),"$")
+cov_amostra_4_tex <- paste0("$S_{0,1}=",texMatrix(cov_amostra_4),"$")
+
+cor_amostra_1_tex <- paste0("$R_{1,0}=",texMatrix(cor_amostra_1),"$")
+cor_amostra_2_tex <- paste0("$R_{1,1}=",texMatrix(cor_amostra_2),"$")
+cor_amostra_3_tex <- paste0("$R_{0,0}=",texMatrix(cor_amostra_3),"$")
+cor_amostra_4_tex <- paste0("$R_{1,1}=",texMatrix(cor_amostra_4),"$")
+
+# Tabelas resumo
+tibble(
+  `Fator 1` = c(0, 1),
+  `0` = c(media_amostra_3_tex, media_amostra_1_tex),
+  `1` = c(media_amostra_4_tex, media_amostra_2_tex))%>%
+  kbl(format = "latex",
+      escape = FALSE,
+      booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6) |> 
+  add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
+
+tibble(
+  `Fator 1` = c(0, 1),
+  `0` = c(cov_amostra_3_tex, cov_amostra_1_tex),
+  `1` = c(cov_amostra_4_tex, cov_amostra_2_tex))%>%
+  kbl(format = "latex",
+      escape = FALSE,
+      booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6) |> 
+  add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
+
+tibble(
+  `Fator 1` = c(0, 1),
+  `0` = c(cor_amostra_3_tex, cor_amostra_1_tex),
+  `1` = c(cor_amostra_4_tex, cor_amostra_2_tex))%>%
+  kbl(format = "latex",
+      escape = FALSE,
+      booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6) |> 
+  add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
+
 ```
 
-```{r,out.width = '80%',fig.align='center'}
-ggpairs(pop[,-c(4,5)],ggplot2::aes(colour="1"),,title = "Descritivas gerais")+
-  scale_fill_manual(values = c("#2a9d8f"))+
-  scale_color_manual(values = c("#457b9d"))
 
-pop |> 
-  mutate(F1 = as.factor(F1)) |> 
-  dplyr::select(-F2) |> 
+```{r Q2 - Gráficos,out.width = '80%'}
+
+pop |>
+  mutate(F1 = as.factor(F1)) |>
+  dplyr::select(-F2) |>
   ggpairs(ggplot2::aes(colour=F1),title = "Descritivas para F1")+
   scale_fill_manual(values = c("#2a9d8f","#264653"))+
   scale_color_manual(values = c("#2a9d8f","#264653"))
 
-pop |> 
-  mutate(F2 = as.factor(F2)) |> 
-  dplyr::select(-F1) |> 
+pop |>
+  mutate(F2 = as.factor(F2)) |>
+  dplyr::select(-F1) |>
   ggpairs(ggplot2::aes(colour=F2),title = "Descritivas para F2")+
   scale_fill_manual(values = c("#457b9d","#1d3557"))+
   scale_color_manual(values = c("#457b9d","#1d3557"))
+
+pop |> 
+  gather(fruta, quilos,-F1,-F2) %>% 
+  mutate(F1 = as.factor(F1)) |> 
+  mutate(F2 = as.factor(F2)) |> 
+  ggplot(aes(x = F1 , color = F2 , group = F2 , y = quilos )) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  facet_wrap(~fruta,scales = "free_y") +
+  ggtitle("Perfis de Médias-Interação")
+
+```
+
+2.3 - Construa a Tabela de MANOVA para a análise destes dados. Considere as fontes de variação devido aos efeitos principais dos fatores F1 e F2 e sua interação $F1*F2$, os correspondentes números de graus de liberdade e as Somas de Quadrados e Produtos Cruzados ($SS_{F1}$, $SS_{F2}$, e $SS_{F1*F2}$, bem como $SS_{W}$). Há evidência amostral de efeito significante dos fatores sob estudo?
+
+R: Para a construção da tabela MANOVA, primeiramente, foi avaliado a homogeneidade entre as matrizes de covariâncias com o Teste M de Box. [validar]
+
+```{r Q2 - Teste M de Box}
+teste_boxM <- boxM(pop[,1:3],as.factor(pop$F2))
+teste_boxM
+```
+
+Como o p-valor de `r round(teste_boxM$p.value,4)` é maior que o nível de significância de 5%. Não rejeitamos a hipótese nula de que as matrizes de covariâncias são iguais. Prosseguimos com a MANOVA:
+
+
+```{r Q2 - MANOVA}
+fit <- manova(as.matrix(pop[,1:3]) ~ pop$F1 + pop$F2 + pop$F1*pop$F2)
+
+options(scipen=0)
+fit_sum <- summary(fit,test = "Wilks")
+fit_sum
+fit_sum$stats[1,6]
+options(scipen=999)
+```
+
+Como o p-valor de `r round(fit_sum$stats[1,6],6)` de F1 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F1.
+
+```{r}
+pop |> 
+  group_by(F1) |> 
+  dplyr::summarise(uva = mean(uva), banana = mean(banana), laranja = mean(laranja)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Como o p-valor de `r round(fit_sum$stats[2,6],6)` de F2 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há combinação dos adubos F1 e F2.
+
+```{r}
+pop |> 
+  group_by(F2) |> 
+  dplyr::summarise(uva = mean(uva), banana = mean(banana), laranja = mean(laranja)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Como o p-valor de `r round(fit_sum$stats[3,6],6)` para a interação de F1 e F2 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F1.
+
+```{r}
+pop |> 
+  group_by(F1,F2) |> 
+  dplyr::summarise(uva = mean(uva), banana = mean(banana), laranja = mean(laranja)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
 ```
 
 
-
-
-2.3 - Construa a Tabela de MANOVA para a análise destes dados. Considere as fontes de variação devido aos efeitos principais dos fatores F1 e F2 e sua interação $F1*F2$, os correspondentes números de graus de liberdade e as Somas de Quadrados e Produtos Cruzados (SSF1, SSF2, e SSF1\*F2, bem como SSW). Há evidência amostral de efeito significante dos fatores sob estudo?
-
 1.4 - De acordo com os resultados da MANOVA, realize comparações múltiplas para estudar os efeitos significantes dos fatores. Utilize correções de Bonferroni e FDR. Interprete os resultados.
+
+R: [responder]
+```{r, echo=FALSE}
+bartlett_teste_uva_F1 <- bartlett.test(pop$uva ~ pop$F1) 
+bartlett_teste_uva_F2 <- bartlett.test(pop$uva ~ pop$F2)
+bartlett_teste_banana_F1 <- bartlett.test(pop$banana ~ pop$F1)
+bartlett_teste_banana_F2 <- bartlett.test(pop$banana ~ pop$F2)
+bartlett_teste_laranja_F1 <- bartlett.test(pop$uva ~ pop$F1)
+bartlett_teste_laranja_F2 <- bartlett.test(pop$uva ~ pop$F2)
+
+t_teste_uva_F1 <- t.test(pop$uva ~ pop$F1, conf.level=0.95, var.equal=TRUE) 
+t_teste_uva_F2 <- t.test(pop$uva ~ pop$F2, conf.level=0.95, var.equal=TRUE)
+t_teste_banana_F1 <- t.test(pop$banana ~ pop$F1, conf.level=0.95, var.equal=FALSE)
+t_teste_banana_F2 <- t.test(pop$banana ~ pop$F2, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_F1 <- t.test(pop$uva ~ pop$F1, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_F2 <- t.test(pop$uva ~ pop$F2, conf.level=0.95, var.equal=TRUE)
+
+
+tibble(`Adubo` = c(rep("F1",3),rep("F2",3)),
+       `Fruta` = rep(c("uva","banana","laranja"),2),
+       `P-Valor Teste de Bartlett` = c(
+         bartlett_teste_uva_F1$p.value,
+         bartlett_teste_banana_F1$p.value,
+         bartlett_teste_laranja_F1$p.value,
+         bartlett_teste_uva_F2$p.value,
+         bartlett_teste_banana_F2$p.value,
+         bartlett_teste_laranja_F2$p.value),
+       `P-Valor T Test` = c(
+         t_teste_uva_F1$p.value,
+         t_teste_banana_F1$p.value,
+         t_teste_laranja_F1$p.value,
+         t_teste_uva_F2$p.value,
+         t_teste_banana_F2$p.value,
+         t_teste_laranja_F2$p.value)) |> 
+  mutate(padjustB = p.adjust(`P-Valor T Test`,method="bonferroni")) |> 
+  mutate(padjustFDR = p.adjust(`P-Valor T Test`,method="fdr")) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,digits = 4) |> 
+  kable_styling(font_size=6)
+```
+
 
 1.5 - Da tabela MANOVA obtida em 1.3 construa a correspondente tabela MANOVA de um estudo que considera o efeito total dos 4 grupos definidos pela estrutura fatorial 2x2. Neste caso, seja SSF a Soma de Quadrados e Produtos Cruzados do referido fator em 4 níveis. Há efeito significante deste fator F que combina os níveis de F1 e F2?
 
+R: [responder]
+
 1.6 - Obtenha a decomposição espectral (autovalores e autovetores) das seguintes matrizes: $SS_{W}^{-1}SS_{F1}, SS_{W}^{-1}SS_{F2}, SS_{W}^{-1}SS_{F1*F2}, SSW^{-1}SS_{F}$. Qual é o padrão de contribuição das variáveis para cada um dos efeitos considerados?
+
+R: [responder]
+
+
