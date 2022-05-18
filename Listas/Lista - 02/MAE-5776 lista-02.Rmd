@@ -25,11 +25,9 @@ knitr::opts_chunk$set(
   fig.align='center',
   size="small")
 
-
-
-options(scipen=999)
-
-
+options(
+  scipen=999,
+  knitr.kable.NA = '')
 
 library(kableExtra)
 library(tidyverse)
@@ -491,13 +489,23 @@ Como o p-valor de `r round(teste_boxM$p.value,4)` é maior que o nível de signi
 fit <- manova(as.matrix(pop[,1:3]) ~ pop$F1 + pop$F2 + pop$F1*pop$F2)
 
 options(scipen=0)
-fit_sum <- summary(fit,test = "Wilks")
-fit_sum
-fit_sum$stats[1,6]
+fit_sum_p <- summary(fit,test = "Pillai")
+fit_sum_w <- summary(fit,test = "Wilks")
+
+fit_sum_p$stats |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+fit_sum_w$stats |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
 options(scipen=999)
 ```
 
-Como o p-valor de `r round(fit_sum$stats[1,6],6)` de F1 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F1.
+Como os p-valores pelos teste de Wilks e Pilai de F1 são menores que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F1.
 
 ```{r}
 pop |> 
@@ -507,7 +515,7 @@ pop |>
   kable_styling(font_size=6)
 ```
 
-Como o p-valor de `r round(fit_sum$stats[2,6],6)` de F2 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há combinação dos adubos F1 e F2.
+Como os p-valores pelos teste de Wilks e Pilai de F2 são menores que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F2.
 
 ```{r}
 pop |> 
@@ -517,7 +525,7 @@ pop |>
   kable_styling(font_size=6)
 ```
 
-Como o p-valor de `r round(fit_sum$stats[3,6],6)` para a interação de F1 e F2 é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há aplicação do adubo F1.
+Como os p-valores pelos teste de Wilks e Pilai para a interação de F1 com F2 são menores que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença no vetor médias quando há combinação dos adubos F1 e F2.
 
 ```{r}
 pop |> 
@@ -527,8 +535,67 @@ pop |>
   kable_styling(font_size=6)
 ```
 
+```{r Q2 - MANOVA Stats}
+SSF1 <- fit_sum_p$SS$`pop$F1`
+SSF2 <- fit_sum_p$SS$`pop$F2`
+SSF1F2 <- fit_sum_p$SS$`pop$F1:pop$F2`
+SSW <- fit_sum_p$SS$Residuals
 
-1.4 - De acordo com os resultados da MANOVA, realize comparações múltiplas para estudar os efeitos significantes dos fatores. Utilize correções de Bonferroni e FDR. Interprete os resultados.
+SSTotal <- SSF1 + SSF2 + SSF1F2 + SSW
+
+SSB <- SSTotal-SSW
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{F1}$:
+```{r}
+SSF1 |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{F2}$:
+```{r}
+SSF2|> 
+  as_tibble()|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{F1*F2}$:
+```{r}
+SSF1F2 |> 
+  as_tibble()|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{F}$:
+```{r}
+SSB |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{W}$:
+```{r}
+SSW |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{total}$:
+```{r}
+SSTotal |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+2.4 - De acordo com os resultados da MANOVA, realize comparações múltiplas para estudar os efeitos significantes dos fatores. Utilize correções de Bonferroni e FDR. Interprete os resultados.
 
 R: [responder]
 ```{r, echo=FALSE}
@@ -565,17 +632,139 @@ tibble(`Adubo` = c(rep("F1",3),rep("F2",3)),
          t_teste_laranja_F2$p.value)) |> 
   mutate(padjustB = p.adjust(`P-Valor T Test`,method="bonferroni")) |> 
   mutate(padjustFDR = p.adjust(`P-Valor T Test`,method="fdr")) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,digits = 4) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 ```
 
 
-1.5 - Da tabela MANOVA obtida em 1.3 construa a correspondente tabela MANOVA de um estudo que considera o efeito total dos 4 grupos definidos pela estrutura fatorial 2x2. Neste caso, seja SSF a Soma de Quadrados e Produtos Cruzados do referido fator em 4 níveis. Há efeito significante deste fator F que combina os níveis de F1 e F2?
+2.5 - Da tabela MANOVA obtida em 1.3 construa a correspondente tabela MANOVA de um estudo que considera o efeito total dos 4 grupos definidos pela estrutura fatorial 2x2. Neste caso, seja $SS_{F}$ a Soma de Quadrados e Produtos Cruzados do referido fator em 4 níveis. Há efeito significante deste fator F que combina os níveis de F1 e F2?
+
+R:
+
+```{r}
+pop_v2 <- pop |> 
+  mutate(F1F2 = paste0(F1,F2)) |> 
+  dplyr::select(-F1,-F2)
+
+fit_v2 <- manova(as.matrix(pop_v2[,1:3]) ~ pop_v2$F1F2)
+
+options(scipen=0)
+fit_sum_p_v2 <- summary(fit_v2,test = "Pillai")
+fit_sum_w_v2 <- summary(fit_v2,test = "Wilks")
+
+fit_sum_p_v2$stats |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+fit_sum_w_v2$stats |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+options(scipen=999)
+```
+
+```{r Q2 V2 - MANOVA Stats}
+
+SSF1F2_v2 <- fit_sum_p_v2$SS$`pop_v2$F1F2`
+SSW_v2 <- fit_sum_p_v2$SS$Residuals
+SSTotal_v2 <- SSF1F2 + SSW
+
+# SSTotal <- (nrow(pop_v2)-1)*cov(pop_v2[,1:3])
+```
+
+Como os p-valores pelos teste de Wilks e Pilai para F são menores que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há diferença em ao menos um vetor médias de F.
+
+```{r}
+pop_v2 |> 
+  group_by(F1F2) |> 
+  dplyr::summarise(uva = mean(uva), banana = mean(banana), laranja = mean(laranja)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{F}$:
+```{r}
+SSF1F2_v2 |> 
+  as_tibble()|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{W}$:
+```{r}
+SSW_v2 |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Somas de Quadrados e Produtos Cruzados $SS_{total}$:
+```{r}
+SSTotal_v2 |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+2.6 - Obtenha a decomposição espectral (autovalores e autovetores) das seguintes matrizes: $SS_{W}^{-1}SS_{F1}, SS_{W}^{-1}SS_{F2}, SS_{W}^{-1}SS_{F1*F2}, SS_{W}^{-1}SS_{F}$. Qual é o padrão de contribuição das variáveis para cada um dos efeitos considerados?
 
 R: [responder]
 
-1.6 - Obtenha a decomposição espectral (autovalores e autovetores) das seguintes matrizes: $SS_{W}^{-1}SS_{F1}, SS_{W}^{-1}SS_{F2}, SS_{W}^{-1}SS_{F1*F2}, SSW^{-1}SS_{F}$. Qual é o padrão de contribuição das variáveis para cada um dos efeitos considerados?
+Autovalores:
 
-R: [responder]
+```{r}
+fit_sum_p$Eigenvalues |> 
+  as_tibble() |> 
+  setNames(c("","",""))|> 
+  round(4) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  kable_styling(font_size=6)
+```
+
+Autovetores de $SS_{W}^{-1}SS_{F1}$
+```{r}
+eigen(solve(SSW)%*%SSF1)$vectors |> 
+  as_tibble() |> 
+  round(4)|> 
+  setNames(c("","",""))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  kable_styling(font_size=6)
+```
+
+Autovetores de $SS_{W}^{-1}SS_{F2}$
+```{r}
+eigen(solve(SSW)%*%SSF2)$vectors|> 
+  as_tibble()|> 
+  round(4) |> 
+  setNames(c("","",""))|>  
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  kable_styling(font_size=6)
+```
+
+Autovetores de $SS_{W}^{-1}SS_{F1*F2}$
+```{r}
+eigen(solve(SSW)%*%SSF1F2)$vectors |> 
+  as_tibble()|> 
+  round(4) |> 
+  setNames(c("","",""))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  kable_styling(font_size=6)
+```
+
+Autovetores de $SS_{W}^{-1}SS_{F}$
+```{r}
+eigen(solve(SSW)%*%SSB)$vectors |> 
+  as_tibble() |> 
+  round(4)|> 
+  setNames(c("","",""))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  kable_styling(font_size=6)
+```
+
+
+
 
 
