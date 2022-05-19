@@ -27,7 +27,9 @@ knitr::opts_chunk$set(
 
 options(
   scipen=999,
-  knitr.kable.NA = '')
+  knitr.kable.NA = '',
+  knitr.table.bottomrule="\\midrule\\midrule",
+  knitr.table.toprule="\\midrule\\midrule")
 
 library(kableExtra)
 library(tidyverse)
@@ -133,10 +135,9 @@ tb_1 <- tibble(
   )
 
 # Exibindo tabela resumo
-tb_1 %>%
-  kbl(format = "latex",
-      escape = FALSE,
-      booktabs = TRUE,longtable = T) |> 
+tb_1 |>
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, 
+      caption = "Title of the table") |> 
   kable_styling(font_size=8) 
 
 
@@ -181,7 +182,7 @@ tb_2 <- tibble(
   )
 
 # Exibindo tabela resumo
-tb_2 %>%
+tb_2 |>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T) |> 
@@ -291,7 +292,7 @@ padjusts <- tibble(Disciplina=c("Por","Mat","His")) |>
   mutate(padjustB = round(padjustB,6)) |> 
   mutate(padjustFDR = round(padjustFDR,6))
 
-padjusts %>%
+padjusts |>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T)
@@ -330,7 +331,7 @@ tb_2 <- tibble(
   `1` = c(media_pop_4_tex, media_pop_2_tex),
   )
 
-tb_2 %>%
+tb_2 |>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T) |> 
@@ -416,7 +417,7 @@ cor_amostra_4_tex <- paste0("$R_{1,1}=",texMatrix(cor_amostra_4),"$")
 tibble(
   `Fator 1` = c(0, 1),
   `0` = c(media_amostra_3_tex, media_amostra_1_tex),
-  `1` = c(media_amostra_4_tex, media_amostra_2_tex))%>%
+  `1` = c(media_amostra_4_tex, media_amostra_2_tex))|>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T) |> 
@@ -426,7 +427,7 @@ tibble(
 tibble(
   `Fator 1` = c(0, 1),
   `0` = c(cov_amostra_3_tex, cov_amostra_1_tex),
-  `1` = c(cov_amostra_4_tex, cov_amostra_2_tex))%>%
+  `1` = c(cov_amostra_4_tex, cov_amostra_2_tex))|>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T) |> 
@@ -436,7 +437,7 @@ tibble(
 tibble(
   `Fator 1` = c(0, 1),
   `0` = c(cor_amostra_3_tex, cor_amostra_1_tex),
-  `1` = c(cor_amostra_4_tex, cor_amostra_2_tex))%>%
+  `1` = c(cor_amostra_4_tex, cor_amostra_2_tex))|>
   kbl(format = "latex",
       escape = FALSE,
       booktabs = TRUE,longtable = T) |> 
@@ -463,7 +464,7 @@ pop |>
   scale_color_manual(values = c("#457b9d","#1d3557"))
 
 pop |> 
-  gather(fruta, quilos,-F1,-F2) %>% 
+  gather(fruta, quilos,-F1,-F2) |> 
   mutate(F1 = as.factor(F1)) |> 
   mutate(F2 = as.factor(F2)) |> 
   ggplot(aes(x = F1 , color = F2 , group = F2 , y = quilos )) +
