@@ -28,8 +28,10 @@ knitr::opts_chunk$set(
 options(
   scipen=999,
   knitr.kable.NA = '',
-  knitr.table.bottomrule="\\midrule\\midrule",
-  knitr.table.toprule="\\midrule\\midrule")
+  knitr.table.bottomrule = "\\specialrule{.5pt}{0pt}{1pt}\\specialrule{.5pt}{0pt}{1pt}",
+  knitr.table.toprule    = "\\specialrule{.5pt}{0pt}{1pt}\\specialrule{.5pt}{0pt}{1pt}",
+  knitr.table.midrule    = "\\specialrule{.4pt}{0pt}{1pt}")
+
 
 library(kableExtra)
 library(tidyverse)
@@ -136,8 +138,7 @@ tb_1 <- tibble(
 
 # Exibindo tabela resumo
 tb_1 |>
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, 
-      caption = "Title of the table") |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=8) 
 
 
