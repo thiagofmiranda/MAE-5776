@@ -144,7 +144,7 @@ tb_1 %>%
 
 1.1 - Contextualize, com uma situação prática hipotética, os dados gerados. Caracterize a estrutura dos dados (amostras balanceadas, observações independentes, tipo de variável, dimensão dos dados, etc). Defina o objetivo do estudo.
 
-R: Podemos contextualizar os dados com sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.[validar]
+R: Podemos contextualizar os dados com sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo avaliadas pela teoria da resposta ao item. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.
 
 \pagebreak
 
@@ -191,13 +191,13 @@ ggpairs(pop, ggplot2::aes(colour=Pop))
 
 ```
 
-R: [responder]
+R: Ao observar os box plots de cada disciplina da Escola 1 e Escola 2 percebe que as medianas não estão distantes; ao observar os histogramas percebe-se que as distribuições da notas em cada disciplina são parecidas; os gráficos de dispersão apontam que há uma marcante intercepção entre as notas da mesma disciplina em Escolas diferentes; a distancia entre as médias de uma mesma disciplina na Escola 1 e Escola 2 são inferiores a 1; os centroides não parecem estar distantes; e as matrizes de covariancia e correlação não apontam alta dependência entre as notas das disciplinas tanto para a Escola 1 quanto para a Escola 2, exceto para a relação entre as notas de Português e História.
 
 \pagebreak
 
 1.3 - De acordo com as premissas adotadas na simulação dos dados, qual é a distribuição amostral da estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$? Justifique. Com base nos dados simulados, construa um gráfico de quantis da Normal para validar os resultados.
 
-R: Os dados foram simulados com base em duas nomais multivariadas, a estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ terá como distribuição amostral uma normal multivariada, pois qualquer combinação linear entre distribuições multivariada resultará em uma distribuição normal multivariada. Verificaremos se cada amostra tem distribuição normal multivariada, para tal, avaliaremos se soma das notas de português, matemática e história segue um distribuição normal.[validar]
+R: Os dados foram simulados com base em duas normais multivariadas, a estatística $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ terá como distribuição amostral uma normal multivariada, pois qualquer combinação linear entre distribuições normais multivariadas resultará em uma distribuição normal multivariada. Verificaremos se cada amostra tem distribuição normal multivariada, para tal, avaliaremos se soma das notas de português, matemática e história seguem um distribuição normal.[validar]
 
 Hipóteses para a amostra da Escola 1:
 $$H_{0}: Por_{1} + Mat_{1} + His_{1} \sim N(\mu_{1}, \sigma^2_{1})$$
@@ -244,8 +244,7 @@ teste_t2_hotelling <- hotelling.test(pop[pop$Pop=="Escola 1",-4],pop[pop$Pop=="E
 teste_t2_hotelling
 ```
 
-Como o p-valor de `r round(teste_t2_hotelling$pval,4)` é menor que o nível de significância de 5%. Rejeitamos a hipótese nula e concluímos que há algumas diferença entre as médias das escolas para as disciplinas de português, matemática e história.
-
+De acordo com o teste T de Hotelling p-value é menor que o nível de significância de 5%, deste modo rejeitamos a hipótese nula e concluímos que há algumas diferença entre as médias das escolas para as disciplinas de português, matemática e história.
 
 
 1.5 - Para cada variável, compare as médias das duas populações. Utilize correções de Bonferroni e FDR na conclusão dessas comparações. Qual variável mais contribui para a possível diferença entre as populações?
@@ -280,7 +279,7 @@ his_ttteste
 
 Como o p-valor do teste T de `r round(his_bartlettteste$p.value,4)` é maior que o nível de significância de 5%, não rejeitamos a hipóteses nula e concluímos que as variâncias das notas de história entre os grupos são homogêneas. E como o p-valor do teste T de `r round(his_ttteste$p.value,4)` é menor que o nível de significância de 5%, rejeitamos a hipóteses nula e concluímos que as médias das notas de história entre as escolas 1 e 2 são diferentes,ao nível de 95% de confiança.
 
-```{r Q1 - Ajuste no P-Valor}
+```{r Q1 - Ajustes no P-Valor}
 #Obter os p-valores (bicaudal) individuais com correção para múltiplos testes
 p.result <- c(por_ttteste$p.value,mat_ttteste$p.value,his_ttteste$p.value)
 
@@ -297,6 +296,8 @@ padjusts %>%
       escape = FALSE,
       booktabs = TRUE,longtable = T)
 ```
+
+Mesmo considerando as correções de Boferroni e FDR percebemos que há diferença significativa entre as médias de cada variável nas duas amostras (Escola 1 e Escola 2).
 
 \pagebreak
 
