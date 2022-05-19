@@ -1,12 +1,12 @@
 ---
-title: 'MAE5776 - 1º Sem/2022 – Comparação de 2 Populações Np'
+title: "MAE5776 - 1º Sem/2022 – Comparação de 2 Populações Np"
 output:
-  pdf_document: 
+  word_document: default
+  pdf_document:
     latex_engine: lualatex
     pandoc_args: --listings
     includes:
-      in_header: 
-        preamble.tex
+      in_header: preamble.tex
 geometry: columnsep=3em
 ---
 
@@ -378,9 +378,27 @@ R: Os dados são referentes a um experimento fatorial 2x2, onde averiguou-se a p
 
 2.2 - Realize uma análise descritiva dos dados (calcule estatísticas descritivas, construa gráficos apropriados). Comente os resultados de acordo com o objetivo do estudo.
 
-R: [responder]
+R: Os gráficos de dispersão relacionados ao Fator 1 apontam que há marcante intersecção entre os valores obtidos na produção de banana, laranja e uva, ao avaliar se há correlação comparando dois a dois, daí vemos que os pontos se sobrepõe, o que demonstra não haver clara "distinção" entre a produção de cada fruta, tendo em vista a aplicação do fator F1. Comportamento similar é percebido quando na aplicação do fator F2. Os box plot obtidos com o fator F1 apontam que para a produção de uva medianamente há pouco distinção entre a aplicar ou não o fator F1, bem como para a produção de banana e laranja. Contudo, notamos que a dispersão (variabilidade dos dados) é maior quando o fator F1 está no nível "0". Comportamento similar é percebido para o fator F2, no que tange aos valores medianos (não são muito distantes) ao aplicar ou não o fator 2 na produção das frutas. Contudo, notamos que a dispersão (variabilidade dos dados) é maior quando o fator F1 está no nível "0"para a produção de uva e laranja.
 
-```{r Q2 - Descritivas}
+```{r Q2 - Gráficos,out.width = '60%'}
+pop |>
+  mutate(F1 = as.factor(F1)) |>
+  dplyr::select(-F2) |>
+  ggpairs(ggplot2::aes(colour=F1),title = "Descritivas para F1")+
+  scale_fill_manual(values = c("#2a9d8f","#264653"))+
+  scale_color_manual(values = c("#2a9d8f","#264653"))
+
+pop |>
+  mutate(F2 = as.factor(F2)) |>
+  dplyr::select(-F1) |>
+  ggpairs(ggplot2::aes(colour=F2),title = "Descritivas para F2")+
+  scale_fill_manual(values = c("#457b9d","#1d3557"))+
+  scale_color_manual(values = c("#457b9d","#1d3557"))
+```
+
+Ao avaliar (graficamente) o efeito de interação entre os fatores, percebe-se que há interação significativa na produção de banana e laranja, já na produção de uva não há evidência de interação significativa do uso dos adubos F1 e F2 (ou seja, F1*F2 é significativo apenas na produção de banana e laranja).
+
+```{r Q2 - Descritivas, ,out.width = '80%'}
 media_amostra_1 <- colMeans(pop[pop$F1==1 & pop$F2==0, -c(4,5)])
 media_amostra_2 <- colMeans(pop[pop$F1==1 & pop$F2==1, -c(4,5)])
 media_amostra_3 <- colMeans(pop[pop$F1==0 & pop$F2==0, -c(4,5)])
@@ -437,25 +455,6 @@ tibble(
   kable_styling(font_size=6) |> 
   add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
 
-```
-
-
-```{r Q2 - Gráficos,out.width = '80%'}
-
-pop |>
-  mutate(F1 = as.factor(F1)) |>
-  dplyr::select(-F2) |>
-  ggpairs(ggplot2::aes(colour=F1),title = "Descritivas para F1")+
-  scale_fill_manual(values = c("#2a9d8f","#264653"))+
-  scale_color_manual(values = c("#2a9d8f","#264653"))
-
-pop |>
-  mutate(F2 = as.factor(F2)) |>
-  dplyr::select(-F1) |>
-  ggpairs(ggplot2::aes(colour=F2),title = "Descritivas para F2")+
-  scale_fill_manual(values = c("#457b9d","#1d3557"))+
-  scale_color_manual(values = c("#457b9d","#1d3557"))
-
 pop |> 
   gather(fruta, quilos,-F1,-F2) |> 
   mutate(F1 = as.factor(F1)) |> 
@@ -465,7 +464,6 @@ pop |>
   stat_summary(fun = mean, geom = "line") +
   facet_wrap(~fruta,scales = "free_y") +
   ggtitle("Perfis de Médias-Interação")
-
 ```
 
 \pagebreak
@@ -486,15 +484,18 @@ Como o p-valor de `r round(teste_boxM$p.value,4)` é maior que o nível de signi
 fit <- manova(as.matrix(pop[,1:3]) ~ pop$F1 + pop$F2 + pop$F1*pop$F2)
 
 options(scipen=0)
+fit
+
 fit_sum_p <- summary(fit,test = "Pillai")
 fit_sum_w <- summary(fit,test = "Wilks")
 
-fit_sum_p$stats |> 
-  as_tibble() |> 
+tibble(` `=str_remove_all(fit_sum_p$row.names,"pop\\$")) |> 
+  bind_cols(as_tibble(fit_sum_p$stats)) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
-fit_sum_w$stats |> 
+tibble(` `=str_remove_all(fit_sum_w$row.names,"pop\\$")) |> 
+  bind_cols(as_tibble(fit_sum_w$stats)) |> 
   as_tibble() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
@@ -646,15 +647,19 @@ pop_v2 <- pop |>
 fit_v2 <- manova(as.matrix(pop_v2[,1:3]) ~ pop_v2$F1F2)
 
 options(scipen=0)
+fit_v2
+
 fit_sum_p_v2 <- summary(fit_v2,test = "Pillai")
 fit_sum_w_v2 <- summary(fit_v2,test = "Wilks")
 
-fit_sum_p_v2$stats |> 
+tibble(` `=str_remove_all(fit_sum_p_v2$row.names,"pop_v2\\$")) |> 
+  bind_cols(as_tibble(fit_sum_p_v2$stats))|> 
   as_tibble() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
-fit_sum_w_v2$stats |> 
+tibble(` `=str_remove_all(fit_sum_w_v2$row.names,"pop_v2\\$")) |> 
+  bind_cols(as_tibble(fit_sum_w_v2$stats))|> 
   as_tibble() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
@@ -663,7 +668,6 @@ options(scipen=999)
 ```
 
 ```{r Q2 V2 - MANOVA Stats}
-
 SSF1F2_v2 <- fit_sum_p_v2$SS$`pop_v2$F1F2`
 SSW_v2 <- fit_sum_p_v2$SS$Residuals
 SSTotal_v2 <- SSF1F2 + SSW
