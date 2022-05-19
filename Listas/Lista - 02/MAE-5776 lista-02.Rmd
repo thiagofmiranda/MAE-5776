@@ -333,9 +333,7 @@ tb_2 <- tibble(
   )
 
 tb_2 |>
-  kbl(format = "latex",
-      escape = FALSE,
-      booktabs = TRUE,longtable = T) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,align="c") |> 
   kable_styling(font_size=8) |> 
   add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
 ```
@@ -374,7 +372,7 @@ pop <- bind_rows(pop_1, pop_2, pop_3, pop_4) |>
 
 2.1 - Contextualize, com uma situação prática hipotética, os dados gerados. Caracterize a estrutura dos dados e defina o objetivo do estudo.
 
-R: Os dados são referentes a um experimento fatorial 2x2, onde averiguou-se a produção, em toneladas por hectare, de três tipos de frutas (uva, banana e laranja) sob o efeito de dois tipos de adubos (F1 e F2). O objetivo principal do estudo é verifical qual adubo tem melhor efeito sobre a produção das três frutas. [validar]
+R: Os dados são referentes a um experimento fatorial 2x2, onde averiguou-se a produção, em toneladas por hectare, de três tipos de frutas (uva, banana e laranja) sob o efeito de dois tipos de adubos F1 e F2, que serão avaliados em dois níveis (1 - presente; 0 - ausente), sendo que o objetivo é verificar se o uso dos adubos F1 e F2 têm (ou não) efeito significativo sobre a produção das três frutas.
 
 \newpage
 
@@ -419,9 +417,7 @@ tibble(
   `Fator 1` = c(0, 1),
   `0` = c(media_amostra_3_tex, media_amostra_1_tex),
   `1` = c(media_amostra_4_tex, media_amostra_2_tex))|>
-  kbl(format = "latex",
-      escape = FALSE,
-      booktabs = TRUE,longtable = T) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,align="c") |>  
   kable_styling(font_size=6) |> 
   add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
 
@@ -429,9 +425,7 @@ tibble(
   `Fator 1` = c(0, 1),
   `0` = c(cov_amostra_3_tex, cov_amostra_1_tex),
   `1` = c(cov_amostra_4_tex, cov_amostra_2_tex))|>
-  kbl(format = "latex",
-      escape = FALSE,
-      booktabs = TRUE,longtable = T) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,align="c") |> 
   kable_styling(font_size=6) |> 
   add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
 
@@ -439,9 +433,7 @@ tibble(
   `Fator 1` = c(0, 1),
   `0` = c(cor_amostra_3_tex, cor_amostra_1_tex),
   `1` = c(cor_amostra_4_tex, cor_amostra_2_tex))|>
-  kbl(format = "latex",
-      escape = FALSE,
-      booktabs = TRUE,longtable = T) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T,align="c") |>  
   kable_styling(font_size=6) |> 
   add_header_above(c(" " = 1, "Fator 2" = 2),align = "c")
 
