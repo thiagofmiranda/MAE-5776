@@ -200,7 +200,7 @@ ggpairs(pop, ggplot2::aes(colour=Pop))
 
 ```
 
-R: Ao observar os box plots de cada disciplina da Escola 1 e Escola 2 percebe que as medianas não estão distantes; ao observar os histogramas percebe-se que as distribuições da notas em cada disciplina são parecidas; os gráficos de dispersão apontam que há uma marcante intercepção entre as notas da mesma disciplina em Escolas diferentes; a distancia entre as médias de uma mesma disciplina na Escola 1 e Escola 2 são inferiores a 1; os centroides não parecem estar distantes; e as matrizes de covariância e correlação não apontam alta dependência entre as notas das disciplinas tanto para a Escola 1 quanto para a Escola 2, exceto para a relação entre as notas de Português e História.
+R: Ao observar os box plots de cada disciplina da Escola 1 e Escola 2 percebe que as medianas não estão distantes; ao observar os histogramas percebe-se que as distribuições da notas em cada disciplina são parecidas; os gráficos de dispersão apontam que há uma marcante intersecção entre as notas da mesma disciplina em Escolas diferentes; a distancia entre as médias de uma mesma disciplina na Escola 1 e Escola 2 são inferiores a 1; os centroides não parecem estar distantes; e as matrizes de covariância e correlação não apontam alta dependência entre as notas das disciplinas tanto para a Escola 1 quanto para a Escola 2, exceto para a relação entre as notas de Português e História.
 
 \pagebreak
 
@@ -844,7 +844,7 @@ SSTotal_v2 |>
 
 R:
 
-Autovalores e autovetores de $SS_{W}^{-1}SS_{F1}$
+Autovalores e Autovetores de $SS_{W}^{-1}SS_{F1}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F1}$ percebemos que a produção de uva, seguida da produção de banana (e por último produção de laranja), mais contribuem para a discriminação entre os efeitos dentro de F1, levando em conta a estrutura multivariada. 
 
@@ -864,7 +864,7 @@ eigen(solve(SSW)%*%SSF1)$vectors |>
 ```
 
 
-Autovalores e autovetores de $SS_{W}^{-1}SS_{F2}$
+Autovalores e Autovetores de $SS_{W}^{-1}SS_{F2}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro de F1, levando em conta a estrutura multivariada. 
 
@@ -883,7 +883,7 @@ eigen(solve(SSW)%*%SSF2)$vectors|>
   kable_styling(font_size=6)
 ```
 
-Autovalores e autovetores de $SS_{W}^{-1}SS_{F1*F2}$
+Autovalores e Autovetores de $SS_{W}^{-1}SS_{F1*F2}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F1*F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro da interação de F1 e F2, levando em conta a estrutura multivariada. 
 
@@ -902,7 +902,7 @@ eigen(solve(SSW)%*%SSF1F2)$vectors |>
   kable_styling(font_size=6)
 ```
 
-Autovalores e autovetores de $SS_{W}^{-1}SS_{F}$
+Autovalores e Autovetores de $SS_{W}^{-1}SS_{F}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F}$ percebemos que a produção de laranja, seguida da produção de uva (e por último produção de banana), mais contribuem para a discriminação entre os efeitos considerando cada um dos tratamentos (sendo os tratamentos, a - adubo 1 presente, b - adubo 1 ausente, c - adubo 2 presente, d - adubo 2 ausente), levando em conta a estrutura multivariada.
 
