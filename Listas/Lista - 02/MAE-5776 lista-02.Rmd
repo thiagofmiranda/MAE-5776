@@ -59,6 +59,14 @@ texMatrix <- function(matrix, round = 2){
 }
 ```
 
+**Alunos:**
+
+Fernando F. Paulos Vieira - nº USP: 13492870
+
+Leandro Alves da Silva - nº USP: 11868023
+
+Thiago Ferreira Miranda - nº USP: 11925711
+
 1 - Comparação de vetores de Médias de 2 populações N3. Teste T2 de Hotelling.
 
 Gerar uma amostra aleatória de $n_{g}$ observações de duas populações Normais tridimensionais, $N_{3}(\mu_{g}; \Sigma_{g})$, envolvendo as variáveis Y1, Y2 e Y3. Preencha a tabela a seguir com os parâmetros adotados na simulação dos dados.
@@ -145,7 +153,7 @@ tb_1 |>
 
 1.1 - Contextualize, com uma situação prática hipotética, os dados gerados. Caracterize a estrutura dos dados (amostras balanceadas, observações independentes, tipo de variável, dimensão dos dados, etc). Defina o objetivo do estudo.
 
-R: Podemos contextualizar os dados com sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo avaliadas pela teoria da resposta ao item. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.
+R: Podemos contextualizar os dados como sendo de notas de português, matemática e história de turmas do 3º ano do ensino médio de duas escolas de São Paulo avaliadas pela teoria da resposta ao item. De um modo geral, os dados são compostos por 3 variáveis contínuas com um total de 200 observações e uma variável categórica definindo a população da amostra. São dados balanceados, contendo 100 obsevações em cada amostra e foram gerados de forma independente, onde a geração de cada observação não influenciou as demais. O objetivo desse estudo será comparar as notas médias das 3 disciplinas entre ambas as escolas.
 
 \pagebreak
 
@@ -575,6 +583,8 @@ SSB |>
   kable_styling(font_size=6)
 ```
 
+\pagebreak
+
 Somas de Quadrados e Produtos Cruzados $SS_{W}$:
 ```{r}
 SSW |> 
@@ -591,10 +601,19 @@ SSTotal |>
   kable_styling(font_size=6)
 ```
 
+\pagebreak
 
 2.4 - De acordo com os resultados da MANOVA, realize comparações múltiplas para estudar os efeitos significantes dos fatores. Utilize correções de Bonferroni e FDR. Interprete os resultados.
 
-R: [responder]
+R: Foram realizados 24 testes para avalizar os efeitos significantes de F1, F2 e da interação F1 e F2. 
+
+Ao avaliarmos o desempenho dos adubos para a Uva, foram identificadas diferenças significativas quando há aplicação do adubo F1, F2, separadamente, e em três combinações diferentes dos adubos. O resultando também é o mesmo quando corrigimos os p-valores com o ajuste FDR. Pelo ajuste de Bonferroni, não há diferenças significativas na aplicação de F1, a conclusão permanece a mesma para os demais testes.
+
+Ao avaliarmos o desempenho dos adubos para a Banana, foram identificadas diferenças significativas quando há aplicação do adubo F2, separadamente, e em quatro combinações diferentes dos adubos. O resultando também é o mesmo quando corrigimos os p-valores com o ajuste FDR. Com o ajuste de Bonferroni, não há diferenças significativas na aplicação de F2, separadamente, e apenas dois testes de aplicações combinadas são significantes.
+
+Ao avaliarmos o desempenho dos adubos para a Laranja, foram identificadas diferenças significativas somente nos testes de aplicações conjuntas. O resultando também é o mesmo quando corrigimos os p-valores com o ajuste FDR. Com o ajuste de Bonferroni, apenas quatro testes de aplicações combinadas são significantes.
+
+
 ```{r, echo=FALSE}
 bartlett_teste_uva_F1 <- bartlett.test(pop$uva ~ pop$F1) 
 bartlett_teste_uva_F2 <- bartlett.test(pop$uva ~ pop$F2)
@@ -719,15 +738,26 @@ Teste = c(
             
             )
 
-tibble(Teste,
+tbl <- tibble(Teste,
        `Fruta` = rep(c("uva","banana","laranja"),8),
        `P-Valor Teste de Bartlett`,
        `P-Valor T Test`) |> 
   mutate(padjustB = p.adjust(`P-Valor T Test`,method="bonferroni")) |> 
   mutate(padjustFDR = p.adjust(`P-Valor T Test`,method="fdr")) |> 
+  mutate(`P-Valor Teste de Bartlett` = round(`P-Valor Teste de Bartlett`,3)) |> 
+  mutate(`P-Valor T Test` = round(`P-Valor T Test`,3)) |> 
+  mutate(padjustB = round(padjustB,3)) |> 
+  mutate(padjustFDR = round(padjustFDR,3)) 
+  
+
+tbl |> 
   kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T) |> 
   kable_styling(font_size=6) |> 
-  collapse_rows(columns = 1, valign = "middle",latex_hline = "major")
+  collapse_rows(columns = 1, valign = "middle",latex_hline = "major") |> 
+  column_spec(4, color = ifelse(tbl$`P-Valor T Test` < 0.05, "blue", "black")) |> 
+  column_spec(5, color = ifelse(tbl$`P-Valor T Test` < 0.05 & tbl$padjustB < 0.05, "blue", "black")) |> 
+  column_spec(6, color = ifelse(tbl$`P-Valor T Test` < 0.05 & tbl$padjustFDR < 0.05, "blue", "black"))
+
 ```
 
 
@@ -791,6 +821,8 @@ SSF1F2_v2 |>
   kable_styling(font_size=6)
 ```
 
+\pagebreak
+
 Somas de Quadrados e Produtos Cruzados $SS_{W}$:
 ```{r}
 SSW_v2 |> 
@@ -832,7 +864,7 @@ eigen(solve(SSW)%*%SSF1)$vectors |>
 ```
 
 
-Autovetores de $SS_{W}^{-1}SS_{F2}$
+Autovalores e autovetores de $SS_{W}^{-1}SS_{F2}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro de F1, levando em conta a estrutura multivariada. 
 
@@ -851,7 +883,7 @@ eigen(solve(SSW)%*%SSF2)$vectors|>
   kable_styling(font_size=6)
 ```
 
-Autovetores de $SS_{W}^{-1}SS_{F1*F2}$
+Autovalores e autovetores de $SS_{W}^{-1}SS_{F1*F2}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F1*F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro da interação de F1 e F2, levando em conta a estrutura multivariada. 
 
@@ -871,7 +903,17 @@ eigen(solve(SSW)%*%SSF1F2)$vectors |>
 ```
 
 Autovetores de $SS_{W}^{-1}SS_{F}$
+
+Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F}$ percebemos que a produção de laranja, seguida da produção de uva (e por último produção de banana), mais contribuem para a discriminação entre os efeitos considerando cada um dos tratamentos (sendo os tratamentos, a - adubo 1 presente, b - adubo 1 ausente, c - adubo 2 presente, d - adubo 2 ausente), levando em conta a estrutura multivariada.
+
 ```{r}
+
+eigen(solve(SSW)%*%SSB)$values |> 
+  as_tibble() |> 
+  setNames(c("uva","banana","laranja"))|>  
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
 eigen(solve(SSW)%*%SSB)$vectors |> 
   as_tibble() |> 
   setNames(c("uva","banana","laranja"))|> 
