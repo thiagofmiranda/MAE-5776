@@ -902,7 +902,7 @@ eigen(solve(SSW)%*%SSF1F2)$vectors |>
   kable_styling(font_size=6)
 ```
 
-Autovetores de $SS_{W}^{-1}SS_{F}$
+Autovalores e autovetores de $SS_{W}^{-1}SS_{F}$
 
 Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F}$ percebemos que a produção de laranja, seguida da produção de uva (e por último produção de banana), mais contribuem para a discriminação entre os efeitos considerando cada um dos tratamentos (sendo os tratamentos, a - adubo 1 presente, b - adubo 1 ausente, c - adubo 2 presente, d - adubo 2 ausente), levando em conta a estrutura multivariada.
 
