@@ -1,7 +1,6 @@
 ---
 title: "MAE5776 - 1º Sem/2022 – Comparação de 2 Populações Np"
 output:
-  word_document: default
   pdf_document:
     latex_engine: lualatex
     pandoc_args: --listings
@@ -227,7 +226,7 @@ Amostra_2 <- pop |>
 ggqqplot(Amostra_2, x = "PMH")
 ```
 
-A partir dos QQ-plots apresentados, verificamos que as soma das variáveis nas duas escolas têm distribuições amostrais normais, evidenciando que, conjutamente, cada escola tem distribuição amostral multivariada nas notas de português, matemática e história. Consequentemente, $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ também resultará em uma $N(\mu_{1}-\mu_{2}, \sigma^2_{1}-\sigma^2_{2})$. 
+A partir dos QQ-plots apresentados, verificamos que as soma das variáveis nas duas escolas têm distribuições amostrais normais, evidenciando que, conjutamente, cada escola tem distribuição amostral normal multivariada nas notas de português, matemática e história. Consequentemente, $\bar{\bar{Y_{1}}} - \bar{\bar{Y_{2}}}$ também resultará em uma $N(\mu_{1}-\mu_{2}, \sigma^2_{1}-\sigma^2_{2})$. 
 
 1.4 - Há evidência amostral de diferença significante entre os vetores de Médias das duas populações? Justifique.
 
@@ -341,15 +340,15 @@ tb_2 |>
 
 ```{r Q2 - Simulação}
 cor_pop <- matrix(
-  c(cov_pop_2[1,1]/(sqrt(cov_pop_2[1,1])*sqrt(cov_pop_2[1,1])),
-    cov_pop_2[1,2]/(sqrt(cov_pop_2[1,1])*sqrt(cov_pop_2[2,2])),
-    cov_pop_2[1,3]/(sqrt(cov_pop_2[1,1])*sqrt(cov_pop_2[3,3])),
-    cov_pop_2[2,1]/(sqrt(cov_pop_2[2,2])*sqrt(cov_pop_2[1,1])),
-    cov_pop_2[2,2]/(sqrt(cov_pop_2[2,2])*sqrt(cov_pop_2[2,2])),
-    cov_pop_2[2,3]/(sqrt(cov_pop_2[2,2])*sqrt(cov_pop_2[3,3])),
-    cov_pop_2[3,1]/(sqrt(cov_pop_2[3,3])*sqrt(cov_pop_2[1,1])),
-    cov_pop_2[3,2]/(sqrt(cov_pop_2[3,3])*sqrt(cov_pop_2[2,2])),
-    cov_pop_2[3,3]/(sqrt(cov_pop_2[3,3])*sqrt(cov_pop_2[3,3]))),
+  c(cov_pop[1,1]/(sqrt(cov_pop[1,1])*sqrt(cov_pop[1,1])),
+    cov_pop[1,2]/(sqrt(cov_pop[1,1])*sqrt(cov_pop[2,2])),
+    cov_pop[1,3]/(sqrt(cov_pop[1,1])*sqrt(cov_pop[3,3])),
+    cov_pop[2,1]/(sqrt(cov_pop[2,2])*sqrt(cov_pop[1,1])),
+    cov_pop[2,2]/(sqrt(cov_pop[2,2])*sqrt(cov_pop[2,2])),
+    cov_pop[2,3]/(sqrt(cov_pop[2,2])*sqrt(cov_pop[3,3])),
+    cov_pop[3,1]/(sqrt(cov_pop[3,3])*sqrt(cov_pop[1,1])),
+    cov_pop[3,2]/(sqrt(cov_pop[3,3])*sqrt(cov_pop[2,2])),
+    cov_pop[3,3]/(sqrt(cov_pop[3,3])*sqrt(cov_pop[3,3]))),
   3,3,byrow=T)
 
 set.seed(123)
@@ -601,39 +600,138 @@ bartlett_teste_uva_F1 <- bartlett.test(pop$uva ~ pop$F1)
 bartlett_teste_uva_F2 <- bartlett.test(pop$uva ~ pop$F2)
 bartlett_teste_banana_F1 <- bartlett.test(pop$banana ~ pop$F1)
 bartlett_teste_banana_F2 <- bartlett.test(pop$banana ~ pop$F2)
-bartlett_teste_laranja_F1 <- bartlett.test(pop$uva ~ pop$F1)
-bartlett_teste_laranja_F2 <- bartlett.test(pop$uva ~ pop$F2)
+bartlett_teste_laranja_F1 <- bartlett.test(pop$laranja ~ pop$F1)
+bartlett_teste_laranja_F2 <- bartlett.test(pop$laranja ~ pop$F2)
 
 t_teste_uva_F1 <- t.test(pop$uva ~ pop$F1, conf.level=0.95, var.equal=TRUE) 
 t_teste_uva_F2 <- t.test(pop$uva ~ pop$F2, conf.level=0.95, var.equal=TRUE)
 t_teste_banana_F1 <- t.test(pop$banana ~ pop$F1, conf.level=0.95, var.equal=FALSE)
 t_teste_banana_F2 <- t.test(pop$banana ~ pop$F2, conf.level=0.95, var.equal=TRUE)
-t_teste_laranja_F1 <- t.test(pop$uva ~ pop$F1, conf.level=0.95, var.equal=TRUE)
-t_teste_laranja_F2 <- t.test(pop$uva ~ pop$F2, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_F1 <- t.test(pop$laranja ~ pop$F1, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_F2 <- t.test(pop$laranja ~ pop$F2, conf.level=0.95, var.equal=TRUE)
 
 
-tibble(`Adubo` = c(rep("F1",3),rep("F2",3)),
-       `Fruta` = rep(c("uva","banana","laranja"),2),
-       `P-Valor Teste de Bartlett` = c(
-         bartlett_teste_uva_F1$p.value,
-         bartlett_teste_banana_F1$p.value,
-         bartlett_teste_laranja_F1$p.value,
-         bartlett_teste_uva_F2$p.value,
-         bartlett_teste_banana_F2$p.value,
-         bartlett_teste_laranja_F2$p.value),
-       `P-Valor T Test` = c(
-         t_teste_uva_F1$p.value,
-         t_teste_banana_F1$p.value,
-         t_teste_laranja_F1$p.value,
-         t_teste_uva_F2$p.value,
-         t_teste_banana_F2$p.value,
-         t_teste_laranja_F2$p.value)) |> 
+pop_int <- pop |> 
+  mutate(F1F2 = paste0(F1,F2)) |> 
+  dplyr::select(-F1,-F2)
+
+# F1==0 e F2==1 x F1==0 e F2==0
+pop_01_00 <- filter(pop_int,F1F2 %in% c("01","00"))
+
+bartlett_teste_uva_01_00     <- bartlett.test(uva ~ F1F2,     data = pop_01_00) # Homo
+bartlett_teste_banana_01_00  <- bartlett.test(banana ~ F1F2,  data = pop_01_00) # Homo
+bartlett_teste_laranja_01_00 <- bartlett.test(laranja ~ F1F2, data = pop_01_00) # Homo
+
+t_teste_uva_01_00     <- t.test(uva ~ F1F2,     data = pop_01_00, conf.level=0.95, var.equal=TRUE)
+t_teste_banana_01_00  <- t.test(banana ~ F1F2,  data = pop_01_00, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_01_00 <- t.test(laranja ~ F1F2, data = pop_01_00, conf.level=0.95, var.equal=TRUE)
+
+
+# F1==0 e F2==1 x F1==1 com F2==1
+pop_01_11 <- filter(pop_int,F1F2 %in% c("01","11"))
+
+bartlett_teste_uva_01_11     <- bartlett.test(uva ~ F1F2,     data = pop_01_11) # Hete
+bartlett_teste_banana_01_11  <- bartlett.test(banana ~ F1F2,  data = pop_01_11) # Homo
+bartlett_teste_laranja_01_11 <- bartlett.test(laranja ~ F1F2, data = pop_01_11) # Homo
+
+t_teste_uva_01_11     <- t.test(uva ~ F1F2,     data = pop_01_11, conf.level=0.95, var.equal=FALSE)
+t_teste_banana_01_11  <- t.test(banana ~ F1F2,  data = pop_01_11, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_01_11 <- t.test(laranja ~ F1F2, data = pop_01_11, conf.level=0.95, var.equal=TRUE)
+
+
+# F1==0 e F2==1 x F1==1 com F2==0
+pop_01_10 <- filter(pop_int,F1F2 %in% c("01","10"))
+
+bartlett_teste_uva_01_10     <- bartlett.test(uva ~ F1F2,     data = pop_01_10) # Hete
+bartlett_teste_banana_01_10  <- bartlett.test(banana ~ F1F2,  data = pop_01_10) # Homo
+bartlett_teste_laranja_01_10 <- bartlett.test(laranja ~ F1F2, data = pop_01_10) # Homo
+
+t_teste_uva_01_10     <- t.test(uva ~ F1F2,     data = pop_01_10, conf.level=0.95, var.equal=FALSE)
+t_teste_banana_01_10  <- t.test(banana ~ F1F2,  data = pop_01_10, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_01_10 <- t.test(laranja ~ F1F2, data = pop_01_10, conf.level=0.95, var.equal=TRUE)
+
+
+# F1==0 e F2==0 x F1==1 e F2==1
+pop_00_11 <- filter(pop_int,F1F2 %in% c("00","11"))
+
+bartlett_teste_uva_00_11     <- bartlett.test(uva ~ F1F2,     data = pop_00_11) # Homo
+bartlett_teste_banana_00_11  <- bartlett.test(banana ~ F1F2,  data = pop_00_11) # Homo
+bartlett_teste_laranja_00_11 <- bartlett.test(laranja ~ F1F2, data = pop_00_11) # Homo
+
+t_teste_uva_00_11     <- t.test(uva ~ F1F2,     data = pop_00_11, conf.level=0.95, var.equal=TRUE)
+t_teste_banana_00_11  <- t.test(banana ~ F1F2,  data = pop_00_11, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_00_11 <- t.test(laranja ~ F1F2, data = pop_00_11, conf.level=0.95, var.equal=TRUE)
+
+
+# F1==0 e F2==0 x F1==1 e F2==0
+pop_00_10 <- filter(pop_int,F1F2 %in% c("00","10"))
+
+bartlett_teste_uva_00_10     <- bartlett.test(uva ~ F1F2,     data = pop_00_10) # Homo
+bartlett_teste_banana_00_10  <- bartlett.test(banana ~ F1F2,  data = pop_00_10) # Homo
+bartlett_teste_laranja_00_10 <- bartlett.test(laranja ~ F1F2, data = pop_00_10) # Homo
+
+t_teste_uva_00_10     <- t.test(uva ~ F1F2,     data = pop_00_10, conf.level=0.95, var.equal=TRUE)
+t_teste_banana_00_10  <- t.test(banana ~ F1F2,  data = pop_00_10, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_00_10 <- t.test(laranja ~ F1F2, data = pop_00_10, conf.level=0.95, var.equal=TRUE)
+
+
+# F1==1 e F2==1 x F1==1 e F2==0
+pop_11_10 <- filter(pop_int,F1F2 %in% c("11","10"))
+
+bartlett_teste_uva_11_10     <- bartlett.test(uva ~ F1F2,     data = pop_11_10) # Homo
+bartlett_teste_banana_11_10  <- bartlett.test(banana ~ F1F2,  data = pop_11_10) # Homo
+bartlett_teste_laranja_11_10 <- bartlett.test(laranja ~ F1F2, data = pop_11_10) # Homo
+
+t_teste_uva_11_10     <- t.test(uva ~ F1F2,     data = pop_11_10, conf.level=0.95, var.equal=TRUE)
+t_teste_banana_11_10  <- t.test(banana ~ F1F2,  data = pop_11_10, conf.level=0.95, var.equal=TRUE)
+t_teste_laranja_11_10 <- t.test(laranja ~ F1F2, data = pop_11_10, conf.level=0.95, var.equal=TRUE)
+
+
+`P-Valor Teste de Bartlett` = c(
+  bartlett_teste_uva_F1$p.value,bartlett_teste_banana_F1$p.value,bartlett_teste_laranja_F1$p.value,
+  bartlett_teste_uva_F2$p.value,bartlett_teste_banana_F2$p.value,bartlett_teste_laranja_F2$p.value,
+  bartlett_teste_uva_01_00$p.value,bartlett_teste_banana_01_00$p.value,bartlett_teste_laranja_01_00$p.value,
+  bartlett_teste_uva_01_11$p.value,bartlett_teste_banana_01_11$p.value,bartlett_teste_laranja_01_11$p.value,
+  bartlett_teste_uva_01_10$p.value,bartlett_teste_banana_01_10$p.value,bartlett_teste_laranja_01_10$p.value,
+  bartlett_teste_uva_00_11$p.value,bartlett_teste_banana_00_11$p.value,bartlett_teste_laranja_00_11$p.value,
+  bartlett_teste_uva_00_10$p.value,bartlett_teste_banana_00_10$p.value,bartlett_teste_laranja_00_10$p.value,
+  bartlett_teste_uva_11_10$p.value,bartlett_teste_banana_11_10$p.value,bartlett_teste_laranja_11_10$p.value)
+
+`P-Valor T Test` = c(
+  t_teste_uva_F1$p.value,t_teste_banana_F1$p.value,t_teste_laranja_F1$p.value,
+  t_teste_uva_F2$p.value,t_teste_banana_F2$p.value,t_teste_laranja_F2$p.value,
+  t_teste_uva_01_00$p.value,t_teste_banana_01_00$p.value,t_teste_laranja_01_00$p.value,
+  t_teste_uva_01_11$p.value,t_teste_banana_01_11$p.value,t_teste_laranja_01_11$p.value,
+  t_teste_uva_01_10$p.value,t_teste_banana_01_10$p.value,t_teste_laranja_01_10$p.value,
+  t_teste_uva_00_11$p.value,t_teste_banana_00_11$p.value,t_teste_laranja_00_11$p.value,
+  t_teste_uva_00_10$p.value,t_teste_banana_00_10$p.value,t_teste_laranja_00_10$p.value,
+  t_teste_uva_11_10$p.value,t_teste_banana_11_10$p.value,t_teste_laranja_11_10$p.value)
+
+Teste = c(
+  rep("$\\bar{Y}_{F1=0} = \\bar{Y}_{F1=1}$",3),
+  rep("$\\bar{Y}_{F2=0} = \\bar{Y}_{F2=1}$",3),
+  rep("$\\bar{Y}_{F2=0,F1=1} = \\bar{Y}_{F1=0,F2=0}$",3),
+  rep("$\\bar{Y}_{F2=0,F1=1} = \\bar{Y}_{F1=1,F2=1}$",3),
+  rep("$\\bar{Y}_{F2=0,F1=1} = \\bar{Y}_{F1=1,F2=0}$",3),
+  rep("$\\bar{Y}_{F2=0,F1=0} = \\bar{Y}_{F1=1,F2=1}$",3),
+  rep("$\\bar{Y}_{F2=0,F1=0} = \\bar{Y}_{F1=1,F2=0}$",3),
+  rep("$\\bar{Y}_{F2=1,F1=1} = \\bar{Y}_{F1=1,F2=0}$",3)
+            
+            )
+
+tibble(Teste,
+       `Fruta` = rep(c("uva","banana","laranja"),8),
+       `P-Valor Teste de Bartlett`,
+       `P-Valor T Test`) |> 
   mutate(padjustB = p.adjust(`P-Valor T Test`,method="bonferroni")) |> 
   mutate(padjustFDR = p.adjust(`P-Valor T Test`,method="fdr")) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T) |> 
+  kable_styling(font_size=6) |> 
+  collapse_rows(columns = 1, valign = "middle",latex_hline = "major")
 ```
 
+
+\pagebreak
 
 2.5 - Da tabela MANOVA obtida em 1.3 construa a correspondente tabela MANOVA de um estudo que considera o efeito total dos 4 grupos definidos pela estrutura fatorial 2x2. Neste caso, seja $SS_{F}$ a Soma de Quadrados e Produtos Cruzados do referido fator em 4 níveis. Há efeito significante deste fator F que combina os níveis de F1 e F2?
 
@@ -712,46 +810,63 @@ SSTotal_v2 |>
 
 2.6 - Obtenha a decomposição espectral (autovalores e autovetores) das seguintes matrizes: $SS_{W}^{-1}SS_{F1}, SS_{W}^{-1}SS_{F2}, SS_{W}^{-1}SS_{F1*F2}, SS_{W}^{-1}SS_{F}$. Qual é o padrão de contribuição das variáveis para cada um dos efeitos considerados?
 
-R: [responder]
+R:
 
-Autovalores:
+Autovalores e autovetores de $SS_{W}^{-1}SS_{F1}$
+
+Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F1}$ percebemos que a produção de uva, seguida da produção de banana (e por último produção de laranja), mais contribuem para a discriminação entre os efeitos dentro de F1, levando em conta a estrutura multivariada. 
 
 ```{r}
 fit_sum_p$Eigenvalues |> 
   as_tibble() |> 
-  setNames(c("","",""))|> 
-  round(4) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  slice(1) |> 
+  setNames(c("uva","banana","laranja"))|>  
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
-```
 
-Autovetores de $SS_{W}^{-1}SS_{F1}$
-```{r}
 eigen(solve(SSW)%*%SSF1)$vectors |> 
   as_tibble() |> 
-  round(4)|> 
-  setNames(c("","",""))|> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  setNames(c("uva","banana","laranja"))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 ```
 
+
 Autovetores de $SS_{W}^{-1}SS_{F2}$
+
+Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro de F1, levando em conta a estrutura multivariada. 
+
 ```{r}
+fit_sum_p$Eigenvalues |> 
+  as_tibble() |> 
+  slice(2) |> 
+  setNames(c("uva","banana","laranja"))|>  
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
 eigen(solve(SSW)%*%SSF2)$vectors|> 
   as_tibble()|> 
-  round(4) |> 
-  setNames(c("","",""))|>  
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  setNames(c("uva","banana","laranja"))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 ```
 
 Autovetores de $SS_{W}^{-1}SS_{F1*F2}$
+
+Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F1*F2}$ percebemos que a produção de uva, seguida da produção de laranja (e por último produção de banana), mais contribuem para a discriminação entre os efeitos dentro da interação de F1 e F2, levando em conta a estrutura multivariada. 
+
 ```{r}
+fit_sum_p$Eigenvalues |> 
+  as_tibble() |> 
+  slice(3) |> 
+  setNames(c("uva","banana","laranja"))|>  
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
 eigen(solve(SSW)%*%SSF1F2)$vectors |> 
   as_tibble()|> 
-  round(4) |> 
-  setNames(c("","",""))|> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  setNames(c("uva","banana","laranja"))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 ```
 
@@ -759,9 +874,8 @@ Autovetores de $SS_{W}^{-1}SS_{F}$
 ```{r}
 eigen(solve(SSW)%*%SSB)$vectors |> 
   as_tibble() |> 
-  round(4)|> 
-  setNames(c("","",""))|> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T, col.names = NULL) |> 
+  setNames(c("uva","banana","laranja"))|> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 ```
 
