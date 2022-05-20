@@ -908,7 +908,8 @@ Ao avaliarmos a decomposição espectral da matriz $SS_{W}^{-1}SS_{F}$ percebemo
 
 ```{r}
 
-eigen(solve(SSW)%*%SSB)$values |> 
+eigen(solve(SSW)%*%SSB)$values |>
+  t() |> 
   as_tibble() |> 
   setNames(c("uva","banana","laranja"))|>  
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
