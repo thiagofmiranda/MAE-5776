@@ -1,0 +1,104 @@
+---
+title: "MAE5776 – Análise Multivariada LISTA 3 1º Semestre/2022"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    pandoc_args: --listings
+    includes:
+      in_header: preamble.tex
+geometry: columnsep=3em
+---
+
+
+```{r setup, include=FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning=FALSE,
+  message=FALSE, 
+  comment=">",
+  prompt=T,
+  fig.align='center',
+  size="small")
+
+options(
+  scipen=999,
+  knitr.kable.NA = '',
+  knitr.table.bottomrule = "\\specialrule{.5pt}{0pt}{1pt}\\specialrule{.5pt}{0pt}{1pt}",
+  knitr.table.toprule    = "\\specialrule{.5pt}{0pt}{1pt}\\specialrule{.5pt}{0pt}{1pt}",
+  knitr.table.midrule    = "\\specialrule{.4pt}{0pt}{1pt}")
+
+
+library(kableExtra)
+library(tidyverse)
+library(GGally)
+library(ggpubr)
+library(biotools)
+library(formatR)
+library(xtable)
+
+# Funções
+
+# função para converter uma matrix em tex
+texMatrix <- function(matrix, round = 2){
+  matrix <- round(matrix,round)
+  tex <- ""
+  for(i in 1:nrow(matrix)){
+    if(i != nrow(matrix)){
+      tex <- paste0(tex,paste(matrix[i,],collapse = " & ")," \\\\ ")
+    }else{
+      tex <- paste0(tex,paste(matrix[i,],collapse = " & "))
+    }
+    
+  }
+  
+  paste0("\\begin{pmatrix}",tex,"\\end{pmatrix}")
+}
+```
+
+**Alunos:**
+
+Fernando F. Paulos Vieira - nº USP: 13492870
+
+Leandro Alves da Silva - nº USP: 11868023
+
+Thiago Ferreira Miranda - nº USP: 11925711
+
+
+
+1 - A partir de uma matriz de dados normalizados $Y^{*}_{n \times p}$, considere a matriz de covariâncias $nS_{p \times p} = Y^{*'} Y^{*}= V \Lambda V^{'}$, tal que $V_{p \times p}=(V_{1},...,V_{p})$ e $\Lambda = diag(\lambda_{j})$ são matrizes de autovetores (das colunas  de $Y^{*}_{n \times p}$) e autovalores, respectivamente, e a matriz de distâncias $D_{n \times n}$, tal que seus elementos são função dos elementos de $B_{n \times n} = Y^{*} Y^{*'} = U \Lambda U^{'}$, com $U_{n \times n}=(U_{1},...,U_{n})$ matriz de autovetores (das linhas de $Y^{*}_{n \times p}$). Três pesquisadores realizaram análises estatísticas e chegaram à seguinte redução de dimensionalidade de $Y^{*}$.
+
+Pesquisador 1: $Y^{*}_{n \times p} \to \tilde{Y}_{n \times 2} = Y^{*}(V_{1} \ V_{2})$
+
+Pesquisador 2: $Y^{*}_{n \times p} \to \tilde{Y}_{n \times 2} = Y^{*}(\frac{V_{1}}{\sqrt{\lambda_{1}}} \ \frac{V_{2}}{\sqrt{\lambda_{2}}})$
+
+Pesquisador 3: $Y^{*}_{n \times p} \to \tilde{Y}_{n \times 2} = Y^{*}(V_{1}\sqrt{\lambda_{1}} \ V_{2}\sqrt{\lambda_{2}})$
+
+
+a) Qual análise estatística cada pesquisador realizou? Que propriedades dos dados estão preservadas em cada caso? Eles partiram do mesmo objetivo? Faça suposições necessárias.
+
+b) Simule dados e realize as análises dos três pesquisadores. Interprete os resultados.
+
+c) Para os dados simulados, obtenha uma representação Biplot. Como esse gráfico é construído?
+
+
+
+
+2 - Considere os dados “bodyfat” disponíveis na biblioteca TH.data do R. Neste caso, a matriz de trabalho contém 71 observações avaliadas em 10 variáveis. Gere 5 observações (para tanto, adote um critério) e considere seu novo conjunto de dados “bodyfat_new”. Com base na matriz de trabalho resultante realize as seguintes análises:
+
+2.1 - Componentes Principais.
+
+2.2 - Escalonamento Multidimensional (ou Coordenadas Principais) – Compare as soluções métricas e não-métricas.
+
+2.3 - Análise Fatorial Exploratória – Solução de MVS (rotacionar, se for de interesse). Em cada caso, que proporção da variância total dos dados pode ser explicada por 2 componentes? Quais variáveis mais influenciaram na redução de dimensionalidade? Represente os dados em eixos bidimensionais, identifique as observações e compare os resultados das três análises.
+
+2.4 - Escolha uma das variáveis do banco de dados e obtenha uma tabela de contingência categorizando esta variável de acordo com faixas etárias das observações. Realize uma Análise de Correspondência e comente sobre o padrão de associação presente nesses dados.
+
+
+
+
+
