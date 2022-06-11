@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
   fig.align='center',
   size="small")
 
+
+
 options(
   scipen=999,
   knitr.kable.NA = '',
@@ -32,14 +34,18 @@ options(
   knitr.table.toprule    = "\\specialrule{.5pt}{0pt}{1pt}\\specialrule{.5pt}{0pt}{1pt}",
   knitr.table.midrule    = "\\specialrule{.4pt}{0pt}{1pt}")
 
-
+library(TH.data)
+library(MASS)
 library(kableExtra)
-library(tidyverse)
 library(GGally)
 library(ggpubr)
 library(biotools)
 library(formatR)
 library(xtable)
+library(tidyverse)
+library(factoextra)
+library(RColorBrewer)
+library(TeachingDemos)
 
 # Funções
 
@@ -79,20 +85,328 @@ Pesquisador 2: $Y^{*}_{n \times p} \to \tilde{Y}_{n \times 2} = Y^{*}(\frac{V_{1
 Pesquisador 3: $Y^{*}_{n \times p} \to \tilde{Y}_{n \times 2} = Y^{*}(V_{1}\sqrt{\lambda_{1}} \ V_{2}\sqrt{\lambda_{2}})$
 
 
-a) Qual análise estatística cada pesquisador realizou? Que propriedades dos dados estão preservadas em cada caso? Eles partiram do mesmo objetivo? Faça suposições necessárias.
+1.1 - Qual análise estatística cada pesquisador realizou? Que propriedades dos dados estão preservadas em cada caso? Eles partiram do mesmo objetivo? Faça suposições necessárias.
 
-b) Simule dados e realize as análises dos três pesquisadores. Interprete os resultados.
+R:
 
-c) Para os dados simulados, obtenha uma representação Biplot. Como esse gráfico é construído?
+O pesquisador 1 - Realizou uma Análise de Componentes Principais. Buscou preservar a variância total dos dados (ou a maior proporção da variância total que possa ser preservada).
 
+O pesquisador 2 - Realizou uma Análise Fatorial Exploratória. Buscou aproximar a matriz de covariâncias em termos de fatores latestes comuns e específicos, descrevendo as variáveis em função de m fatores.
 
+O pesquisador 3 - Realizou uma Análise de Coordenadas Principais ou Escalonamento Multidimensional. Analogamente ao Pesquisador 1, buscou preservar a variância total dos dados (ou a maior proporção da variância total que possa ser preservada).
 
+Num primeiro momento, acredita-se que estes pesquisadores partiram de um mesmo objetivo de redução de dimensionalidade das variáveis presentes nos dados originais disponíveis.
+
+\pagebreak
+
+1.2 - Simule dados e realize as análises dos três pesquisadores. Interprete os resultados.
+
+```{r Q1 - Simulação}
+# Vetor de médias
+media_pop <- c(5, 7, 10, 8, 11)
+
+# Matrizes de covariâncias
+cov_pop <- matrix(c(1.0, 0.3,	0.5, 0.2,	0.7,
+                    0.3, 1.0,	0.2, 0.4,	0.6,
+                    0.5, 0.2,	2.5, 1.2,	1.5,
+                    0.2, 0.4,	1.2, 2,	1.5,
+                    0.7, 0.6,	1.5, 1.5,	3),5,5,byrow=T)
+
+# Simulação dos dados
+set.seed(123)
+pop <- MASS::mvrnorm(100,media_pop,cov_pop) |> 
+  as_tibble()
+
+# outputs para a tabela em latex
+media_pop_tex <- paste0("$\\mu_{1}=(",paste(media_pop,collapse = ", "),")$")
+
+cov_pop_tex <- paste0("$\\Sigma_{1}=",texMatrix(cov_pop),"$")
+
+# Tabela resumo
+tb_1 <- tibble(
+  Amostra = "$n_{1}=100$",
+  `Vetor de Médias` = media_pop_tex,
+  `Matriz de Covariâncias` = cov_pop_tex)
+
+# Exibindo tabela resumo
+tb_1 |>
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=8) 
+```
+
+1.3 - Para os dados simulados, obtenha uma representação Biplot. Como esse gráfico é construído?
+
+\pagebreak
 
 2 - Considere os dados “bodyfat” disponíveis na biblioteca TH.data do R. Neste caso, a matriz de trabalho contém 71 observações avaliadas em 10 variáveis. Gere 5 observações (para tanto, adote um critério) e considere seu novo conjunto de dados “bodyfat_new”. Com base na matriz de trabalho resultante realize as seguintes análises:
 
+```{r}
+#pairs(bodyfat)
+
+y <- bodyfat
+
+#summary(y)
+
+mi_y <- colMeans(y) #vetor centróide (Total:n=150)
+#round(mi_y,2)
+
+St_y<-cov(y) # matriz de covariâncias para os dados totais
+#round(St_y,2)
+
+Rt_y <- cor(y) #matriz de correlação
+#round(Rt_y,2)
+
+
+# 2. INCLUSAO DAS NOVAS OBSERVAÇÕES
+
+n <- 5 #numero de observações
+
+set.seed(123) # inclusão de um seed para manter a amostragem
+novas_observacoes <- mvrnorm(n,mi_y,St_y) #criando a novas observações
+
+novas_observacoes <- novas_observacoes |> 
+  data.frame() |> 
+  mutate(age = round(age)) 
+
+bodyfat_new <- bind_rows(y,novas_observacoes) |> 
+  data.frame() # NOVO DATA FRAME COM NOVAS OBSERVAÇOES ADICIONADAS
+
+rownames(bodyfat_new) <- NULL
+
+```
+
 2.1 - Componentes Principais.
 
+```{r componentes Principais 1,out.width = '80%'}
+# Análise de Componentes Principais - Comando prcomp
+cp <- prcomp(bodyfat_new)
+
+stss_cp <- summary(cp)
+```
+
+
+Centróides dos componentes:
+```{r}
+writeLines("")
+cp$center |> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Autovalores:
+```{r,out.width = '70%'}
+c(stss_cp$importance[1,]^2)|> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Importância dos componentes:
+```{r,out.width = '70%'}
+stss_cp$importance |> 
+  round(4) |> 
+  data.frame() |> 
+  rownames_to_column() |> 
+  setNames(c("",paste0("PC",1:10))) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cores <- brewer.pal(n = 10,name = 'Paired')
+
+my_theme <- theme_minimal(base_size = 8,)+
+  theme(plot.title = element_blank(),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 10),
+        text = element_text(size = 8))
+
+plot.var <- fviz_eig(cp,choice = "variance",
+                     addlabels = TRUE,
+                     barfill = cores,barcolor = cores,ggtheme = my_theme) +
+  ylab("Pecentual de variância explicada")+
+  xlab("Componentes")
+
+plot.var
+
+```
+ 
+\newpage
+ 
+Autovetores:
+```{r,out.width = '100%'}
+cp$rotation|> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+plot.eigenvector <- cp$rotation %>%
+  data.frame() %>%
+  select(PC1,PC2) %>%
+  mutate(X1=colnames(bodyfat_new)) %>%
+  gather(key = "Componente", "Pesos", -X1) %>%
+  ggplot(aes(x=X1, y=Pesos, fill = X1))+
+  geom_bar(stat = "identity")+
+  facet_grid(Componente~.)+
+  scale_fill_manual(values = cores)+
+  theme_bw()+ 
+  theme(legend.position = "none",
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
+plot.eigenvector
+
+```
+
+
+```{r,out.width = '100%'}
+biplot(cp)
+```
+
+
+Análise de Componentes Principais com dados padronizados
+
+```{r componentes Principais 2,out.width = '80%'}
+cpr <- prcomp(bodyfat_new,scale=TRUE)
+
+stss_cpr <- summary(cpr)
+```
+
+
+Centróides dos componentes:
+```{r}
+writeLines("")
+cpr$center |> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Autovalores:
+```{r,out.width = '70%'}
+c(stss_cpr$importance[1,]^2)|> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Importância dos componentes:
+```{r,out.width = '70%'}
+stss_cpr$importance |> 
+  round(4) |> 
+  data.frame() |> 
+  rownames_to_column() |> 
+  setNames(c("",paste0("PC",1:10))) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+plot.var <- fviz_eig(cpr,choice = "variance",
+                     addlabels = TRUE,
+                     barfill = cores,barcolor = cores,ggtheme = my_theme) +
+  ylab("Pecentual de variância explicada")+
+  xlab("Componentes")
+
+plot.var
+
+```
+ 
+ 
+Autovetores:
+```{r,out.width = '100%'}
+cpr$rotation|> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+plot.eigenvector <- cpr$rotation %>%
+  data.frame() %>%
+  select(PC1,PC2) %>%
+  mutate(X1=colnames(bodyfat_new)) %>%
+  gather(key = "Componente", "Pesos", -X1) %>%
+  ggplot(aes(x=X1, y=Pesos, fill = X1))+
+  geom_bar(stat = "identity")+
+  facet_grid(Componente~.)+
+  scale_fill_manual(values = cores)+
+  theme_bw()+ 
+  theme(legend.position = "none",
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
+plot.eigenvector
+
+```
+
+
+```{r,out.width = '100%'}
+biplot(cpr)
+```
+
+
+
+\newpage
+
 2.2 - Escalonamento Multidimensional (ou Coordenadas Principais) – Compare as soluções métricas e não-métricas.
+
+```{r Escalonamento Multidimensional Métrico}
+#Distância Euclidiana (ordinária) entre observações
+de <- dist(bodyfat_new)
+
+##ESCALONAMENTO MULTIDIMENSIONAL - Solução Métrica
+esc_1 <- cmdscale(de, k = 2, eig = F, add = FALSE, x.ret = FALSE) |> 
+  data.frame() |> 
+  mutate(EM = "Solução Métrica - eig = F") |> 
+  mutate(label= 1:n())
+
+esc_2 <- cmdscale(de, k = 2, eig = T, add = FALSE, x.ret = FALSE)$points |> 
+  data.frame() |> 
+  mutate(EM = "Solução Métrica - eig = T") |> 
+  mutate(label= 1:n())
+
+esc_3 <- sammon(de)$points |> 
+  data.frame() |> 
+  mutate(EM = "Solução Não Métrica - Sammon") |> 
+  mutate(label= 1:n())
+
+esc_4 <- isoMDS(de)$points |> 
+  data.frame() |> 
+  mutate(EM = "Solução Não Métrica - isoMDS") |> 
+  mutate(label= 1:n())
+
+esc_12 <- bind_rows(esc_1, esc_2)
+p_esc_12 <- ggplot(esc_12, aes(X1,X2,label=label))+
+  geom_text()+
+  ylim(-50,50)+
+  xlim(-50,50)+
+  facet_grid(~EM)+
+  theme_bw()
+
+
+esc_34 <- bind_rows(esc_3, esc_4)
+p_esc_34 <- ggplot(esc_34, aes(X1,X2,label=label))+
+  geom_text()+
+  ylim(-50,50)+
+  xlim(-50,50)+
+  facet_grid(~EM)+
+  theme_bw()
+
+p_esc_12
+p_esc_34
+#difd <- as.matrix(dist(bodyfat_new))-as.matrix(dist(esc)) #compara as matrizes de distância "de" com a estimada por EM (k=2)
+
+```
+
+
 
 2.3 - Análise Fatorial Exploratória – Solução de MVS (rotacionar, se for de interesse). Em cada caso, que proporção da variância total dos dados pode ser explicada por 2 componentes? Quais variáveis mais influenciaram na redução de dimensionalidade? Represente os dados em eixos bidimensionais, identifique as observações e compare os resultados das três análises.
 
