@@ -1,5 +1,5 @@
 ---
-title: "MAE5776 – Análise Multivariada LISTA 3 1º Semestre/2022"
+title: "MAE5776 - 1º Semestre/2022 – Análise Multivariada - Lista 3"
 output:
   pdf_document:
     latex_engine: lualatex
@@ -46,6 +46,7 @@ library(tidyverse)
 library(factoextra)
 library(RColorBrewer)
 library(TeachingDemos)
+library(patchwork)
 
 # Funções
 
@@ -177,17 +178,17 @@ rownames(bodyfat_new) <- NULL
 
 2.1 - Componentes Principais.
 
-```{r componentes Principais 1,out.width = '80%'}
+```{r componentes Principais, results = "asis",out.width = '100%', fig.height=5,fig.width=8 }
 # Análise de Componentes Principais - Comando prcomp
 cp <- prcomp(bodyfat_new)
 
 stss_cp <- summary(cp)
-```
 
+cpr <- prcomp(bodyfat_new,scale=TRUE)
 
-Centróides dos componentes:
-```{r}
-writeLines("")
+stss_cpr <- summary(cpr)
+
+cat("Centróides dos componentes:")
 cp$center |> 
   round(4) |> 
   t() |> 
@@ -195,10 +196,17 @@ cp$center |>
   setNames(paste0("PC",1:10)) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
-```
 
-Autovalores:
-```{r,out.width = '70%'}
+cat("Centróides dos componentes com dados padronizados:")
+cpr$center |> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Autovalores dos componentes:")
 c(stss_cp$importance[1,]^2)|> 
   round(4) |> 
   t() |> 
@@ -206,11 +214,27 @@ c(stss_cp$importance[1,]^2)|>
   setNames(paste0("PC",1:10)) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
-```
 
-Importância dos componentes:
-```{r,out.width = '70%'}
+cat("Autovalores dos componentes com dados padronizados:")
+c(stss_cpr$importance[1,]^2)|> 
+  round(4) |> 
+  t() |> 
+  data.frame() |> 
+  setNames(paste0("PC",1:10)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Importância dos componentes:")
 stss_cp$importance |> 
+  round(4) |> 
+  data.frame() |> 
+  rownames_to_column() |> 
+  setNames(c("",paste0("PC",1:10))) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Importância dos componentes com dados padronizados:")
+stss_cpr$importance |> 
   round(4) |> 
   data.frame() |> 
   rownames_to_column() |> 
@@ -226,111 +250,40 @@ my_theme <- theme_minimal(base_size = 8,)+
         axis.text = element_text(size = 10),
         text = element_text(size = 8))
 
-plot.var <- fviz_eig(cp,choice = "variance",
+plot_var_1 <- fviz_eig(cp,choice = "variance",
                      addlabels = TRUE,
                      barfill = cores,barcolor = cores,ggtheme = my_theme) +
   ylab("Pecentual de variância explicada")+
   xlab("Componentes")
 
-plot.var
+plot_var_2 <- fviz_eig(cpr,choice = "variance",
+                     addlabels = TRUE,
+                     barfill = cores,barcolor = cores,ggtheme = my_theme) +
+  ylab("")+
+  xlab("Componentes")
 
-```
- 
-\newpage
- 
-Autovetores:
-```{r,out.width = '100%'}
+xlab <- plot_var_1$labels$x
+plot_var_1$labels$x <- plot_var_2$labels$x <- " "
+
+plot_var_1 | plot_var_2
+
+grid::grid.draw(grid::textGrob(xlab, x = 0.5,y = 0.03))
+
+cat("Autovetores:")
 cp$rotation|> 
   round(4) |> 
   data.frame() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
-plot.eigenvector <- cp$rotation %>%
-  data.frame() %>%
-  select(PC1,PC2) %>%
-  mutate(X1=colnames(bodyfat_new)) %>%
-  gather(key = "Componente", "Pesos", -X1) %>%
-  ggplot(aes(x=X1, y=Pesos, fill = X1))+
-  geom_bar(stat = "identity")+
-  facet_grid(Componente~.)+
-  scale_fill_manual(values = cores)+
-  theme_bw()+ 
-  theme(legend.position = "none",
-        axis.title = element_text(size = 10),
-        axis.text = element_text(size = 8))
-plot.eigenvector
-
-```
-
-
-```{r,out.width = '100%'}
-biplot(cp)
-```
-
-
-Análise de Componentes Principais com dados padronizados
-
-```{r componentes Principais 2,out.width = '80%'}
-cpr <- prcomp(bodyfat_new,scale=TRUE)
-
-stss_cpr <- summary(cpr)
-```
-
-
-Centróides dos componentes:
-```{r}
-writeLines("")
-cpr$center |> 
-  round(4) |> 
-  t() |> 
-  data.frame() |> 
-  setNames(paste0("PC",1:10)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-```
-
-Autovalores:
-```{r,out.width = '70%'}
-c(stss_cpr$importance[1,]^2)|> 
-  round(4) |> 
-  t() |> 
-  data.frame() |> 
-  setNames(paste0("PC",1:10)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-```
-
-Importância dos componentes:
-```{r,out.width = '70%'}
-stss_cpr$importance |> 
-  round(4) |> 
-  data.frame() |> 
-  rownames_to_column() |> 
-  setNames(c("",paste0("PC",1:10))) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-
-plot.var <- fviz_eig(cpr,choice = "variance",
-                     addlabels = TRUE,
-                     barfill = cores,barcolor = cores,ggtheme = my_theme) +
-  ylab("Pecentual de variância explicada")+
-  xlab("Componentes")
-
-plot.var
-
-```
- 
- 
-Autovetores:
-```{r,out.width = '100%'}
+cat("Autovetores com dados padronizados:")
 cpr$rotation|> 
   round(4) |> 
   data.frame() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
-plot.eigenvector <- cpr$rotation %>%
+plot_eigenvector_1 <- cp$rotation %>%
   data.frame() %>%
   select(PC1,PC2) %>%
   mutate(X1=colnames(bodyfat_new)) %>%
@@ -341,15 +294,32 @@ plot.eigenvector <- cpr$rotation %>%
   scale_fill_manual(values = cores)+
   theme_bw()+ 
   theme(legend.position = "none",
-        axis.title = element_text(size = 10),
-        axis.text = element_text(size = 8))
-plot.eigenvector
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10))
 
+plot_eigenvector_2 <- cpr$rotation %>%
+  data.frame() %>%
+  select(PC1,PC2) %>%
+  mutate(X1=colnames(bodyfat_new)) %>%
+  gather(key = "Componente", "Pesos", -X1) %>%
+  ggplot(aes(x=X1, y=Pesos, fill = X1))+
+  geom_bar(stat = "identity")+
+  facet_grid(Componente~.)+
+  scale_fill_manual(values = cores)+
+  theme_bw()+ 
+  theme(legend.position = "none",
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10))
+
+(plot_eigenvector_1 / plot_eigenvector_2)
 ```
 
+```{r,out.width = '100%',results="asis", fig.width=10, fig.height=10}
+cat("Biplots:")
+par(mfrow=c(1,2))
+biplot(cp,main="Dados originais")
 
-```{r,out.width = '100%'}
-biplot(cpr)
+biplot(cpr,main="Dados padronizados")
 ```
 
 
@@ -358,7 +328,9 @@ biplot(cpr)
 
 2.2 - Escalonamento Multidimensional (ou Coordenadas Principais) – Compare as soluções métricas e não-métricas.
 
-```{r Escalonamento Multidimensional Métrico}
+R: 
+
+```{r Escalonamento Multidimensional Métrico,fig.width=8, fig.height=8, message=F}
 #Distância Euclidiana (ordinária) entre observações
 de <- dist(bodyfat_new)
 
@@ -391,7 +363,6 @@ p_esc_12 <- ggplot(esc_12, aes(X1,X2,label=label))+
   facet_grid(~EM)+
   theme_bw()
 
-
 esc_34 <- bind_rows(esc_3, esc_4)
 p_esc_34 <- ggplot(esc_34, aes(X1,X2,label=label))+
   geom_text()+
@@ -400,15 +371,251 @@ p_esc_34 <- ggplot(esc_34, aes(X1,X2,label=label))+
   facet_grid(~EM)+
   theme_bw()
 
-p_esc_12
-p_esc_34
+ggpubr::ggarrange(p_esc_12,p_esc_34,ncol = 1,nrow = 2)
+
 #difd <- as.matrix(dist(bodyfat_new))-as.matrix(dist(esc)) #compara as matrizes de distância "de" com a estimada por EM (k=2)
 
 ```
 
 
+\pagebreak
 
 2.3 - Análise Fatorial Exploratória – Solução de MVS (rotacionar, se for de interesse). Em cada caso, que proporção da variância total dos dados pode ser explicada por 2 componentes? Quais variáveis mais influenciaram na redução de dimensionalidade? Represente os dados em eixos bidimensionais, identifique as observações e compare os resultados das três análises.
+
+R: Foram feitas 3 análises fatoriais, a primeira sendo via Componentes Principais, a segunda e a terceira via Máxima Verossimilhança, sendo que na terceira rotacionamos via Varimax. 
+Em dois componentes, análise fatorial via CP explicou $78,8%$ da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Varimax explicou $74,5%$.
+
+Análise Fatorial Exploratória via CP:
+
+```{r Análise Fatorial Exploratória via CP,out.width = '100%', fig.width=8, fig.height=12,results = 'asis'}
+m<-colMeans(bodyfat_new) #centróide dos dados
+v<-cov(bodyfat_new) #matriz de covariância
+r<-cor(bodyfat_new) # matriz de correlação de Y = matriz de covariância de Y*
+
+de <- eigen(r)
+
+cat("Autovalores e Variância explicada:")
+data.frame(Eigenvalues=de$values) |> 
+  mutate(CP=paste0("CP",str_pad(1:n(),2,"left","0"))) |> 
+  mutate(`Cumulative Proportion`=cumsum(Eigenvalues)/n()) |> 
+  select(CP,Eigenvalues,`Cumulative Proportion`) |> 
+  pivot_longer(, cols = -CP) |> 
+  pivot_wider(, names_from = CP) |> 
+  column_to_rownames(var="name") |> 
+  data.frame() |> 
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+  
+
+vecn1<-de$vectors[,1]*sqrt(de$values[1])
+vecn2<-de$vectors[,2]*sqrt(de$values[2])
+#vecn3<-de$vectors[,3]*sqrt(de$values[3])
+
+#phi3 <- cbind(vecn1,vecn2,vecn3)
+phi2 <- cbind(vecn1,vecn2)
+
+cat("Matriz de cargas:")
+phi2 |> #matriz de cargas
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+
+psi2<-diag(10)-diag(diag(phi2%*%t(phi2)))
+r.af2 <- (phi2%*%t(phi2))+psi2
+res.cp2 <- r-r.af2 
+#round(res.cp3,4)  #compare os res com 2 e 3 fatores
+
+
+#bodyfat_new <- asNumericMatrix(bodyfat_new)
+
+cp <- as.matrix(bodyfat_new) %*% de$vectors[,1:2]
+
+fc <- cp[,1:2] %*% solve(diag(sqrt(de$values[1:2])))
+
+loadins_pca <- phi2 %>%
+  as_tibble() %>% 
+  setNames(c("Factor1","Factor2")) |> 
+  mutate(Vars=colnames(bodyfat_new))
+
+scores_pca <- as_tibble(fc) |> 
+  setNames(c("Factor1","Factor2")) |> 
+  mutate(label=1:n())
+```
+
+
+
+Análise Fatorial Exploratória via Máxima Verossimilhança - Sem Rotação:
+```{r, results="asis"}
+#Solução da Análise de Fatores via Máxima Verossimilhança
+af1 <- factanal(bodyfat_new, factors=2, rotation="none", scores="Bartlet")
+
+cat("Cargas Fatoriais:")
+
+af1$loadings[] |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Variância Explicada:")
+tibble(
+  `SS loadings`=colSums(af1$loadings[]^2),
+  `Proportion Var`=colSums(af1$loadings[]^2)/10,
+  `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/10),
+  Factor = c("Factor1", "Factor2")
+  ) |> 
+  pivot_longer(, cols = -Factor) |> 
+  pivot_wider(, names_from = Factor) |> 
+  column_to_rownames(var="name") |> 
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+```
+
+Análise Fatorial Exploratória via Máxima Verossimilhança - Rotação Varimax:
+```{r, results="asis"}
+#Solução da Análise de Fatores via Máxima Verossimilhança
+af2 <- factanal(bodyfat_new, factors=2, rotation="varimax", scores="Bartlet")
+
+cat("Cargas Fatoriais:")
+
+af2$loadings[] |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Variância Explicada:")
+tibble(
+  `SS loadings`=colSums(af2$loadings[]^2),
+  `Proportion Var`=colSums(af2$loadings[]^2)/10,
+  `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/10),
+  Factor = c("Factor1", "Factor2")) |> 
+  pivot_longer(, cols = -Factor) |> 
+  pivot_wider(, names_from = Factor) |> 
+  column_to_rownames(var="name") |> 
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+Cargas ou coeficientes dos fatores comuns:
+```{r ,out.width = '100%', fig.height=12,fig.width=8}
+plot_loadins <- function(loadins,n){
+  cores <- brewer.pal(n = n,name = 'Paired')
+  loadins %>% 
+    gather(key = "Fator", "Loadins",-Vars) %>% 
+    ggplot(aes(x=Vars, y=Loadins, fill = Vars))+
+    geom_bar(stat = "identity")+
+    facet_grid(Fator~.,scales = "free_y")+
+    scale_fill_manual(values = cores)+
+    theme_bw()+ 
+    theme(legend.position = "none")+
+    theme(plot.title = element_text(hjust = 0.5, size=15))
+}
+
+loadins_sem_rotacao <- af1$loadings[,] %>%
+  as_tibble() %>% 
+  mutate(Vars=colnames(bodyfat_new))
+
+loadins_varimax <- af2$loadings[,] %>%
+  as_tibble() %>% 
+  mutate(Vars=colnames(bodyfat_new))
+
+plot_loadins_af_pca <- plot_loadins(loadins_pca,n=10)+
+  ggtitle("Cargas - Fatores Comuns via CP")
+plot_loadins_af_msv_none <- plot_loadins(loadins_sem_rotacao,n=10)+
+  ggtitle("Cargas - Sem Rotação")
+plot_loadins_af_msv_varimax <- plot_loadins(loadins_varimax,n=10)+
+  ggtitle("Cargas - Rotação Varimax")
+
+(plot_loadins_af_pca / plot_loadins_af_msv_none / plot_loadins_af_msv_varimax)
+
+```
+
+Plot de escore dos componentes:
+```{r,out.width = '100%', fig.height=4,fig.width=8}
+af_cp <- mutate(data.frame(cp),analise="Escores - CP") |>
+  bind_rows(mutate(data.frame(fc),analise="Fatores Comuns via CP")) |>
+  group_by(analise) |>
+  mutate(label=1:n())
+
+af_1 <- ggplot(af_cp, aes(X1,X2,label=label))+
+  geom_text()+
+  facet_grid(~analise,scales = "free_x")+
+  theme_bw()
+af_1
+```
+
+
+Biplot entre os fatores:
+```{r ,out.width = '100%', fig.height=4,fig.width=8}
+biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
+  cores <- brewer.pal(n = n,name = 'Paired')
+  loadins |> 
+    mutate_if(is.numeric,function(x){x*scale}) |> 
+    ggplot()+
+    geom_text(aes_string(y=Factor2,x=Factor1,label="label"),data=scores)+
+    geom_label(aes_string(y=Factor2,x=Factor1,label="Vars",fill="Vars"), 
+               color="white",vjust="outward",size=4,fontface = "bold")+
+    geom_segment(aes_string(x="0", y="0", yend=Factor2, xend=Factor1,color="Vars"),size = 1, 
+                 arrow=arrow(length=unit(0.3,"cm")))+
+    geom_hline(yintercept = 0,linetype="dashed")+
+    geom_vline(xintercept = 0,linetype="dashed")+
+    scale_fill_manual(values = cores)+
+    scale_color_manual(values = cores)+
+    scale_y_continuous(paste0("Scores (",Factor2,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor2,")")))+
+    scale_x_continuous(paste0("Scores (",Factor1,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor1,")")))+
+    ggtitle(title)+
+    theme_bw()+
+    theme(legend.position="none")+
+    theme(plot.title = element_text(hjust = 0.5, size=20))
+}
+
+scores_sem_rotacao <- as_tibble(af1$scores) |> 
+  mutate(label=1:n())
+scores_varimax <- as_tibble(af2$scores)|> 
+  mutate(label=1:n())
+
+bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",n=10,scale=2,title="AF - Bartlet - Sem Rotação")
+
+bp_af_rotacao_varimax_12 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor2",n=10,scale=2,title="AF - Bartlet - Rotação Varimax")
+
+ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_varimax_12,ncol = 2,nrow = 1)
+```
+
+
+
+
+Especificidades:
+
+```{r}
+af1$uniquenesses |> 
+  t() |> 
+  round(4) |> 
+  data.frame() |>  
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+Matrizes de correlação para a qual a aproximação é feita:
+
+```{r}
+af1$correlation|> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+
+\pagebreak
 
 2.4 - Escolha uma das variáveis do banco de dados e obtenha uma tabela de contingência categorizando esta variável de acordo com faixas etárias das observações. Realize uma Análise de Correspondência e comente sobre o padrão de associação presente nesses dados.
 
