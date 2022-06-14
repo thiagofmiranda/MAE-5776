@@ -406,14 +406,20 @@ rownames(bodyfat_new) <- NULL
 
 2.1 - Componentes Principais.
 
+R: Para o conjunto de dados "bodyfat_new", com 76 observações, foram realizadas duas análises de componentes principais, a primeira com os dados originais e a segunda com os dados padronizados.  
+
+A análise considerando dos dados originais conseguiu reunir em dois componentes cerca de 95% da variabilidade total dos dados, enquanto que a análise com os dados padronizados conseguiu explicar cerca de 80%. 
+
+Ao analisármos para os componentes gerados pela primeira análise, percebemos que apenas as variáveis age, DEXfat, hipcirc e waistcirc receberam cargas relevantes. Podemos observar também que o primeiro componente é formado por cargas negativas nessas variáveis (age, DEXfat, hipcirc e waistcirc). Enquanto que no segundo componente temos carga negativa apenas para a variável age, as variáveis DEXfat, hipcirc e waistcirc receberam sinal positivos.
+
+Já quando analisamos os componentes formados com os dados padronizados, percebemos que todas as variáveis são levadas em consideração. O primeiro componente é formado por cargas positivas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo componente é composto, principalmente, pelas variáveis age, elbowbreadth e kneebreadth.
+
 ```{r Q2.1 componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 # Análise de Componentes Principais - Comando prcomp
 cp <- prcomp(bodyfat_new)
-
 stss_cp <- summary(cp)
 
 cpr <- prcomp(bodyfat_new,scale=TRUE)
-
 stss_cpr <- summary(cpr)
 
 cat("Centróides dos componentes:")
@@ -451,7 +457,11 @@ c(stss_cpr$importance[1,]^2)|>
   setNames(paste0("PC",1:10)) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
+```
 
+\newpage
+
+```{r Q2.1 componentes Principais 2, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 cat("Importância dos componentes:")
 stss_cp$importance |> 
   round(4) |> 
@@ -504,6 +514,13 @@ cp$rotation|>
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
+
+```
+
+\newpage
+
+```{r Q2.1 componentes Principais 3, results = "asis",out.width = '100%', fig.height=6,fig.width=8 }
+
 cat("Autovetores com dados padronizados:")
 cpr$rotation|> 
   round(4) |> 
@@ -518,7 +535,7 @@ plot_eigenvector_1 <- cp$rotation %>%
   gather(key = "Componente", "Pesos", -X1) %>%
   ggplot(aes(x=X1, y=Pesos, fill = X1))+
   geom_bar(stat = "identity")+
-  facet_grid(Componente~.)+
+  facet_grid(Componente~.,scale="free_y")+
   scale_fill_manual(values = cores)+
   theme_bw()+ 
   theme(legend.position = "none",
@@ -532,7 +549,7 @@ plot_eigenvector_2 <- cpr$rotation %>%
   gather(key = "Componente", "Pesos", -X1) %>%
   ggplot(aes(x=X1, y=Pesos, fill = X1))+
   geom_bar(stat = "identity")+
-  facet_grid(Componente~.)+
+  facet_grid(Componente~.,scale="free_y")+
   scale_fill_manual(values = cores)+
   theme_bw()+ 
   theme(legend.position = "none",
@@ -541,6 +558,8 @@ plot_eigenvector_2 <- cpr$rotation %>%
 
 (plot_eigenvector_1 / plot_eigenvector_2)
 ```
+
+\newpage
 
 ```{r,out.width = '100%',results="asis", fig.width=10, fig.height=10}
 cat("Biplots:")
@@ -556,7 +575,7 @@ stats::biplot(cpr,main="Dados padronizados")
 
 2.2 - Escalonamento Multidimensional (ou Coordenadas Principais) – Compare as soluções métricas e não-métricas.
 
-R: 
+R: Com os dados "bodyfat_new" também foram realizados quatro análises de escalonamento multidimensional. Essa técnica facilitou a representação gráfica dos dados em duas dimensões. Podemos observar que as análises com solução métricas e solução não métrica via isoMDS geraram representações similares para a distância entre as observações nas duas dimensões. Podemos perceber que a solução não metrica de Sammon gerou uma representação diferente das três anteriores, onde alguns grupos de observações estão mais separados.
 
 ```{r Q2 - Escalonamento Multidimensional ,fig.width=8, fig.height=8, results=F}
 #Distância Euclidiana (ordinária) entre observações
