@@ -25,8 +25,6 @@ knitr::opts_chunk$set(
   fig.align='center',
   size="small")
 
-
-
 options(
   scipen=999,
   knitr.kable.NA = '',
@@ -104,7 +102,7 @@ Em um primeiro momento, acredita-se que estes pesquisadores partiram de um mesmo
 
 1.2 - Simule dados e realize as análises dos três pesquisadores. Interprete os resultados.
 
-```{r Q1 - Simulação}
+```{r Q1 - Simulação, results="asis"}
 # Vetor de médias
 media_pop <- c(5, 7, 10,  11, 6)
 
@@ -117,8 +115,10 @@ cov_pop <- matrix(c(1.0, 0.6,	0.5,0.7, 1.0,
 
 # Simulação dos dados
 set.seed(123)
-pop <- MASS::mvrnorm(100,media_pop,cov_pop) |> 
-  as_tibble()
+pop_original <- MASS::mvrnorm(100,media_pop,cov_pop) |> 
+  as_tibble() 
+
+pop <-   scale(pop_original)
 
 # outputs para a tabela em latex
 media_pop_tex <- paste0("$\\mu_{1}=(",paste(media_pop,collapse = ", "),")$")
@@ -131,6 +131,7 @@ tb_1 <- tibble(
   `Vetor de Médias` = media_pop_tex,
   `Matriz de Covariâncias` = cov_pop_tex)
 
+cat("Parâmetros da Simulação:")
 # Exibindo tabela resumo
 tb_1 |>
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
@@ -145,15 +146,6 @@ p_pop <- ncol(pop)
 cp <- prcomp(pop)
 
 stss_cp <- summary(cp)
-
-cat("Centróides dos componentes:")
-cp$center |> 
-  round(4) |> 
-  t() |> 
-  data.frame() |> 
-  setNames(paste0("PC",1:p_pop)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
 
 cat("Autovalores dos componentes:")
 c(stss_cp$importance[1,]^2)|> 
@@ -219,7 +211,7 @@ plot_eigenvector_1
 
 ```{r,out.width = '70%',results="asis", fig.width=6, fig.height=6}
 cat("Biplot:")
-stats::biplot(cp,main="Dados originais")
+stats::biplot(cp,main="Dados padronizados")
 ```
 
 
@@ -415,7 +407,7 @@ rownames(bodyfat_new) <- NULL
 
 2.1 - Componentes Principais.
 
-```{r componentes Principais, results = "asis",out.width = '100%', fig.height=5,fig.width=8 }
+```{r componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 # Análise de Componentes Principais - Comando prcomp
 cp <- prcomp(bodyfat_new)
 
