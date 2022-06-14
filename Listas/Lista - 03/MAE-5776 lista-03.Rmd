@@ -191,7 +191,7 @@ plot_var_1
 ```
 
 
-```{r Q1 - componentes Principais 2, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
+```{r Q1 - Componentes Principais 2, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 cat("Autovetores:")
 cp$rotation|> 
   round(4) |> 
@@ -280,6 +280,37 @@ plot_loadins_af_msv_none
 
 ```
 
+Biplot
+```{r ,out.width = '60%', fig.height=5,fig.width=5}
+biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
+  cores <- brewer.pal(n = n,name = 'Dark2')
+  loadins |> 
+    mutate_if(is.numeric,function(x){x*scale}) |> 
+    ggplot()+
+    geom_text(aes_string(y=Factor2,x=Factor1,label="label"),data=scores)+
+    geom_label(aes_string(y=Factor2,x=Factor1,label="Vars",fill="Vars"), 
+               color="white",vjust="outward",size=4,fontface = "bold")+
+    geom_segment(aes_string(x="0", y="0", yend=Factor2, xend=Factor1,color="Vars"),size = 1, 
+                 arrow=arrow(length=unit(0.3,"cm")))+
+    geom_hline(yintercept = 0,linetype="dashed")+
+    geom_vline(xintercept = 0,linetype="dashed")+
+    scale_fill_manual(values = cores)+
+    scale_color_manual(values = cores)+
+    scale_y_continuous(paste0("Scores (",Factor2,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor2,")")))+
+    scale_x_continuous(paste0("Scores (",Factor1,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor1,")")))+
+    ggtitle(title)+
+    theme_bw()+
+    theme(legend.position="none")+
+    theme(plot.title = element_text(hjust = 0.5, size=20))
+}
+
+scores_sem_rotacao <- as_tibble(af1$scores) |> 
+  mutate(label=1:n())
+
+bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",n=5,scale=2,title="AF - Bartlet - Sem Rotação")
+
+bp_af_sem_rotacao_12
+```
 
 Especificidades:
 
@@ -339,33 +370,6 @@ R: O gráfico biplot representa cada observação dos dados, sendo construído p
 
 Biplot entre os dois fatores da análise fatorial:
 ```{r ,out.width = '60%', fig.height=5,fig.width=5}
-biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
-  cores <- brewer.pal(n = n,name = 'Dark2')
-  loadins |> 
-    mutate_if(is.numeric,function(x){x*scale}) |> 
-    ggplot()+
-    geom_text(aes_string(y=Factor2,x=Factor1,label="label"),data=scores)+
-    geom_label(aes_string(y=Factor2,x=Factor1,label="Vars",fill="Vars"), 
-               color="white",vjust="outward",size=4,fontface = "bold")+
-    geom_segment(aes_string(x="0", y="0", yend=Factor2, xend=Factor1,color="Vars"),size = 1, 
-                 arrow=arrow(length=unit(0.3,"cm")))+
-    geom_hline(yintercept = 0,linetype="dashed")+
-    geom_vline(xintercept = 0,linetype="dashed")+
-    scale_fill_manual(values = cores)+
-    scale_color_manual(values = cores)+
-    scale_y_continuous(paste0("Scores (",Factor2,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor2,")")))+
-    scale_x_continuous(paste0("Scores (",Factor1,")"), sec.axis = sec_axis(~ . / scale, name = paste0("Loadings (",Factor1,")")))+
-    ggtitle(title)+
-    theme_bw()+
-    theme(legend.position="none")+
-    theme(plot.title = element_text(hjust = 0.5, size=20))
-}
-
-scores_sem_rotacao <- as_tibble(af1$scores) |> 
-  mutate(label=1:n())
-
-bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",n=5,scale=2,title="AF - Bartlet - Sem Rotação")
-
 bp_af_sem_rotacao_12
 ```
 
@@ -820,6 +824,7 @@ bp_af_rotacao_varimax_12 <- biplot(loadins_varimax,scores_varimax,"Factor1","Fac
 ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_varimax_12,ncol = 2,nrow = 1)
 ```
 
+
 Especificidades:
 
 ```{r}
@@ -848,3 +853,138 @@ af1$correlation|>
 \pagebreak
 
 2.4 - Escolha uma das variáveis do banco de dados e obtenha uma tabela de contingência categorizando esta variável de acordo com faixas etárias das observações. Realize uma Análise de Correspondência e comente sobre o padrão de associação presente nesses dados.
+
+
+```{r Q2 - Análise de Correspondência}
+age_DEXfat_cat <- bodyfat_new |> 
+  mutate(age_cat = case_when(age < 35 ~ "age < 35",
+                             age >= 35 & age < 45 ~ "35 <= age < 45",
+                             age >= 45 & age < 55 ~ "45 <= age < 55",
+                             age >= 55 & age < 65 ~ "55 <= age < 65",
+                             age >= 65 ~ "age >= 65")) |> 
+  mutate(DEXfat_cat = case_when(DEXfat < 25 ~ "DEXfat < 25",
+                                DEXfat >= 25 & DEXfat < 35 ~ "25 <= DEXfat < 35",
+                                DEXfat >= 35 & DEXfat < 45 ~ "35 <= DEXfat < 45",
+                                DEXfat >= 45 ~ "DEXfat >= 45")) |> 
+  mutate(age_cat=factor(age_cat,levels = c("age < 35","35 <= age < 45",
+                                           "45 <= age < 55","55 <= age < 65","age >= 65"))) |> 
+  mutate(DEXfat_cat=factor(DEXfat_cat,levels = c("DEXfat < 25","25 <= DEXfat < 35","35 <= DEXfat < 45",
+                                                 "DEXfat >= 45")))
+
+tb_contigencia <- age_DEXfat_cat |> 
+  group_by(age_cat,DEXfat_cat) |> 
+  summarise(n=n()) |> 
+  spread(DEXfat_cat,n,fill = 0) |> 
+  column_to_rownames("age_cat")
+
+tab2.4 <- as.matrix(tb_contigencia)
+
+
+tab2.4 |> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+pr <- prop.table(tab2.4,1) #proporções com totais linha fixos
+pc <- prop.table(tab2.4,2) #proporções com totais coluna fixos
+
+pr|> 
+  round(2) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+pc|> 
+  round(2) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+chisq.test(tab2.4) #H0: populações homogêneas
+#Rejeitar H0 -> há evidência de populações heterogêneas
+```
+
+
+```{r Q2 - Análise de Correspondência pt2}
+#Representação das 5 trinomiais no simplex
+
+s3d <- scatterplot3d(pr[,1:3],pch=10, type="h", angle=55) 
+text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),
+     cex= 1, col = "red")
+```
+
+
+```{r Q2 - Análise de Correspondência pt3}
+colnames(tab2.4) <- NULL
+rownames(tab2.4) <- NULL
+fit.ca<-ca(data.matrix(tab2.4))
+fit.ca
+```
+
+
+```{r Q2 - Análise de Correspondência pt4, results="asis"}
+cat("coordenadas padrão das linhas (autovetores_linha)")
+fit.ca$rowcoord |> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("coord padrão das colunas (autovetores_col)")
+fit.ca$rowcoord |> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+
+```{r Q2 - Análise de Correspondência pt5}
+#Supondo análise de associação: total "n" da tabela fixo
+#Teste Qui-Quadrado: H0:Variáveis linha e coluna independentes
+#p=0.1718 ==> não rejeitar H0
+
+pls<-plot(fit.ca,main="Biplot Simétrico") #biplot simétrico
+round(pls$row,2) #autovetor_linha*sqrt(autovalor)
+round(pls$col,2) #autovetor_col*sqrt(autovalor)
+```
+
+
+```{r Q2 - Análise de Correspondência pt6}
+plot(fit.ca, map="rowprincipal", main="Rowprincipal")
+#Colunas em Coord Padrão, Linhas em Coord Principais 
+plr<-plot(fit.ca, map="rowprincipal", main="Rowprincipal",arrows=c(FALSE,TRUE))
+round(plr$row,2) #autovetor_linha*sqrt(autovalor)
+round(plr$col,2) #autovetor_col
+```
+
+
+```{r Q2 - Análise de Correspondência pt7}
+plot(fit.ca, map="rowgreen", main="Rowgreen")
+#Colunas em Coord Padronizadas, Linhas em Coord Principais 
+plrg<-plot(fit.ca, map="rowgreen", main="Rowgreen")
+round(plrg$row,2) #autovetor_linha*sqrt(autovalor)
+round(plrg$col,2) #autovetor_col*sqrt(massa)
+#massa:frequência relativa da marginal da tabela
+```
+
+
+```{r Q2 - Análise de Correspondência pt8}
+#Comparando diferentes representações dos dados
+par(mfrow=c(1,3))
+plot(fit.ca, main="Symetric") #ambas, L e C, em coord principais
+plot(fit.ca, map="rowprincipal",main="Rowprincipal", arrows=c(FALSE,TRUE))
+plot(fit.ca,map="colprincipal", main="Colprincipal", arrows=c(TRUE,FALSE))
+
+par(mfrow=c(1,2))
+plot(fit.ca, map="rowgreen", main="Rowgreen",arrows=c(FALSE,TRUE))
+plot(fit.ca, map="colgreen", main="Colgreen",arrows=c(TRUE,FALSE)) 
+
+par(mfrow=c(1,2))
+plot(fit.ca, mass=TRUE,map="rowgreen",main="Rowgreen.mass",arrows=c(FALSE,TRUE)) 
+plot(fit.ca, mass=TRUE,map="colgreen",main="Colgreen.mass",arrows=c(TRUE,FALSE)) 
+
+```
+
+
+
