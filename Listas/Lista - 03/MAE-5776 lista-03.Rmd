@@ -629,18 +629,10 @@ ggpubr::ggarrange(p_esc_1,p_esc_2,p_esc_3,ncol = 2,nrow = 2)
 
 2.3 - Análise Fatorial Exploratória – Solução de MVS (rotacionar, se for de interesse). Em cada caso, que proporção da variância total dos dados pode ser explicada por 2 componentes? Quais variáveis mais influenciaram na redução de dimensionalidade? Represente os dados em eixos bidimensionais, identifique as observações e compare os resultados das três análises.
 
-R: Foram feitas 3 análises fatoriais, a primeira sendo via Componentes Principais, a segunda e a terceira via Máxima Verossimilhança, sendo que na terceira rotacionamos via Varimax. 
-Em três fatores, análise fatorial via CP explicou $86,9%$ da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Varimax explicou $74,5%$.
+R: Foram feitas 3 análises fatoriais, a primeira sendo via Componentes Principais, a segunda e a terceira via Máxima Verossimilhança, sendo que na terceira rotacionamos via Promax. 
+Em três fatores, análise fatorial via CP explicou 86,9% da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Promax explicou 74,5%.
 
-
-Diferentemente da análise de componentes principais anterior, que reteve cerca de $95%$ da variancia total dos dados em dois componentes, a análise fatorial realizada via componentes principais, reteve $86,9%$ em três. 
-
-
-
-
-Ao analisármos para os componentes gerados pela primeira análise, percebemos que apenas as variáveis age, DEXfat, hipcirc e waistcirc receberam cargas relevantes. Podemos observar também que o primeiro componente é formado por cargas negativas nessas variáveis (age, DEXfat, hipcirc e waistcirc). Enquanto que no segundo componente temos carga negativa apenas para a variável age, as variáveis DEXfat, hipcirc e waistcirc receberam sinal positivos.
-
-Já quando analisamos os componentes formados com os dados padronizados, percebemos que todas as variáveis são levadas em consideração. O primeiro componente é formado por cargas positivas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo componente é composto, principalmente, pelas variáveis age, elbowbreadth e kneebreadth.
+A análise fatorial via CP tem equivalência com a análise de componentes principais com dados padronizados realizada anteriormente, entretanto na análise fatorial via CP consideramos 3 fatores ao invés de 2, onde 86,9% da variância total dos dados é explicada pelos 3 fatores. O primeiro fator é formado por cargas negativas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo fator é composto, principalmente, pelas variáveis age com sinal positivo, elbowbreadth e kneebreadth com sinais negativos. E o terceiro fator pelas variáveis age, elbowbreadth e kneebreadth com sinais positivos.
 
 
 
@@ -734,10 +726,10 @@ tibble(
 
 ```
 
-Análise Fatorial Exploratória via Máxima Verossimilhança - Rotação Varimax:
+Análise Fatorial Exploratória via Máxima Verossimilhança - Rotação Promax:
 ```{r, results="asis"}
 #Solução da Análise de Fatores via Máxima Verossimilhança
-af2 <- factanal(bodyfat_new, factors=3, rotation="varimax", scores="Bartlet", lower = 0.01)
+af2 <- factanal(bodyfat_new, factors=3, rotation="promax", scores="Bartlet", lower = 0.01)
 
 cat("Cargas Fatoriais:")
 
@@ -797,7 +789,7 @@ loadins_sem_rotacao <- af1$loadings[,] %>%
   as_tibble() %>% 
   mutate(Vars=colnames(bodyfat_new))
 
-loadins_varimax <- af2$loadings[,] %>%
+loadins_promax <- af2$loadings[,] %>%
   as_tibble() %>% 
   mutate(Vars=colnames(bodyfat_new))
 
@@ -805,10 +797,10 @@ plot_loadins_af_pca <- plot_loadins(loadins_pca,n=10)+
   ggtitle("Cargas - Fatores Comuns via CP")
 plot_loadins_af_msv_none <- plot_loadins(loadins_sem_rotacao,n=10)+
   ggtitle("Cargas - Sem Rotação")
-plot_loadins_af_msv_varimax <- plot_loadins(loadins_varimax,n=10)+
-  ggtitle("Cargas - Rotação Varimax")
+plot_loadins_af_msv_promax <- plot_loadins(loadins_promax,n=10)+
+  ggtitle("Cargas - Rotação Promax")
 
-(plot_loadins_af_pca / plot_loadins_af_msv_none / plot_loadins_af_msv_varimax)
+(plot_loadins_af_pca / plot_loadins_af_msv_none / plot_loadins_af_msv_promax)
 
 ```
 
@@ -860,7 +852,7 @@ biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
 
 scores_sem_rotacao <- as_tibble(af1$scores) |> 
   mutate(label=1:n())
-scores_varimax <- as_tibble(af2$scores)|> 
+scores_promax <- as_tibble(af2$scores)|> 
   mutate(label=1:n())
 
 bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",
@@ -870,22 +862,17 @@ bp_af_sem_rotacao_13 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1",
 bp_af_sem_rotacao_23 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor2","Factor3",
                                n=10,scale=2)
 
-bp_af_rotacao_varimax_12 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor2",
-                                   n=10,scale=2,title="AF - Bartlet - Rotação Varimax")
-bp_af_rotacao_varimax_13 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor3",
+bp_af_rotacao_promax_12 <- biplot(loadins_promax,scores_promax,"Factor1","Factor2",
+                                   n=10,scale=2,title="AF - Bartlet - Rotação Promax")
+bp_af_rotacao_promax_13 <- biplot(loadins_promax,scores_promax,"Factor1","Factor3",
                                    n=10,scale=2)
-bp_af_rotacao_varimax_23 <- biplot(loadins_varimax,scores_varimax,"Factor2","Factor3",
+bp_af_rotacao_promax_23 <- biplot(loadins_promax,scores_promax,"Factor2","Factor3",
                                    n=10,scale=2)
 
-ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_varimax_12,
-                  bp_af_sem_rotacao_13,bp_af_rotacao_varimax_13,
-                  bp_af_sem_rotacao_23,bp_af_rotacao_varimax_23,ncol = 2,nrow = 3)
+ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_promax_12,
+                  bp_af_sem_rotacao_13,bp_af_rotacao_promax_13,
+                  bp_af_sem_rotacao_23,bp_af_rotacao_promax_23,ncol = 2,nrow = 3)
 ```
-
-
-
-
-
 
 \pagebreak
 
@@ -895,20 +882,22 @@ R: As variáveis selecionadas para a análise de correspondência foram *age* e 
 
 
 ```{r Q2 - Análise de Correspondência}
+
+rm(list=setdiff(ls(), c("bodyfat_new","def.chunk.hook")))
+
 age_DEXfat_cat <- bodyfat_new |> 
   mutate(age_cat = case_when(age < 35 ~ "age < 35",
                              age >= 35 & age < 45 ~ "35 <= age < 45",
                              age >= 45 & age < 55 ~ "45 <= age < 55",
                              age >= 55 & age < 65 ~ "55 <= age < 65",
                              age >= 65 ~ "age >= 65")) |> 
-  mutate(DEXfat_cat = case_when(DEXfat < 25 ~ "DEXfat < 25",
-                                DEXfat >= 25 & DEXfat < 35 ~ "25 <= DEXfat < 35",
-                                DEXfat >= 35 & DEXfat < 45 ~ "35 <= DEXfat < 45",
-                                DEXfat >= 45 ~ "DEXfat >= 45")) |> 
+  mutate(DEXfat_cat = case_when(DEXfat < 20 ~ "DEXfat < 20",
+                                DEXfat >= 20 & DEXfat < 35 ~ "20 <= DEXfat < 35",
+                                DEXfat >= 35 ~ "DEXfat >= 35")) |> 
   mutate(age_cat=factor(age_cat,levels = c("age < 35","35 <= age < 45",
                                            "45 <= age < 55","55 <= age < 65","age >= 65"))) |> 
-  mutate(DEXfat_cat=factor(DEXfat_cat,levels = c("DEXfat < 25","25 <= DEXfat < 35","35 <= DEXfat < 45",
-                                                 "DEXfat >= 45")))
+  mutate(DEXfat_cat=factor(DEXfat_cat,levels = c("DEXfat < 20","20 <= DEXfat < 35",
+                                                 "DEXfat >= 35")))
 
 tb_contigencia <- age_DEXfat_cat |> 
   group_by(age_cat,DEXfat_cat) |> 
@@ -961,9 +950,13 @@ text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),cex= 1, col = "red")
 
 
 ```{r Q2 - Análise de Correspondência pt3}
-colnames(tab2.4) <- NULL
-rownames(tab2.4) <- NULL
-fit.ca<-ca(data.matrix(tab2.4))
+#colnames(tab2.4) <- NULL
+#rownames(tab2.4) <- NULL
+fit.ca<-ca(tab2.4)
+
+#fit.ca$rownames <- rownames(tb_contigencia)
+#fit.ca$colnames <- colnames(tb_contigencia)
+
 fit.ca
 ```
 
