@@ -336,12 +336,12 @@ O pesquisador pesquisador 3 buscou mapear as distâncias entre os dados padroniz
 de <- dist(pop)
 
 ##ESCALONAMENTO MULTIDIMENSIONAL - Solução Métrica
-esc_1 <- cmdscale(de, k = 2, eig = F, add = FALSE, x.ret = FALSE) |> 
+esc_1 <- cmdscale(de, k = 2, eig = T, add = FALSE, x.ret = FALSE)$points |> 
   data.frame() |> 
-  mutate(EM = "Escalonamento Multidimensional: Solução Métrica - eig = F") |> 
+  mutate(EM = "Escalonamento Multidimensional: Solução Métrica") |> 
   mutate(label= 1:n())
 
-p_esc_12 <- ggplot(esc_1, aes(X1,X2,label=label))+
+p_esc_12 <- ggplot(esc_1, aes(x=X1,y=X2,label=label))+
   geom_text()+
   ylab("Dim2")+
   xlab("Dim1")+
@@ -575,50 +575,50 @@ stats::biplot(cpr,main="Dados padronizados")
 
 2.2 - Escalonamento Multidimensional (ou Coordenadas Principais) – Compare as soluções métricas e não-métricas.
 
-R: Com os dados "bodyfat_new" também foram realizados quatro análises de escalonamento multidimensional. Essa técnica facilitou a representação gráfica dos dados em duas dimensões. Podemos observar que as análises com solução métricas e solução não métrica via isoMDS geraram representações similares para a distância entre as observações nas duas dimensões. Podemos perceber que a solução não metrica de Sammon gerou uma representação diferente das três anteriores, onde alguns grupos de observações estão mais separados.
+R: Com os dados "bodyfat_new" também foram realizados três análises de escalonamento multidimensional. Essa técnica facilitou a representação gráfica dos dados em duas dimensões. Podemos observar que as análises com  a solução métrica e a solução não métrica via isoMDS geraram representações similares para a distância entre as observações nas duas dimensões. Podemos perceber que a solução não metrica de Sammon gerou uma representação diferente das duas anteriores, onde alguns grupos de observações estão mais separados.
 
-```{r Q2 - Escalonamento Multidimensional ,fig.width=8, fig.height=8, results=F}
+```{r Q2 - Escalonamento Multidimensional ,out.width = '100%',fig.width=8, fig.height=8, results=F}
 #Distância Euclidiana (ordinária) entre observações
 de <- dist(bodyfat_new)
 
 ##ESCALONAMENTO MULTIDIMENSIONAL - Solução Métrica
 esc_1 <- cmdscale(de, k = 2, eig = F, add = FALSE, x.ret = FALSE) |> 
   data.frame() |> 
-  mutate(EM = "Solução Métrica - eig = F") |> 
+  mutate(EM = "Solução Métrica") |> 
   mutate(label= 1:n())
 
-esc_2 <- cmdscale(de, k = 2, eig = T, add = FALSE, x.ret = FALSE)$points |> 
-  data.frame() |> 
-  mutate(EM = "Solução Métrica - eig = T") |> 
-  mutate(label= 1:n())
-
-esc_3 <- sammon(de)$points |> 
+esc_2 <- sammon(de)$points |> 
   data.frame() |> 
   mutate(EM = "Solução Não Métrica - Sammon") |> 
   mutate(label= 1:n())
 
-esc_4 <- isoMDS(de)$points |> 
+esc_3 <- isoMDS(de)$points |> 
   data.frame() |> 
   mutate(EM = "Solução Não Métrica - isoMDS") |> 
   mutate(label= 1:n())
 
-esc_12 <- bind_rows(esc_1, esc_2)
-p_esc_12 <- ggplot(esc_12, aes(X1,X2,label=label))+
+p_esc_1 <- ggplot(esc_1, aes(X1,X2,label=label))+
   geom_text()+
-  ylim(-50,50)+
+  ylim(-35,35)+
   xlim(-50,50)+
   facet_grid(~EM)+
   theme_bw()
 
-esc_34 <- bind_rows(esc_3, esc_4)
-p_esc_34 <- ggplot(esc_34, aes(X1,X2,label=label))+
+p_esc_2 <- ggplot(esc_2, aes(X1,X2,label=label))+
   geom_text()+
-  ylim(-50,50)+
+  ylim(-35,35)+
   xlim(-50,50)+
   facet_grid(~EM)+
   theme_bw()
 
-ggpubr::ggarrange(p_esc_12,p_esc_34,ncol = 1,nrow = 2)
+p_esc_3 <- ggplot(esc_3, aes(X1,X2,label=label))+
+  geom_text()+
+  ylim(-35,35)+
+  xlim(-50,50)+
+  facet_grid(~EM)+
+  theme_bw()
+
+ggpubr::ggarrange(p_esc_1,p_esc_2,p_esc_3,ncol = 2,nrow = 2)
 
 #difd <- as.matrix(dist(bodyfat_new))-as.matrix(dist(esc)) #compara as matrizes de distância "de" com a estimada por EM (k=2)
 
@@ -630,7 +630,20 @@ ggpubr::ggarrange(p_esc_12,p_esc_34,ncol = 1,nrow = 2)
 2.3 - Análise Fatorial Exploratória – Solução de MVS (rotacionar, se for de interesse). Em cada caso, que proporção da variância total dos dados pode ser explicada por 2 componentes? Quais variáveis mais influenciaram na redução de dimensionalidade? Represente os dados em eixos bidimensionais, identifique as observações e compare os resultados das três análises.
 
 R: Foram feitas 3 análises fatoriais, a primeira sendo via Componentes Principais, a segunda e a terceira via Máxima Verossimilhança, sendo que na terceira rotacionamos via Varimax. 
-Em dois componentes, análise fatorial via CP explicou $78,8%$ da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Varimax explicou $74,5%$.
+Em três fatores, análise fatorial via CP explicou $86,9%$ da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Varimax explicou $74,5%$.
+
+
+Diferentemente da análise de componentes principais anterior, que reteve cerca de $95%$ da variancia total dos dados em dois componentes, a análise fatorial realizada via componentes principais, reteve $86,9%$ em três. 
+
+
+
+
+Ao analisármos para os componentes gerados pela primeira análise, percebemos que apenas as variáveis age, DEXfat, hipcirc e waistcirc receberam cargas relevantes. Podemos observar também que o primeiro componente é formado por cargas negativas nessas variáveis (age, DEXfat, hipcirc e waistcirc). Enquanto que no segundo componente temos carga negativa apenas para a variável age, as variáveis DEXfat, hipcirc e waistcirc receberam sinal positivos.
+
+Já quando analisamos os componentes formados com os dados padronizados, percebemos que todas as variáveis são levadas em consideração. O primeiro componente é formado por cargas positivas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo componente é composto, principalmente, pelas variáveis age, elbowbreadth e kneebreadth.
+
+
+
 
 Análise Fatorial Exploratória via CP:
 
@@ -657,47 +670,46 @@ data.frame(Eigenvalues=de$values) |>
 
 vecn1<-de$vectors[,1]*sqrt(de$values[1])
 vecn2<-de$vectors[,2]*sqrt(de$values[2])
-#vecn3<-de$vectors[,3]*sqrt(de$values[3])
+vecn3<-de$vectors[,3]*sqrt(de$values[3])
 
-#phi3 <- cbind(vecn1,vecn2,vecn3)
-phi2 <- cbind(vecn1,vecn2)
+phi3 <- cbind(vecn1,vecn2,vecn3)
+#phi2 <- cbind(vecn1,vecn2)
 
 cat("Matriz de cargas:")
-phi2 |> #matriz de cargas
+phi3 |> #matriz de cargas
   round(4) |> 
   data.frame() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
 
 
-psi2<-diag(10)-diag(diag(phi2%*%t(phi2)))
-r.af2 <- (phi2%*%t(phi2))+psi2
-res.cp2 <- r-r.af2 
+psi3<-diag(10)-diag(diag(phi3%*%t(phi3)))
+r.af3 <- (phi3%*%t(phi3))+psi3
+res.cp3 <- r-r.af3 
 #round(res.cp3,4)  #compare os res com 2 e 3 fatores
 
 
 #bodyfat_new <- asNumericMatrix(bodyfat_new)
 
-cp <- as.matrix(bodyfat_new) %*% de$vectors[,1:2]
+cp <- as.matrix(bodyfat_new) %*% de$vectors[,1:3]
 
-fc <- cp[,1:2] %*% solve(diag(sqrt(de$values[1:2])))
+fc <- cp[,1:3] %*% solve(diag(sqrt(de$values[1:3])))
 
-loadins_pca <- phi2 %>%
+loadins_pca <- phi3 %>%
   as_tibble() %>% 
-  setNames(c("Factor1","Factor2")) |> 
+  setNames(c("Factor1","Factor2","Factor3")) |> 
   mutate(Vars=colnames(bodyfat_new))
 
 scores_pca <- as_tibble(fc) |> 
-  setNames(c("Factor1","Factor2")) |> 
+  setNames(c("Factor1","Factor2","Factor3")) |> 
   mutate(label=1:n())
 ```
-
 
 
 Análise Fatorial Exploratória via Máxima Verossimilhança - Sem Rotação:
 ```{r, results="asis"}
 #Solução da Análise de Fatores via Máxima Verossimilhança
-af1 <- factanal(bodyfat_new, factors=2, rotation="none", scores="Bartlet")
+af1 <- factanal(bodyfat_new, factors=3, rotation="none", scores="Bartlet", lower = 0.01)
 
 cat("Cargas Fatoriais:")
 
@@ -711,7 +723,7 @@ tibble(
   `SS loadings`=colSums(af1$loadings[]^2),
   `Proportion Var`=colSums(af1$loadings[]^2)/10,
   `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/10),
-  Factor = c("Factor1", "Factor2")
+  Factor = c("Factor1", "Factor2", "Factor3")
   ) |> 
   pivot_longer(, cols = -Factor) |> 
   pivot_wider(, names_from = Factor) |> 
@@ -725,7 +737,7 @@ tibble(
 Análise Fatorial Exploratória via Máxima Verossimilhança - Rotação Varimax:
 ```{r, results="asis"}
 #Solução da Análise de Fatores via Máxima Verossimilhança
-af2 <- factanal(bodyfat_new, factors=2, rotation="varimax", scores="Bartlet")
+af2 <- factanal(bodyfat_new, factors=3, rotation="varimax", scores="Bartlet", lower = 0.01)
 
 cat("Cargas Fatoriais:")
 
@@ -739,15 +751,32 @@ tibble(
   `SS loadings`=colSums(af2$loadings[]^2),
   `Proportion Var`=colSums(af2$loadings[]^2)/10,
   `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/10),
-  Factor = c("Factor1", "Factor2")) |> 
+  Factor = c("Factor1", "Factor2", "Factor3")) |> 
   pivot_longer(, cols = -Factor) |> 
   pivot_wider(, names_from = Factor) |> 
   column_to_rownames(var="name") |> 
   mutate_all(round,3) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
-```
 
+cat("Especificidades:")
+
+af1$uniquenesses |> 
+  t() |> 
+  round(4) |> 
+  data.frame() |>  
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+
+cat("Matrizes de correlação para a qual a aproximação é feita:")
+
+af1$correlation|> 
+  round(4) |> 
+  data.frame() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  kable_styling(font_size=6)
+```
 
 Cargas ou coeficientes dos fatores comuns:
 ```{r ,out.width = '100%', fig.height=12,fig.width=8}
@@ -783,8 +812,8 @@ plot_loadins_af_msv_varimax <- plot_loadins(loadins_varimax,n=10)+
 
 ```
 
-Plot de escore dos componentes:
-```{r,out.width = '100%', fig.height=4,fig.width=8}
+Plot de escore entre componentes e biplot entre os fatores:
+```{r,out.width = '80%', fig.height=14,fig.width=10}
 af_cp <- mutate(data.frame(cp),analise="Escores - CP") |>
   bind_rows(mutate(data.frame(fc),analise="Fatores Comuns via CP")) |>
   group_by(analise) |>
@@ -794,12 +823,19 @@ af_1 <- ggplot(af_cp, aes(X1,X2,label=label))+
   geom_text()+
   facet_grid(~analise,scales = "free_x")+
   theme_bw()
-af_1
+af_2 <- ggplot(af_cp, aes(X1,X3,label=label))+
+  geom_text()+
+  facet_grid(~analise,scales = "free_x")+
+  theme_bw()
+af_3 <- ggplot(af_cp, aes(X2,X3,label=label))+
+  geom_text()+
+  facet_grid(~analise,scales = "free_x")+
+  theme_bw()
+
+af_1 / af_2 / af_3
 ```
 
-
-Biplot entre os fatores:
-```{r ,out.width = '100%', fig.height=4,fig.width=8}
+```{r ,out.width = '100%', fig.height=14,fig.width=10}
 biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
   cores <- brewer.pal(n = n,name = 'Paired')
   loadins |> 
@@ -827,42 +863,35 @@ scores_sem_rotacao <- as_tibble(af1$scores) |>
 scores_varimax <- as_tibble(af2$scores)|> 
   mutate(label=1:n())
 
-bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",n=10,scale=2,title="AF - Bartlet - Sem Rotação")
+bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",
+                               n=10,scale=2,title="AF - Bartlet - Sem Rotação")
+bp_af_sem_rotacao_13 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor3",
+                               n=10,scale=2)
+bp_af_sem_rotacao_23 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor2","Factor3",
+                               n=10,scale=2)
 
-bp_af_rotacao_varimax_12 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor2",n=10,scale=2,title="AF - Bartlet - Rotação Varimax")
+bp_af_rotacao_varimax_12 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor2",
+                                   n=10,scale=2,title="AF - Bartlet - Rotação Varimax")
+bp_af_rotacao_varimax_13 <- biplot(loadins_varimax,scores_varimax,"Factor1","Factor3",
+                                   n=10,scale=2)
+bp_af_rotacao_varimax_23 <- biplot(loadins_varimax,scores_varimax,"Factor2","Factor3",
+                                   n=10,scale=2)
 
-ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_varimax_12,ncol = 2,nrow = 1)
+ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_varimax_12,
+                  bp_af_sem_rotacao_13,bp_af_rotacao_varimax_13,
+                  bp_af_sem_rotacao_23,bp_af_rotacao_varimax_23,ncol = 2,nrow = 3)
 ```
 
 
-Especificidades:
 
-```{r}
-af1$uniquenesses |> 
-  t() |> 
-  round(4) |> 
-  data.frame() |>  
-  mutate_all(round,3) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-```
-
-
-Matrizes de correlação para a qual a aproximação é feita:
-
-```{r}
-af1$correlation|> 
-  round(4) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-```
 
 
 
 \pagebreak
 
 2.4 - Escolha uma das variáveis do banco de dados e obtenha uma tabela de contingência categorizando esta variável de acordo com faixas etárias das observações. Realize uma Análise de Correspondência e comente sobre o padrão de associação presente nesses dados.
+
+R: As variáveis selecionadas para a análise de correspondência foram *age* e *DEXfat*, categorizadas de acordo com a tabela:
 
 
 ```{r Q2 - Análise de Correspondência}
@@ -887,40 +916,47 @@ tb_contigencia <- age_DEXfat_cat |>
   spread(DEXfat_cat,n,fill = 0) |> 
   column_to_rownames("age_cat")
 
+tb_contigencia |> 
+  mutate_all(round,3) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,align = "c",longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+```{r Q2 - Análise de Correspondência 2}
 tab2.4 <- as.matrix(tb_contigencia)
 
-
-tab2.4 |> 
-  round(4) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-
 pr <- prop.table(tab2.4,1) #proporções com totais linha fixos
+
 pc <- prop.table(tab2.4,2) #proporções com totais coluna fixos
 
 pr|> 
   round(2) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-pc|> 
-  round(2) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,align = "c",longtable = T) |> 
   kable_styling(font_size=6)
 
-chisq.test(tab2.4) #H0: populações homogêneas
-#Rejeitar H0 -> há evidência de populações heterogêneas
+pc|> 
+  round(2) |> 
+  as_tibble() |> 
+  kbl(format = "latex",escape = FALSE,booktabs = TRUE,align = "c",longtable = T) |> 
+  kable_styling(font_size=6)
+```
+
+Testando as populações:
+
+H0: Populações homogêneas
+
+H1: Populações heterogêneas
+
+```{r Q2 - Análise de Correspondência 3}
+chisq.test(tab2.4) 
 ```
 
 
-```{r Q2 - Análise de Correspondência pt2}
+```{r Q2 - Análise de Correspondência pt2, out.width = '80%', fig.height=6,fig.width=6}
 #Representação das 5 trinomiais no simplex
-
 s3d <- scatterplot3d(pr[,1:3],pch=10, type="h", angle=55) 
-text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),
-     cex= 1, col = "red")
+text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),cex= 1, col = "red")
 ```
 
 
@@ -941,7 +977,7 @@ fit.ca$rowcoord |>
   kable_styling(font_size=6)
 
 cat("coord padrão das colunas (autovetores_col)")
-fit.ca$rowcoord |> 
+fit.ca$colcoord |> 
   round(4) |> 
   data.frame() |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
