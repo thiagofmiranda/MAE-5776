@@ -92,11 +92,11 @@ R:
 
 O pesquisador 1 - Realizou uma Análise de Componentes Principais. Buscou preservar a variância total dos dados (ou a maior proporção da variância total que possa ser preservada) em 2 componentes.
 
-O pesquisador 2 - Realizou uma Análise Fatorial Exploratória. Buscou aproximar a matriz de covariâncias em termos de fatores latestes comuns e específicos, descrevendo as variáveis em função de 2 fatores.
+O pesquisador 2 - Realizou uma Análise Fatorial Exploratória. Buscou aproximar a matriz de covariâncias em termos de fatores latestes comuns e específicos, descrevendo as variáveis em função de 2 fatores latentes.
 
 O pesquisador 3 - Realizou uma Análise de Coordenadas Principais ou Escalonamento Multidimensional. Analogamente ao Pesquisador 1, buscou preservar a variância total dos dados (ou a maior proporção da variância total que possa ser preservada).
 
-Em um primeiro momento, acredita-se que estes pesquisadores partiram de um mesmo objetivo de redução de dimensionalidade das variáveis presentes nos dados originais disponíveis.
+Em um primeiro momento, acredita-se que estes pesquisadores partiram de um mesmo objetivo de redução de dimensionalidade das variáveis presentes nos dados originais disponíveis, buscando representar as p variáveis em m variáveis (neste caso, m = 2).
 
 \pagebreak
 
@@ -357,7 +357,8 @@ p_esc_12
 \newpage
 
 1.3 - Para os dados simulados, obtenha uma representação Biplot. Como esse gráfico é construído?
-R: O gráfico biplot representa cada observação dos dados, sendo construído pela dispersão de pares de escores gerados por alguma análise de redução de dimensionalidade e pelo sentido das cargas que geram tais escores. 
+
+R: O gráfico biplot representa cada observação dos dados, sendo construído pela dispersão de pares de escores gerados por alguma análise de redução de dimensionalidade e pelo sentido das cargas que geram tais escores. O que proporciona uma representação gráfica simultânea das $n$ observações e $p$ variáveis em $R^2$.
 
 Biplot entre os dois fatores da análise fatorial:
 ```{r Q1 - Biplot,out.width = '60%', fig.height=5,fig.width=5}
@@ -410,9 +411,9 @@ R: Para o conjunto de dados "bodyfat_new", com 76 observações, foram realizada
 
 A análise considerando dos dados originais conseguiu reunir em dois componentes cerca de 95% da variabilidade total dos dados, enquanto que a análise com os dados padronizados conseguiu explicar cerca de 80%. 
 
-Ao analisármos para os componentes gerados pela primeira análise, percebemos que apenas as variáveis age, DEXfat, hipcirc e waistcirc receberam cargas relevantes. Podemos observar também que o primeiro componente é formado por cargas negativas nessas variáveis (age, DEXfat, hipcirc e waistcirc). Enquanto que no segundo componente temos carga negativa apenas para a variável age, as variáveis DEXfat, hipcirc e waistcirc receberam sinal positivos.
+Ao analisármos para os componentes gerados pela primeira análise, percebemos que apenas as variáveis *age*, *DEXfat*, *hipcirc* e *waistcirc* receberam cargas relevantes. Podemos observar também que o primeiro componente é formado por cargas negativas nessas variáveis (*age*, *DEXfat*, *hipcirc* e *waistcirc*). Enquanto que no segundo componente temos carga negativa apenas para a variável *age*, as variáveis *DEXfat*, *hipcirc* e *waistcirc* receberam sinal positivos.
 
-Já quando analisamos os componentes formados com os dados padronizados, percebemos que todas as variáveis são levadas em consideração. O primeiro componente é formado por cargas positivas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo componente é composto, principalmente, pelas variáveis age, elbowbreadth e kneebreadth.
+Já quando analisamos os componentes formados com os dados padronizados, percebemos que todas as variáveis são levadas em consideração. O primeiro componente é formado por cargas positivas em todas as variáveis, onde as variáveis *anthro3a*, *anthro3b*, *anthro3c*, *anthro4*, *Dexfat*, *hipcirc*, *kneebreadth* e *waistcirc* tem as cargas mais elevadas. O segundo componente é composto, principalmente, pelas variáveis *age*, *elbowbreadth* e *kneebreadth*.
 
 ```{r Q2.1 componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 # Análise de Componentes Principais - Comando prcomp
@@ -632,10 +633,13 @@ ggpubr::ggarrange(p_esc_1,p_esc_2,p_esc_3,ncol = 2,nrow = 2)
 R: Foram feitas 3 análises fatoriais, a primeira sendo via Componentes Principais, a segunda e a terceira via Máxima Verossimilhança, sendo que na terceira rotacionamos via Promax. 
 Em três fatores, análise fatorial via CP explicou 86,9% da variação total dos dados e a análise fatorial via MVS sem rotação e com rotação Promax explicou 74,5%.
 
-A análise fatorial via CP tem equivalência com a análise de componentes principais com dados padronizados realizada anteriormente, entretanto na análise fatorial via CP consideramos 3 fatores ao invés de 2, onde 86,9% da variância total dos dados é explicada pelos 3 fatores. O primeiro fator é formado por cargas negativas em todas as variáveis, onde as variáveis anthro3a, anthro3b, anthro3c, anthro4, Dexfat, hipcirc, kneebreadth e waistcirc tem as cargas mais elevadas. O segundo fator é composto, principalmente, pelas variáveis age com sinal positivo, elbowbreadth e kneebreadth com sinais negativos. E o terceiro fator pelas variáveis age, elbowbreadth e kneebreadth com sinais positivos.
+A análise fatorial via CP teve equivalência com a análise de componentes principais com dados padronizados realizada anteriormente, entretanto na análise fatorial via CP consideramos 3 fatores ao invés de 2, onde 86,9% da variância total dos dados é explicada pelos 3 fatores. O primeiro fator é formado por cargas negativas em todas as variáveis, onde as variáveis *anthro3a*, *anthro3b*, *anthro3c*, *anthro4*, *Dexfat*, *hipcirc*, *kneebreadth* e *waistcirc* tem as cargas mais elevadas. O segundo fator é composto, principalmente, pelas variáveis *age* com sinal positivo, *elbowbreadth* e *kneebreadth* com sinais negativos. E o terceiro fator pelas variáveis *age*, *elbowbreadth* e *kneebreadth* com sinais positivos.
 
+Para a análise fatorial via máxima verossimilhaça onde não houve rotação, o primeiro fator foi composto por cargas positivas em todas as variáveis, onde *age* e *elbowbreadth* tiveram as menosres cargas. O segundo fator foi composto pelas variáveis: *DEXfat*, *elbowbreadth*, *hipcirc*, *kneebreadth*, *waistcirc* e *anthro3b*, todos com cargas positivas, exceto *anthro3b*, com carga negativa. E o terceiro fator foi caracterizado pela variáveis: *elbowbreadth*, *anthro3a*, *anthro3b* e *anthro3c*.
 
+A análise fatorial via MVS com rotação Promax conseguiu definir melhor quais variáveis compõe cada fator. O primeiro fator reduziu de 10 variáveis para 7, removendo *hipcirc*, *elbowbreadth* e *kneebreadth*. No segundo fator houve a saída da variável *anthro3b* e a entrada de *anthro3c*. E o terceiro fator foi reduzido de 4 para 3, com uma troca de variável, o terceiro fator foi composto por *elbowbreadth*, *anthro3a* e *anthro4*. 
 
+\pagebreak
 
 Análise Fatorial Exploratória via CP:
 
@@ -726,6 +730,8 @@ tibble(
 
 ```
 
+\newpage
+
 Análise Fatorial Exploratória via Máxima Verossimilhança - Rotação Promax:
 ```{r, results="asis"}
 #Solução da Análise de Fatores via Máxima Verossimilhança
@@ -770,8 +776,10 @@ af1$correlation|>
   kable_styling(font_size=6)
 ```
 
+\pagebreak
+
 Cargas ou coeficientes dos fatores comuns:
-```{r ,out.width = '100%', fig.height=12,fig.width=8}
+```{r ,out.width = '100%', fig.height=12,fig.width=10}
 plot_loadins <- function(loadins,n){
   cores <- brewer.pal(n = n,name = 'Paired')
   loadins %>% 
