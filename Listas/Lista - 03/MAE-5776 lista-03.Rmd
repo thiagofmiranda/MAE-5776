@@ -102,7 +102,7 @@ Em um primeiro momento, acredita-se que estes pesquisadores partiram de um mesmo
 
 1.2 - Simule dados e realize as análises dos três pesquisadores. Interprete os resultados.
 
-```{r Q1 - Simulação, results="asis"}
+```{r Q1.2 - Simulação, results="asis"}
 # Vetor de médias
 media_pop <- c(5, 7, 10,  11, 6)
 
@@ -140,7 +140,10 @@ tb_1 |>
 ```
 
 Pesquisador 1 - Análise de Componentes Principais:
-```{r Q1 - componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8}
+
+O pesquisador 1 buscou reduzir o banco de dados para dois componentes. Na sua análise de componentes principais com dados padronizados, os dois componentes encontrados explicam 74,2% da variabilidade total presentes nos dados. O primeiro compontente encontrado é formado, principalmente, pela variáveis V1, V2, V4 e V5, com carga maior na variável V5(0,5828), este componente representa 50,8% da variabilidade total dos dados. No segundo componente destacam-se as variáveis V2, V3 e V4, sendo a V3 a variável com maior carga, este componente explicou 23,4% da variabilidade presente nos dados.
+
+```{r Q1.2 - Componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8}
 p_pop <- ncol(pop)
 
 cp <- prcomp(pop)
@@ -183,7 +186,7 @@ plot_var_1
 ```
 
 
-```{r Q1 - Componentes Principais 2, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
+```{r Q1.2 - Componentes Principais 2, results = "asis",out.width = '100%', fig.height=3,fig.width=8 }
 cat("Autovetores:")
 cp$rotation|> 
   round(4) |> 
@@ -198,7 +201,7 @@ plot_eigenvector_1 <- cp$rotation %>%
   gather(key = "Componente", "Pesos", -X1) %>%
   ggplot(aes(x=X1, y=Pesos, fill = X1))+
   geom_bar(stat = "identity")+
-  facet_grid(Componente~.)+
+  facet_grid(Componente~.,scales="free_y")+
   xlab("Variáveis")+
   scale_fill_manual(values = cores)+
   theme_bw()+ 
@@ -209,15 +212,18 @@ plot_eigenvector_1 <- cp$rotation %>%
 plot_eigenvector_1
 ```
 
-```{r,out.width = '70%',results="asis", fig.width=6, fig.height=6}
-cat("Biplot:")
+```{r Q1.2 - Componentes Principais 3,out.width = '65%',results="asis", fig.width=6, fig.height=6}
 stats::biplot(cp,main="Dados padronizados")
 ```
 
 
 
 Pesquisador 2 - Análise Fatorial Exploratória via Máxima Verossimilhança - Sem Rotação:
-```{r, results="asis"}
+
+O pesquisador 2 buscou reduzir a dimensionalidade dos dados padronizados para dois fatores por meio da análise fatorial exproratória, onde buscou preservar a variância comum dos dados padronizados. Com dois fatores estimados, o pesquisador 2 conseguiu explicar 62,6% da variância total a partir da comunalidade. O fator 1 é majoritariamente composto por todas as variáveis, com grande influência da variável V5, enquanto o fator 2 é caracterizado pela variáveis V2, V3 e V4, com ênfase para a variável V3. 
+
+
+```{r Q1.2 - Análise Fatorial Exploratória, results="asis",out.width = '100%', fig.height=4,fig.width=8}
 #Solução da Análise de Fatores via Máxima Verossimilhança
 af1 <- factanal(pop, factors=2, rotation="none", scores="Bartlet", lower = 0.01)
 
@@ -231,8 +237,8 @@ af1$loadings[] |>
 cat("Variância Explicada:")
 tibble(
   `SS loadings`=colSums(af1$loadings[]^2),
-  `Proportion Var`=colSums(af1$loadings[]^2)/10,
-  `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/10),
+  `Proportion Var`=colSums(af1$loadings[]^2)/5,
+  `Cumulative Var`=cumsum(colSums(af1$loadings[]^2)/5),
   Factor = c("Factor1", "Factor2")
   ) |>
   pivot_longer(, cols = -Factor) |>
@@ -242,11 +248,8 @@ tibble(
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |>
   kable_styling(font_size=6)
 
-```
+cat("Cargas ou coeficientes dos fatores comuns:")
 
-
-Cargas ou coeficientes dos fatores comuns:
-```{r ,out.width = '100%', fig.height=4,fig.width=8}
 plot_loadins <- function(loadins,n){
   cores <- brewer.pal(n = n,name = 'Dark2')
   loadins %>% 
@@ -271,9 +274,10 @@ plot_loadins_af_msv_none <- plot_loadins(loadins_sem_rotacao,n=10)+
 plot_loadins_af_msv_none
 
 ```
+\newpage
 
-Biplot
-```{r ,out.width = '60%', fig.height=5,fig.width=5}
+Biplot:
+```{r Q1.2 - Análise Fatorial Exploratória 2,results="asis",out.width = '60%', fig.height=5,fig.width=5}
 biplot <- function(loadins,scores,Factor1,Factor2,n,scale,title=""){
   cores <- brewer.pal(n = n,name = 'Dark2')
   loadins |> 
@@ -302,11 +306,8 @@ scores_sem_rotacao <- as_tibble(af1$scores) |>
 bp_af_sem_rotacao_12 <- biplot(loadins_sem_rotacao,scores_sem_rotacao,"Factor1","Factor2",n=5,scale=2,title="AF - Bartlet - Sem Rotação")
 
 bp_af_sem_rotacao_12
-```
 
-Especificidades:
-
-```{r}
+cat("Especificidades:")
 af1$uniquenesses |> 
   t() |> 
   round(4) |> 
@@ -314,12 +315,9 @@ af1$uniquenesses |>
   mutate_all(round,3) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
   kable_styling(font_size=6)
-```
 
+cat("Matrizes de correlação para a qual a aproximação é feita:")
 
-Matrizes de correlação para a qual a aproximação é feita:
-
-```{r}
 af1$correlation|> 
   round(4) |> 
   data.frame() |> 
@@ -327,9 +325,13 @@ af1$correlation|>
   kable_styling(font_size=6)
 ```
 
+\newpage
 
 Pesquisador 3 - Escalonamento Multidimensional:
-```{r Q1 - Escalonamento Multidimensional,out.width = '60%',fig.width=5, fig.height=5, message=F}
+
+O pesquisador pesquisador 3 buscou mapear as distâncias entre os dados padronizados através da técnica de interdependência Escalonamento Multidimensional, técnica que facilitou a representação gráfica dos dados em duas dimensões.
+
+```{r Q1.2 - Escalonamento Multidimensional, out.width = '60%',fig.width=5, fig.height=5, message=F}
 #Distância Euclidiana (ordinária) entre observações
 de <- dist(pop)
 
@@ -352,16 +354,13 @@ p_esc_12
 
 ```
 
-
-
-
 \newpage
 
 1.3 - Para os dados simulados, obtenha uma representação Biplot. Como esse gráfico é construído?
 R: O gráfico biplot representa cada observação dos dados, sendo construído pela dispersão de pares de escores gerados por alguma análise de redução de dimensionalidade e pelo sentido das cargas que geram tais escores. 
 
 Biplot entre os dois fatores da análise fatorial:
-```{r ,out.width = '60%', fig.height=5,fig.width=5}
+```{r Q1 - Biplot,out.width = '60%', fig.height=5,fig.width=5}
 bp_af_sem_rotacao_12
 ```
 
@@ -370,7 +369,7 @@ bp_af_sem_rotacao_12
 
 2 - Considere os dados “bodyfat” disponíveis na biblioteca TH.data do R. Neste caso, a matriz de trabalho contém 71 observações avaliadas em 10 variáveis. Gere 5 observações (para tanto, adote um critério) e considere seu novo conjunto de dados “bodyfat_new”. Com base na matriz de trabalho resultante realize as seguintes análises:
 
-```{r}
+```{r, Q2 Simulação}
 #pairs(bodyfat)
 
 y <- bodyfat
@@ -407,7 +406,7 @@ rownames(bodyfat_new) <- NULL
 
 2.1 - Componentes Principais.
 
-```{r componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
+```{r Q2.1 componentes Principais, results = "asis",out.width = '100%', fig.height=4,fig.width=8 }
 # Análise de Componentes Principais - Comando prcomp
 cp <- prcomp(bodyfat_new)
 
