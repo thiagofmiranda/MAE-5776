@@ -886,8 +886,10 @@ ggpubr::ggarrange(bp_af_sem_rotacao_12,bp_af_rotacao_promax_12,
 
 2.4 - Escolha uma das variáveis do banco de dados e obtenha uma tabela de contingência categorizando esta variável de acordo com faixas etárias das observações. Realize uma Análise de Correspondência e comente sobre o padrão de associação presente nesses dados.
 
-R: As variáveis selecionadas para a análise de correspondência foram *age* e *DEXfat*, categorizadas de acordo com a tabela:
+R: Temos 5 trinomiais representando os perfis de frequência relativa no gráfico simplex 3D, fixando os totais de linha, dos dados totais.
+A representação do gráfico symetric permite verificar (no plano bidimensional) a associação das variáveis, e com estes podemos fixar as linhas e representar os pontos referentes às colunas ou também fixar as colunas e representar os pontos referentes às linhas. Já o plot Rowgreen é basicamente  equivalente ao simplex. Temos também verificar o Colgreen onde damos um "zoom" nas populações da variável DEX_fat e verificamos como se "encaixam" as categorias de "age".
 
+Por meio das representações gráficas podemos perceber que os indivíduos com "age" até 35 tendem à apresentar um indíce DEX_fat inferior a 20 (assim como "age" de 35 a 45 também se encontram no quadrante de DEX_fat inferior a 20),  indivíduos com "age" entre 55 e 65 tendem a apresentar uma associação um pouco mais próximas ao indíce DEX_fat entre 20 a 35, as demais categorias de "age" (de 45 a 55 e acima de 65) tendem a apresentar um ínidice DEX_fat acima de 35, contudo estes dois últimos padrões são não de fácil visualização.
 
 ```{r Q2 - Análise de Correspondência}
 
@@ -917,9 +919,7 @@ tb_contigencia |>
   mutate_all(round,3) |> 
   kbl(format = "latex",escape = FALSE,booktabs = TRUE,align = "c",longtable = T) |> 
   kable_styling(font_size=6)
-```
 
-```{r Q2 - Análise de Correspondência 2}
 tab2.4 <- as.matrix(tb_contigencia)
 
 pr <- prop.table(tab2.4,1) #proporções com totais linha fixos
@@ -939,7 +939,7 @@ pc|>
   kable_styling(font_size=6)
 ```
 
-Testando as populações:
+Teste para as populações:
 
 H0: Populações homogêneas
 
@@ -950,7 +950,7 @@ chisq.test(tab2.4)
 ```
 
 
-```{r Q2 - Análise de Correspondência pt2, out.width = '80%', fig.height=6,fig.width=6}
+```{r Q2 - Análise de Correspondência pt2, out.width = '60%', fig.height=6,fig.width=6}
 #Representação das 5 trinomiais no simplex
 s3d <- scatterplot3d(pr[,1:3],pch=10, type="h", angle=55) 
 text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),cex= 1, col = "red")
@@ -958,80 +958,17 @@ text(s3d$xyz.convert(pr[, 1:3]), labels = rownames(tab2.4),cex= 1, col = "red")
 
 
 ```{r Q2 - Análise de Correspondência pt3}
-#colnames(tab2.4) <- NULL
-#rownames(tab2.4) <- NULL
 fit.ca<-ca(tab2.4)
-
-#fit.ca$rownames <- rownames(tb_contigencia)
-#fit.ca$colnames <- colnames(tb_contigencia)
 
 fit.ca
 ```
 
-
-```{r Q2 - Análise de Correspondência pt4, results="asis"}
-cat("coordenadas padrão das linhas (autovetores_linha)")
-fit.ca$rowcoord |> 
-  round(4) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-
-cat("coord padrão das colunas (autovetores_col)")
-fit.ca$colcoord |> 
-  round(4) |> 
-  data.frame() |> 
-  kbl(format = "latex",escape = FALSE,booktabs = TRUE,longtable = T) |> 
-  kable_styling(font_size=6)
-```
-
-
-```{r Q2 - Análise de Correspondência pt5}
-#Supondo análise de associação: total "n" da tabela fixo
-#Teste Qui-Quadrado: H0:Variáveis linha e coluna independentes
-#p=0.1718 ==> não rejeitar H0
-
-pls<-plot(fit.ca,main="Biplot Simétrico") #biplot simétrico
-round(pls$row,2) #autovetor_linha*sqrt(autovalor)
-round(pls$col,2) #autovetor_col*sqrt(autovalor)
-```
-
-
-```{r Q2 - Análise de Correspondência pt6}
-plot(fit.ca, map="rowprincipal", main="Rowprincipal")
-#Colunas em Coord Padrão, Linhas em Coord Principais 
-plr<-plot(fit.ca, map="rowprincipal", main="Rowprincipal",arrows=c(FALSE,TRUE))
-round(plr$row,2) #autovetor_linha*sqrt(autovalor)
-round(plr$col,2) #autovetor_col
-```
-
-
-```{r Q2 - Análise de Correspondência pt7}
-plot(fit.ca, map="rowgreen", main="Rowgreen")
-#Colunas em Coord Padronizadas, Linhas em Coord Principais 
-plrg<-plot(fit.ca, map="rowgreen", main="Rowgreen")
-round(plrg$row,2) #autovetor_linha*sqrt(autovalor)
-round(plrg$col,2) #autovetor_col*sqrt(massa)
-#massa:frequência relativa da marginal da tabela
-```
-
-
-```{r Q2 - Análise de Correspondência pt8}
+```{r, out.width = '100%', fig.height=8,fig.width=8}
 #Comparando diferentes representações dos dados
-par(mfrow=c(1,3))
+par(mfrow=c(2,2))
 plot(fit.ca, main="Symetric") #ambas, L e C, em coord principais
-plot(fit.ca, map="rowprincipal",main="Rowprincipal", arrows=c(FALSE,TRUE))
-plot(fit.ca,map="colprincipal", main="Colprincipal", arrows=c(TRUE,FALSE))
-
-par(mfrow=c(1,2))
 plot(fit.ca, map="rowgreen", main="Rowgreen",arrows=c(FALSE,TRUE))
 plot(fit.ca, map="colgreen", main="Colgreen",arrows=c(TRUE,FALSE)) 
-
-par(mfrow=c(1,2))
-plot(fit.ca, mass=TRUE,map="rowgreen",main="Rowgreen.mass",arrows=c(FALSE,TRUE)) 
-plot(fit.ca, mass=TRUE,map="colgreen",main="Colgreen.mass",arrows=c(TRUE,FALSE)) 
-
 ```
-
 
 
