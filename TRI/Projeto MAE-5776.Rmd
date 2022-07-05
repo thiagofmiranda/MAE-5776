@@ -63,15 +63,277 @@ texMatrix <- function(matrix, round = 2){
 }
 ```
 
+```{r}
+load("data.RData")
+```
+
 **Alunos:**
 
 Leandro Alves da Silva - nº USP: 11868023
 
 Thiago Ferreira Miranda - nº USP: 11925711
 
+\section{Introdução}
+
+O desenvolvimento de escalas apropriadas para medir características de
+indivíduos que não podem ser medidas diretamente, as quais são comumente
+denominadas de traço latente. Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros. 
+
+
+Duas são as teorias utilizadas para este fim. A Teoria Clássica dos Testes
+– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria
+da Resposta ao Item – TRI, cujo foco principal, como bem diz o seu nome, é o
+item e não o teste como um todo.
+
+Ambas contemplam a análise de itens através
+das estimativas de seus parâmetros, e a análise do instrumento de medida como
+um todo. A TRI foi desenvolvida com o prop´osito de resolver um problema
+da TCT que é a dependência da medida de proficiência em relação ao teste
+aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes.
+Dentro do contexto da TRI, a medida de proficiência de um aluno não depende
+dos itens apresentados a ele, e os parâmetros de discriminação e de dificuldade
+do item não dependem do grupo de respondentes. Em outras palavras, um
+item mede determinado conhecimento, independentemente de quem o está
+respondendo, e a proficiência de um aluno não depende dos itens que estão sendo apresentados a ele.
+
+Maiores detalhes sobre estas duas teorias podem ser encontrados em: Gulliksen
+(1950), Lord e Novick (1968), Lord (1980), Vianna (1987), Pasquali
+(2003), Andrade, Tavares e Valle (2000), Ayala (2009), Baker e Kim (2004) e
+Embretson e Reise (2000).
+
+
+
+
+\subsection{Teoria clássica dos testes}
+
+
+\subsubsection{Coeficiente de correlação ponto-bisserial}
+
+O coeficiente de correlação ponto-bisserial ($\rho_{pb}$) é a correlação de Pearson entre uma variável dicotômica e o escore do teste e é definido por:
+
+\begin{equation}
+\rho_{pb} = \frac{\overline{X}_A - \overline{X}_T}{S_T}\sqrt{\frac{p}{1-p}}
+\end{equation}
+
+em que,
+
+$\overline{X}_A$ é a média dos escores dos respondentes que acertaram o item;
+
+$\overline{X}_T$ é a média global dos escores do teste;
+
+$S_T$ é o desvio padrão do teste;
+
+$p$ é a proporção de respondentes que acertaram o item.
+
+
+\subsubsection{Coeficiente de correlação bisserial}
+
+O coeficiente de correlação bisserial ($\rho_{b}$) é uma medida de associação entre uma variável dicotomizada e uma variável contínua, e é definido por:
+
+\begin{equation}
+\rho_{b} = \rho_{pb}\frac{\sqrt{p(1-p)}}{h(p)}
+\end{equation}
+
+em que,
+
+$\rho_{pb}$ é a correlação ponto-bisserial;
+
+$p$ é a proporção de respondentes que acertaram o item;
+
+$h(p)$ é o valor da densidade da distribuição normal padrão no ponto em que a área da curva à esquerda deste ponto é igual a $p$.
+
+\subsubsection{Coeficiente alfa de Cronbach}
+
+O coeficiente alfa de Cronbach é utilizado para medir a consistência interna do instrumento de medida, e é definido por:
+
+\begin{equation}
+    \alpha = \frac{n}{n-1}\Big(1 -  \frac{\sum{s_{i}^{2}}}{s_{T}^{2}}\Big)
+\end{equation}
+
+em que,
+
+$n$ é o númenro de itens;
+
+$\sum{s_{i}^{2}}$ é soma das variâncias dos $n$ itens;
+
+$s_{T}^{2}$ é a variância global dos escores dos testes.
+
+Esse coeficiente varia de 0 a 1. Quanto mais próximo de 0 menor a consistência e quanto mais próximo de 1 maior a consistência do teste.
+
+
+\subsection{Teoria da Resposta ao Item}
+
+Falando um pouco sobre modelos logísticos unidimensionais da TRI.
+
+\subsubsection{Modelo de 3 parâmetros}
+
+O modelo logístico de 3 parâmetros é definido por:
+
+\begin{equation}
+    P(U_{ij} = 1|\theta_j, a_i, b_i, c_i) = c_i + (1-c_i)\frac{e^{a_i(\theta_j - b_i)}}{1 + e^{a_i(\theta_j - b_i)}}
+\end{equation}
+
+em que,
+
+$P(U_{ij} = 1|\theta_j, a_i, b_i, c_i)$ é a probabilidade do indivíduo $j$ com habilidade $\theta_j$ acertar o item $i$;
+
+$b_i$ é o parâmetro de dificuldade (ou de posição) do item $i$, medido na mesma escala de habilidade;
+
+$a_i$ é o parâmetro de discriminação (ou inclinação) do item $i$, com valor proporcional à inclinação da Curva Característica do Item no ponto $b_i$;
+
+$c_i$ é o parâmetro do item que representa a probabilidade de indivíduos com baixa habilidade responderem corretamente o item $i$ (também chamado de probabilidade de acerto casual).
+
+
+
+\subsubsection{Modelo de 2 parâmetros}
+
+O modelo logístico de 2 parâmetros é semelhante ao modelo de 3 parâmetros, mas não inclui o parâmetro de acerto casual no modelo.
+
+\begin{equation}
+    P(U_{ij} = 1|\theta_j, a_i, b_i) = \frac{e^{a_i(\theta_j - b_i)}}{1 + e^{a_i(\theta_j - b_i)}}
+\end{equation}
+
+
+
+\subsubsection{Função de informação do item}
+
+A função de informação do item (item information function) permite analisar
+o quanto um item contém de informação sobre a medida de habilidade.
+Ela indica a quantidade de informação que um item apresenta dentro da escala
+de habilidade. 
+
+Para o modelo logístico de 2 parâmetros a função de informação do item é definida como:
+
+\begin{equation}
+    I_i(\theta) = a_{i}^{2}P_i(\theta)(Q_i(\theta))
+\end{equation}
+
+em que,
+
+$I_i(\theta)$ é a informação fornecida pelo item $i$ no nível de habilidade $\theta$;
+
+$P_i(\theta) = P(X_{ij} = 1|\theta)$;
+
+$Q_i(\theta) = 1-P_i(\theta)$;
+
+$a_i$ é o parâmetro de discriminação (ou inclinação) do item $i$.
+
+
+\subsubsection{Função de informação do teste}
+
+Dada a independência entre os itens, a função de informação do teste (teste
+information function) é a soma das informações fornecidas por cada item, que foram calibrados em uma mesma escala. A função de informação do teste é
+escrita como:
+
+\begin{equation}
+    I(\theta) = \displaystyle\sum_{i=1}^{I}{I_i(\theta)}
+\end{equation}
+
+
+\newpage
+
+
+\section{Aplicação}
+
+Este trabalho tem como objetivo a criação de um indicador para a gestão ambiental municipal através da teoria da resposta ao item, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC.   
+
+\subsection{Pesquisa de Informações Básicas Municipais - MUNIC}
+
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipala. O principal interesse da Munic é a gestão pública na esfera de administração, no que se refere à organização das prefeituras, bem como o quadro funcional, estrutura e políticas públicas setoriais no âmbito das áreas pesquisadas. Em 2020, a pesquisa investigou informações sobre recursos humanos, habitação, transporte, agropecuária, meio ambiente, gestão de riscos e de desastres, e COVID-19. O questionário de meio ambiente é dividido nas seguintes seções:
+
+1. Órgão gestor do meio ambiente;
+2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
+3. Conselho e Fundo municipal de Meio Ambiente;
+4. Legislação ou instrumento de gestão ambiental;
+6. Plano de Gestão Integrada de Resíduos Sólidos;
+7. Programas em parceria com o Governo Federal;
+8. Pagamento de Serviços Ambientais;
+9. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
+
+Composto pelo seguintes itens em cada seção:
+
 ```{r}
-load("data.RData")
+dicionario |> 
+  filter(secao.id=="5.1") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Órgão gestor do meio ambiente.") |> 
+  kable_styling(font_size=5)
 ```
+
+\newpage
+
+```{r}
+dicionario |> 
+  filter(secao.id=="5.2") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Capacitação.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+
+dicionario |> 
+  filter(secao.id=="5.3") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Conselho e Fundo municipal de meio ambiente.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+```
+
+\newpage
+
+```{r}
+dicionario |> 
+  filter(secao.id=="5.4") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Legislação ou instrumento de gestão ambiental.") |> 
+  kable_styling(font_size=5)
+
+dicionario |> 
+  filter(secao.id=="5.6") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Plano de Gestão Integrada de Resíduos Sólidos.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+
+dicionario |> 
+  filter(secao.id=="5.7") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Programas em parceria com o Governo Federal.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+```
+
+\pagebreak
+
+```{r anexos 3}
+dicionario |> 
+  filter(secao.id=="5.8") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Pagamento de Serviços Ambientais.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+
+dicionario |> 
+  filter(secao.id=="5.9") |> 
+  dplyr::select(-c(1,2)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
+      caption = "Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.") |> 
+  kable_styling(font_size=5) |> 
+  column_spec(2, width = "50em")
+
+```
+
+\newpage
+
+\subsection{Avaliação dos itens pela TCT}
+
+
 
 
 ```{r Análise Clássica 1, echo = FALSE, results = 'asis', warning = F}
@@ -149,75 +411,6 @@ data.frame(itens_parametros$est) |>
 ```
 
 \newpage
-```{r leitura e tratamento dos dados}
-
-
-dicionario |> 
-  filter(secao.id=="5.1") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Órgão gestor do meio ambiente.") |> 
-  kable_styling(font_size=5)
-
-dicionario |> 
-  filter(secao.id=="5.2") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Capacitação.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-dicionario |> 
-  filter(secao.id=="5.3") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Conselho e Fundo municipal de meio ambiente.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-dicionario |> 
-  filter(secao.id=="5.4") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Legislação ou instrumento de gestão ambiental.") |> 
-  kable_styling(font_size=5)
-
-dicionario |> 
-  filter(secao.id=="5.6") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Plano de Gestão Integrada de Resíduos Sólidos.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-dicionario |> 
-  filter(secao.id=="5.7") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Programas em parceria com o Governo Federal.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-dicionario |> 
-  filter(secao.id=="5.8") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Pagamento de Serviços Ambientais.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-dicionario |> 
-  filter(secao.id=="5.9") |> 
-  dplyr::select(-c(1,2)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",
-      caption = "Seção - Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.") |> 
-  kable_styling(font_size=5) |> 
-  column_spec(2, width = "50em")
-
-```
-
-\pagebreak
-
 
 
 
