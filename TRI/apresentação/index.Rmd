@@ -1,0 +1,168 @@
+---
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    seal: false
+    nature:
+      ratio: '16:9'
+---
+class: inverse, center, middle
+background-size: 50
+background-position: center
+
+<p style="text-align:center;">
+<img src = "images/ime-logo.png" width="300px"/>
+</p>
+
+### Análise da gestão ambiental de municípios brasileiros pela Teoria da Resposta ao Item
+#### MAE - 5776
+.large[Leandro Silva e Thiago Miranda | 07 Jul 2022]
+
+---
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Georgia Sans"),
+  text_font_google   = google_font("Georgia", "300", "300i"),
+  text_font_size = "28px",text_bold_color = "black")
+
+```
+
+# Sumário
+
+* Introdução
+* Teoria da Resposta ao Item
+* Principais modelos
+* Métodos de estimação
+* Aplicações
+* Referências
+
+---
+# Introdução
+* O que é um traço latente?
+* Como medir?
+* Teoria Clássica de Testes
+* Teoria da Resposta ao Item
+
+<p style="text-align:center;">
+<img src = "images/regua.png" width="200px"/>
+<img src = "images/exam.png" width="250px" />
+</p>
+---
+# Teoria da Resposta ao Item
+
+<div style="text-align:justify">
+Segundo Andrade, Tavares e Valle (2000), os primeiros modelos da TRI surgiram no início da década de 50.
+Lord (1952), Birnbaum (1968),  Lord, Rasch (1960), Samegima (1969), Bock (1972), Andrich (1978), Masters (1982) e Muraki (1992), são as pricipais referências na área. 
+
+</div>
+---
+# Principais modelos
+* Modelos para itens dicotômicos
+  * Modelos logísticos unidimencionais de 1, 2 e 3 parâmetros
+* Modelos para itens não dicotômicos
+  * Modelo de resposta nominal 
+  * Modelo de resposta gradual 
+
+---
+# Principais modelos
+* Modelo logístico unidimensional de 3 parâmetros:
+$$P\left(U_{i j}=1 \mid \theta_{j}\right)=c_{i}+\left(1-c_{i}\right) \frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}$$
+
+<small style="font-size: 18px !important; text-align:justify">
+Onde $a_{i}$, $b_{i}$, e $c_{i}$, são parâmetros dos itens e deverão ser estimados a partir dos dados; a constante $D=1,7$, é apenas um fator de escala, $\theta_{j}$ é a habilidade do indivíduo $j$.  Em Andrade, Tavares & Valle (2000) obtemos maiores detalhes sobre esse e outros modelos encontrados na literatura.
+</small>
+
+---
+# Principais modelos
+```{r CCI, echo=F, message=F}
+library(tidyverse)
+a1 <- 2.5
+b1 <- -1
+c1 <- 0.25
+
+a2 <- 1.5
+b2 <- 1
+c2 <- 0.15
+
+theta <- seq(-4,4,by=0.01)
+
+probML3 <- function(theta,a,b,c){
+  c+(1-c)/(1+exp(-a*(theta-b)))
+}
+
+sim <- data.frame(theta) %>% 
+  mutate(prob1=probML3(theta=theta,a1,b1,c1)) %>% 
+  mutate(prob2=probML3(theta=theta,a2,b2,c2)) 
+
+sim %>% 
+  ggplot(aes(y=prob1))+
+  geom_line(aes(x=theta),color = "#E60278",size=1)+
+  geom_vline(xintercept = b1,linetype ="dotted")+
+  geom_hline(yintercept = (1+c1)/2,linetype ="dotted")+
+  ylim(0,1)+
+  ggtitle(paste0("Curva Característica do Item: a=",a1,", b=",b1," e c=",c1))+
+  theme_minimal(base_size = 16)+
+  ylab("Probabilidade de acertar o item")+
+  xlab("Habilidade")+
+  theme(plot.title = element_text(size=18,hjust = 0.5))
+
+sim %>% 
+  ggplot(aes(y=prob2))+
+  geom_line(aes(x=theta),color = "#E60278",size=1)+
+  geom_vline(xintercept = b2,linetype ="dotted")+
+  geom_hline(yintercept = (1+c2)/2,linetype ="dotted")+
+  ylim(0,1)+
+  ggtitle(paste0("Curva Característica do Item: a=",a2,", b=",b2," e c=",c2))+
+  theme_minimal(base_size = 16)+
+  ylab("Probabilidade de acertar o item")+
+  xlab("Habilidade")+
+  theme(plot.title = element_text(size=18,hjust = 0.5))
+
+```
+
+
+---
+
+# Métodos de estimação
+
+* Estimação dos parâmetros dos itens
+  * Máxima Verossimilhança Marginal - MVM
+  * Bayesiano 
+
+* Estimação das habilidades
+  * Máxima Verossimilhança - MV
+  * Bayesiano - EAP
+  * Bayesiano - MAP
+
+---
+# Aplicações
+
+* Sistema de Avaliação da Educação Básica - SAEB
+* Exame Nacional do Ensino Médio - ENEM
+* Sistema de Avaliação de Rendimento Escolar do Estado de São Paulo - SARESP 
+* Estimando sua altura:
+
+<ul>https://thiagomiranda.shinyapps.io/altura_tri/<ul>
+
+```{r altura, echo=F, fig.asp=0.5, fig.align='center'}
+qrcode::qrcode_gen("https://thiagomiranda.shinyapps.io/altura_tri/")
+```
+
+---
+# Referências
+
+ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
+
+ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
+Nacional de Probabilidade e Estatística, 2012. 
+
+
+
+
+
+
+
+
+

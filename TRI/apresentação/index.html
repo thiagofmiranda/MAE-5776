@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>index.knit</title>
+    <meta charset="utf-8" />
+    <script src="index_files/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: inverse, center, middle
+background-size: 50
+background-position: center
+
+&lt;p style="text-align:center;"&gt;
+&lt;img src = "images/ime-logo.png" width="300px"/&gt;
+&lt;/p&gt;
+
+### Análise da gestão ambiental de municípios brasileiros pela Teoria da Resposta ao Item
+#### MAE - 5776
+.large[Leandro Silva e Thiago Miranda | 07 Jul 2022]
+
+---
+
+
+# Sumário
+
+* Introdução
+* Teoria da Resposta ao Item
+* Principais modelos
+* Métodos de estimação
+* Aplicações
+* Referências
+
+---
+# Introdução
+* O que é um traço latente?
+* Como medir?
+* Teoria Clássica de Testes
+* Teoria da Resposta ao Item
+
+&lt;p style="text-align:center;"&gt;
+&lt;img src = "images/regua.png" width="200px"/&gt;
+&lt;img src = "images/exam.png" width="250px" /&gt;
+&lt;/p&gt;
+---
+# Teoria da Resposta ao Item
+
+&lt;div style="text-align:justify"&gt;
+Segundo Andrade, Tavares e Valle (2000), os primeiros modelos da TRI surgiram no início da década de 50.
+Lord (1952), Birnbaum (1968),  Lord, Rasch (1960), Samegima (1969), Bock (1972), Andrich (1978), Masters (1982) e Muraki (1992), são as pricipais referências na área. 
+
+&lt;/div&gt;
+---
+# Principais modelos
+* Modelos para itens dicotômicos
+  * Modelos logísticos unidimencionais de 1, 2 e 3 parâmetros
+* Modelos para itens não dicotômicos
+  * Modelo de resposta nominal 
+  * Modelo de resposta gradual 
+
+---
+# Principais modelos
+* Modelo logístico unidimensional de 3 parâmetros:
+`$$P\left(U_{i j}=1 \mid \theta_{j}\right)=c_{i}+\left(1-c_{i}\right) \frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}$$`
+
+&lt;small style="font-size: 18px !important; text-align:justify"&gt;
+Onde `\(a_{i}\)`, `\(b_{i}\)`, e `\(c_{i}\)`, são parâmetros dos itens e deverão ser estimados a partir dos dados; a constante `\(D=1,7\)`, é apenas um fator de escala, `\(\theta_{j}\)` é a habilidade do indivíduo `\(j\)`.  Em Andrade, Tavares &amp; Valle (2000) obtemos maiores detalhes sobre esse e outros modelos encontrados na literatura.
+&lt;/small&gt;
+
+---
+# Principais modelos
+![](index_files/figure-html/CCI-1.png)&lt;!-- --&gt;![](index_files/figure-html/CCI-2.png)&lt;!-- --&gt;
+
+
+---
+
+# Métodos de estimação
+
+* Estimação dos parâmetros dos itens
+  * Máxima Verossimilhança Marginal - MVM
+  * Bayesiano 
+
+* Estimação das habilidades
+  * Máxima Verossimilhança - MV
+  * Bayesiano - EAP
+  * Bayesiano - MAP
+
+---
+# Aplicações
+
+* Sistema de Avaliação da Educação Básica - SAEB
+* Exame Nacional do Ensino Médio - ENEM
+* Sistema de Avaliação de Rendimento Escolar do Estado de São Paulo - SARESP 
+* Estimando sua altura:
+
+&lt;ul&gt;https://thiagomiranda.shinyapps.io/altura_tri/&lt;ul&gt;
+
+
+```
+## Warning: `qrcode_gen()` has known bugs. Please use `qr_code()` instead.
+```
+
+&lt;img src="index_files/figure-html/altura-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Referências
+
+ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
+
+ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
+Nacional de Probabilidade e Estatística, 2012. 
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
