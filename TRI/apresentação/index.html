@@ -4,10 +4,13 @@
     <title>index.knit</title>
     <meta charset="utf-8" />
     <script src="index_files/header-attrs-2.14/header-attrs.js"></script>
+    <script src="index_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="index_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
+
 
 class: inverse, center, middle
 background-size: 50
@@ -54,11 +57,11 @@ Lord (1952), Birnbaum (1968),  Lord, Rasch (1960), Samegima (1969), Bock (1972),
 &lt;/div&gt;
 ---
 # Principais modelos
-* Modelos para itens dicotômicos
-  * Modelos logísticos unidimencionais de 1, 2 e 3 parâmetros
-* Modelos para itens não dicotômicos
-  * Modelo de resposta nominal 
-  * Modelo de resposta gradual 
+A literatura propõe que os modelos da TRI podem dependem principalmente de três fatores?
+
+1. da natureza do item — dicotômicos ou não dicotômicos;
+2. do número de populações envolvidas — apenas uma ou mais de uma;
+3. e da quantidade de traços latentes que está sendo medida — apenas um ou mais de um.
 
 ---
 # Principais modelos
@@ -88,23 +91,207 @@ Onde `\(a_{i}\)`, `\(b_{i}\)`, e `\(c_{i}\)`, são parâmetros dos itens e dever
   * Bayesiano - MAP
 
 ---
-# Aplicações
+# Aplicação: MUNIC
 
-* Sistema de Avaliação da Educação Básica - SAEB
-* Exame Nacional do Ensino Médio - ENEM
-* Sistema de Avaliação de Rendimento Escolar do Estado de São Paulo - SARESP 
-* Estimando sua altura:
+&lt;small style="font-size: 18px !important; text-align:justify"&gt;
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
 
-&lt;ul&gt;https://thiagomiranda.shinyapps.io/altura_tri/&lt;ul&gt;
+1. Órgão gestor do meio ambiente;
+2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
+3. Conselho e Fundo municipal de Meio Ambiente;
+4. Legislação ou instrumento de gestão ambiental;
+5. Plano de Gestão Integrada de Resíduos Sólidos;
+6. Programas em parceria com o Governo Federal;
+7. Pagamento de Serviços Ambientais;
+8. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
 
-
-```
-## Warning: `qrcode_gen()` has known bugs. Please use `qr_code()` instead.
-```
-
-&lt;img src="index_files/figure-html/altura-1.png" style="display: block; margin: auto;" /&gt;
+&lt;/small&gt;
 
 ---
+# TCT
+
+
+* Coeficiente de Correlação Ponto-Bisserial
+* Alpha de Cronbach (com todos os itens: 0.8285)
+
+&lt;table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; item &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; prop0 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; prop1 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; bisCorr &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ExBisCorr &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ExAlphaCronbach &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam201 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3659 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6341 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3826 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3207 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8243 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam202 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2628 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7372 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3302 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2716 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8256 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam203 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7665 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2335 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4046 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3514 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8237 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam204 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5257 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4743 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5099 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4533 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8205 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam205 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7548 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2452 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4225 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3692 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8232 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam206 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6105 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3895 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5013 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4456 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8209 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam207 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7137 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2863 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4691 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4156 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8219 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam2011 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0817 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3442 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3084 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8254 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+---
+# TRI
+### Calibração dos Itens
+* Seleção de itens em 3 rodadas da TRI
+* Critérios de exclusão: 
+`$$a &gt; 4, ~ b &gt; 6 ~ e ~ b &lt; -6$$`
+
+
+&lt;table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; item &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; descricao &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; a &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; b &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam201 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre coleta seletiva de resíduos sólidos domésticos &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2245 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.5716 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam202 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre saneamento básico &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2288 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.0708 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam203 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre gestão de bacias hidrográficas &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.7118 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0306 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam204 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre área e/ou zona de proteção ou controle ambiental &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.1935 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0950 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam205 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre destino das embalagens utilizadas em produtos agrotóxicos &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.9266 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9268 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam206 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre poluição do ar &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.2662 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3627 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam207 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre permissão de atividades extrativas minerais &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0027 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7484 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Mmam2011 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sobre adaptação e mitigação de mudança do clima &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.3182 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.7387 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# TRI
+### Gráficos dos Itens
+
+
+
+
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+# TRI
+### Gráficos dos Itens
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+# TRI
+### Estimação das habilidades
+
+&lt;img src="index_files/figure-html/Análise TRI 2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Indicador por município
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
 # Referências
 
 ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
@@ -112,7 +299,7 @@ ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conce
 ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
 Nacional de Probabilidade e Estatística, 2012. 
 
-
+FIGUEIREDO, Adriano Marcos Rodrigues. Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
 
 
 

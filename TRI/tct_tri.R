@@ -1,6 +1,9 @@
 library(tidyverse)
+library(ggpubr)
 library(readxl)
 library(irtoys)
+library(naniar)
+library(geobr)
 
 
 # Lendo toda a base da Munic
@@ -8,8 +11,9 @@ df <- read_xlsx("TRI/Base_MUNIC_2020.xlsx",sheet=6)
 
 # Filtro inicial
 df_2 <- df |> 
-  filter(!Mmam01 %in% c("Recusa","Não possui estrutura")) |> 
-  replace_with_na_all(condition = ~.x %in% c("Recusa","Não informou","-","Sem titular"))
+  filter(!Mmam01 %in% c("Não informou","Recusa","Não informou")) |> 
+  replace_with_na_all(condition = ~.x %in% c("-","Sem titular"))
+
 
 dicionario <- tribble(
   ~secao.id,  ~secao.descricao,  ~item.id,     ~item.descricao, ~dicotomico,
@@ -24,7 +28,7 @@ dicionario <- tribble(
   "5.1", "Órgão gestor do meio ambiente", "Mmam04",     "Idade do(a) titular do órgão gestor",                 "Não",         
   "5.1", "Órgão gestor do meio ambiente", "Mmam05",     "Cor/raça do(a) titular do órgão gestor",              "Não",         
   "5.1", "Órgão gestor do meio ambiente", "Mmam051",    "Foi respondido pelo próprio titular do órgão gestor", "Não",         
-  "5.1", "Órgão gestor do meio ambiente", "Mmam06",     "Escolaridade do(a) titular do órgão gestor",          "Não",         
+  "5.1", "Órgão gestor do meio ambiente", "Mmam06",     "Escolaridade do(a) titular do órgão gestor",          "Não", 
   "5.2","Capacitação","Mmam08",     "Nos últimos quatro anos servidores do município participaram de capacitação promovida pelo governo federal na área de meio ambiente",              "Sim",         
   "5.2","Capacitação","Mmam091",    "Tipo de capacitação: Estruturação da gestão municipal de meio ambiente",           "Sim",         
   "5.2","Capacitação","Mmam092",    "Tipo de capacitação: Licenciamento",                                               "Sim",         
@@ -127,66 +131,114 @@ dicionario <- tribble(
   "5.9","Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente","Mmam2613",   "Falta de saneamento (destinação inadequada do esgoto doméstico)",       "Sim",         
   "5.9","Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente","Mmam2614",   "Outros",                                                                "Sim")  
 
-dic_vars <- dicionario |> 
-  filter(dicotomico=="Sim"|secao.id=="5.1") |> 
-  pull(item.id)
-
-df_3 <- df_2 |> 
-  dplyr::select(any_of(c(dic_vars,"Faixa_pop"))) 
-
-df_3[is.na(df_3)] <- "Não"
-df_3[df_3=="Não foi instalado ou está inativo"] <- "Não"
-df_3[df_3=="O fundo possui um conselho gestor próprio"] <- "Sim"
-
-df_3[df_3=="Sim"] <- "1"
-df_3[df_3=="Não"] <- "0"
 
 
-# Dividindo os dados
-df_info <- df_3 |> 
+
+
+dic <- function(data,na0=F){
+  
+  data[data=="Sim"] <- "1"
+  data[data=="Não"] <- "0"
+  data[data=="Não informou"] <- "0"
+  data[data=="Não foi instalado ou está inativo"] <- "0"
+  if(na0){data[is.na(data)] <- "0"}else{data[is.na(data)] <- NA}
+  
+  data[data!="1" & data!="0"] <- NA
+  
+  data
+}
+
+####################################################################################################
+dic_vars <- pull(filter(dicionario,dicotomico=="Sim"|secao.id=="5.1"),item.id)
+
+no_vars <- c("Mmam08","Mmam0911","Mmam10", "Mmam141","Mmam142","Mmam143","Mmam15","Mmam171","Mmam2012","Mmam211","Mmam229","Mmam2614",
+             "Mmam2311","Mmam2312","Mmam2313","Mmam2314","Mmam2315","Mmam2316","Mmam2317","Mmam241","Mmam242","Mmam243","Mmam244","Mmam245","Mmam246","Mmam247")
+
+no_mun <- c(2918506, 2101350, 2410405, 3540309, 5208400, 1303569, 2111763, 
+            2307502, 2308807, 2609154, 2708501, 5103437, 5208400,
+            1507102, 2101350, 2102408, 2111763, 2308807, 2708501,
+            2101350, 2103000, 2707305, 2708501, 2918506)
+
+df_final <- df_2 |> 
+  dplyr::select(any_of(c(dic_vars,"Faixa_pop"))) |> 
+  dplyr::select(-any_of(no_vars)) |> 
+  filter(!CodMun %in% no_mun)
+
+df_info <- df_final |> 
   dplyr::select(CodMun,Mun,`Cod UF`,UF,Faixa_pop,Regiao,Mmam01,Mmam03,Mmam04,Mmam05,Mmam051,Mmam06) 
 
-df_dic <- df_3|> 
+df_dic <- df_final|> 
   dplyr::select(-CodMun,-Mun,-`Cod UF`,-UF,-Faixa_pop,-Regiao,-Mmam01,-Mmam03,-Mmam04,-Mmam05,-Mmam051,-Mmam06) |> 
-  mutate_all(as.numeric) |> 
-  na.omit()
+  dic(na0 = T) |> 
+  mutate_all(as.numeric) 
+
+df_info <- df_info[rowSums(df_dic) >= 5,]
+df_dic <- df_dic[rowSums(df_dic) >= 5,]
 
 
 # Análises pela TCT
-tct <- descript(df_dic)
+tct <- descript(df_dic) # 1553
+#tct <- reliability(df_dic) # 1553
+
 
 # Selecionando itens com boa correlação
 itens_1 <- data.frame(bisCorr=tct$bisCorr,ExBisCorr=tct$ExBisCorr) |> 
-    filter(bisCorr>=0.4) |> 
-    row.names() 
+  #filter(ExBisCorr>=0.3) |> 
+  row.names() 
 
 df_dic_2 <- df_dic |> 
   dplyr::select(all_of(itens_1))
 
-# Removendo itens condicionados
-df_dic_3 <- df_dic_2 |> 
-  dplyr::select(!starts_with("Mmam151")) |> 
-  dplyr::select(!starts_with("Mmam11")) 
-
-
 itens_selecionados <- dicionario |> 
-  filter(item.id %in% colnames(df_dic_3))
+  filter(item.id %in% colnames(df_dic_2))
 
-tct_2 <- descript(df_dic_3)
+#tct_2 <- descript(df_dic_2)
 
-itens_parametros <- est(df_dic_3, model="2PL", engine="ltm",nqp= 20)
+itens_parametros_1 <- est(df_dic_2, model="2PL", engine="ltm",nqp= 20)
 
-escores <- eap(df_dic_3,itens_parametros,qu=normal.qu())
+exc_itens_tri_1 <- itens_parametros_1$est |> 
+  data.frame() |> 
+  filter(X2 > 5 | X2 < -5 | X1 > 4) |> 
+  rownames()
+
+df_dic_3 <- df_dic_2 |> 
+  dplyr::select(-any_of(exc_itens_tri_1)) 
+
+itens_parametros_2 <- est(df_dic_3, model="2PL", engine="ltm",nqp= 20)
+exc_itens_tri_2 <- itens_parametros_2$est |> 
+  data.frame() |> 
+  filter(X2 > 5 | X2 < -5 | X1 > 4) |> 
+  rownames()
 
 
+df_dic_4 <- df_dic_3 |> 
+  dplyr::select(-any_of(exc_itens_tri_2)) 
+
+itens_parametros_3 <- est(df_dic_4, model="2PL", engine="ltm",nqp= 20)
+itens_parametros_3$est
+
+escores <- eap(df_dic_4,itens_parametros_3,qu=normal.qu())
+
+
+#shapiro.test(escores[,1])
+
+
+options(timeout= 4000000)
+metadata <- download_metadata() # para ver codigos
+head(metadata)
+
+mun <- read_municipality(year = 2020)
+
+df_escore <- df_info |> 
+  bind_cols(escores) |> 
+  select(CodMun,est)
+
+dataset_final = left_join(mun, df_escore, by=c("code_muni"="CodMun")) 
+
+plot_geo <- ggplot() +
+  geom_sf(data=dataset_final, aes(fill=est), color= NA, size=.15)+
+  scale_fill_distiller(palette = "Greens", limits=c(-2.5, 3.5),direction = 1,
+                       name="Indicador")+
+  theme_minimal(base_size = 16)
 
 save.image("TRI/data.RData")
-
-
-
-
-
-
-
-
-

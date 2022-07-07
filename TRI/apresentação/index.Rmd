@@ -6,6 +6,29 @@ output:
     nature:
       ratio: '16:9'
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning=FALSE,
+  message=FALSE, 
+  comment=">",
+  prompt=T)
+
+options(
+  scipen=999,
+  knitr.kable.NA = '')
+
+if(!require(kableExtra)) install.packages("kableExtra"); library(kableExtra)
+if(!require(readxl)) install.packages("readxl"); library(readxl)
+if(!require(formatR)) install.packages("formatR"); library(formatR)
+if(!require(xtable)) install.packages("xtable"); library(xtable)
+if(!require(tidyverse)) install.packages("tidyverse"); library(tidyverse)
+if(!require(factoextra)) install.packages("factoextra"); library(factoextra)
+if(!require(RColorBrewer)) install.packages("RColorBrewer"); library(RColorBrewer)
+if(!require(ggpubr)) install.packages("ggpubr"); library(ggpubr)
+if(!require(irtoys)) install.packages("irtoys"); library(irtoys)
+library(geobr)
+```
 class: inverse, center, middle
 background-size: 50
 background-position: center
@@ -59,11 +82,11 @@ Lord (1952), Birnbaum (1968),  Lord, Rasch (1960), Samegima (1969), Bock (1972),
 </div>
 ---
 # Principais modelos
-* Modelos para itens dicotômicos
-  * Modelos logísticos unidimencionais de 1, 2 e 3 parâmetros
-* Modelos para itens não dicotômicos
-  * Modelo de resposta nominal 
-  * Modelo de resposta gradual 
+A literatura propõe que os modelos da TRI podem dependem principalmente de três fatores?
+
+1. da natureza do item — dicotômicos ou não dicotômicos;
+2. do número de populações envolvidas — apenas uma ou mais de uma;
+3. e da quantidade de traços latentes que está sendo medida — apenas um ou mais de um.
 
 ---
 # Principais modelos
@@ -137,20 +160,206 @@ sim %>%
   * Bayesiano - MAP
 
 ---
-# Aplicações
+# Aplicação: MUNIC
 
-* Sistema de Avaliação da Educação Básica - SAEB
-* Exame Nacional do Ensino Médio - ENEM
-* Sistema de Avaliação de Rendimento Escolar do Estado de São Paulo - SARESP 
-* Estimando sua altura:
+<small style="font-size: 18px !important; text-align:justify">
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
 
-<ul>https://thiagomiranda.shinyapps.io/altura_tri/<ul>
+1. Órgão gestor do meio ambiente;
+2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
+3. Conselho e Fundo municipal de Meio Ambiente;
+4. Legislação ou instrumento de gestão ambiental;
+5. Plano de Gestão Integrada de Resíduos Sólidos;
+6. Programas em parceria com o Governo Federal;
+7. Pagamento de Serviços Ambientais;
+8. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
 
-```{r altura, echo=F, fig.asp=0.5, fig.align='center'}
-qrcode::qrcode_gen("https://thiagomiranda.shinyapps.io/altura_tri/")
+</small>
+
+---
+# TCT
+```{r}
+load("../data.RData")
+```
+
+* Coeficiente de Correlação Ponto-Bisserial
+* Alpha de Cronbach (com todos os itens: `r round(tct$alpha[1,1],4)`)
+
+```{r}
+itens_tri <- itens_parametros_3$est |> 
+  data.frame() |> 
+  arrange(desc(X1)) |> 
+  rownames()
+
+tct_1 <- data.frame(tct$perc) |> 
+  rename(prop0=X0,prop1=X1) |> 
+  mutate(bisCorr=tct$bisCorr) |> 
+  mutate(ExBisCorr=tct$ExBisCorr) |> 
+  round(4) |> 
+  rownames_to_column("item") |> 
+  filter(item %in% itens_tri[1:8])
+
+tct_2 <- data.frame(alpha=tct$alpha)|> 
+  round(4) |> 
+  rownames_to_column("item") |> 
+  mutate(item = str_remove_all(item,"Excluding "))
+
+tabela_tct <- left_join(tct_1,tct_2,"item") |> 
+  rename(ExAlphaCronbach=value) |> 
+  dplyr::select(-logit)
+
+tabela_tct |> 
+  kbl() |> 
+  #kable_classic_2(full_width = F) |> 
+  kable_styling(font_size=12)
+```
+
+
+
+---
+# TRI
+### Calibração dos Itens
+* Seleção de itens em 3 rodadas da TRI
+* Critérios de exclusão: 
+$$a > 4, ~ b > 6 ~ e ~ b < -6$$
+
+
+```{r}
+tabela_tri <- data.frame(itens_parametros_3$est) |> 
+  rename(a=X1,b=X2,c=X3) |> 
+  round(4) |> 
+  rownames_to_column("item") |> 
+  filter(item %in% itens_tri[1:8]) |> 
+  dplyr::select(-c) |> 
+  left_join(dplyr::select(dicionario,item.id,item.descricao), by = c("item"="item.id")) |> 
+  dplyr::select(item,item.descricao,a,b) |> 
+  rename(descricao=item.descricao)
+
+tabela_tri |> 
+  kbl() |> 
+  #kable_classic_2(full_width = F) |> 
+  kable_styling(font_size=12)
 ```
 
 ---
+# TRI
+### Gráficos dos Itens
+
+```{r}
+CTT <- function(ltm_pars,filter_item="none",leg=T){
+  
+  irf_values <- irf(ltm_pars,x = seq(-6,6,0.02)) # Item Response Function - IRF
+  iif_values <- iif(ltm_pars,x = seq(-6,6,0.02)) # Item Information Function - IIF
+  
+  irf_values_f <- bind_cols(x=irf_values$x,irf_values$f) |> 
+    gather("item","irf",-x) |> 
+    dplyr::select(item,x,irf)
+  
+  iif_values_f <- bind_cols(x=irf_values$x,iif_values$f) |> 
+    gather("item","iif",-x) |> 
+    dplyr::select(item,x,iif)
+  
+  iif_max <- max(iif_values$f)
+  values <- left_join(irf_values_f,iif_values_f,by=c("item","x"))
+  
+  if(filter_item=="none"){
+    p1 <- values |>  
+      ggplot(aes(x=x,color=item,group=item))+
+      geom_line(aes(y=irf),size=1)+
+      guides(color=guide_legend(title=NULL))+
+      ylim(0,1)+
+      ggtitle("Curva Característica dos Itens")+
+      ylab("Probabilidade de acertar o item")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = 16)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    p2 <- values |>  
+      ggplot(aes(x=x,color=item,group=item))+
+      geom_line(aes(y=iif),size=1)+
+      guides(color=guide_legend(title=NULL))+
+      ggtitle("Função de Informação dos Itens")+
+      ylab("Informação do Item")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = 16)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    p3 <- values |>
+      group_by(x) |> 
+      summarise(iif=sum(iif)) |> 
+      ggplot(aes(x=x))+
+      geom_line(aes(y=iif),size=1)+
+      ggtitle("Função de Informação Total do Teste")+
+      ylab("Informação do Teste")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = 16)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    #result <- ggpubr::ggarrange(p3,p1,p2,ncol=1,common.legend = TRUE,legend = ifelse(leg,"bottom","none"))
+    result <- list("cci"=p1,"info_itens"=p2,"info_total"=p3)
+  }else{
+    
+    pars <- ltm_pars$est |> 
+      data.frame() |> 
+      rownames_to_column("item") |> 
+      setNames(c("item","a","b","c")) |> 
+      filter(item==filter_item)
+    
+    result <- values |>  
+      filter(item==filter_item) |> 
+      mutate(iif=iif/iif_max) |> 
+      ggplot(aes(x=x,y=irf))+
+      geom_line(color = "#E60278",size=1)+
+      geom_line(aes(y=iif),color = "black",size=1)+
+      scale_y_continuous("Probabilidade de acertar o Item", sec.axis = sec_axis(~ . * iif_max, name = "Informação do Item"))+
+      ggtitle(paste0(filter_item,": a=",round(pars$a,4),"; b=",round(pars$b,4),"; c=",round(pars$c,4)))+
+      xlab("Habilidade")+
+      theme_minimal(base_size = 16)+
+      theme(plot.title = element_text(size=18,hjust = 0.5))
+  }
+  
+  return(result)
+}
+
+plot_geral <- CTT(itens_parametros_3,leg=F)
+```
+
+
+```{r,fig.align='center',out.width = '80%', fig.height=6,fig.width=16}
+ggarrange(plot_geral$cci,plot_geral$info_itens,plot_geral$info_total,ncol = 3)
+```
+
+---
+# TRI
+### Gráficos dos Itens
+```{r,fig.align='center',out.width = '80%', fig.height=6,fig.width=16}
+ggarrange(
+  CTT(itens_parametros_3,filter_item = itens_tri[1]),
+  CTT(itens_parametros_3,filter_item = itens_tri[4]),
+  CTT(itens_parametros_3,filter_item = itens_tri[8]),ncol = 3)
+
+```
+
+
+---
+# TRI
+### Estimação das habilidades
+
+```{r Análise TRI 2,fig.align='center',out.width = '60%', fig.height=6,fig.width=12}
+ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
+
+
+```
+
+---
+
+# Indicador por município
+```{r ,fig.align='center',out.width = '60%', fig.height=6,fig.width=9}
+ggarrange(plot_geo)
+```
+
+---
+
 # Referências
 
 ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
@@ -158,6 +367,7 @@ ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conce
 ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
 Nacional de Probabilidade e Estatística, 2012. 
 
+FIGUEIREDO, Adriano Marcos Rodrigues. Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
 
 
 

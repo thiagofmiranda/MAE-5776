@@ -41,6 +41,7 @@ if(!require(xtable)) install.packages("xtable"); library(xtable)
 if(!require(tidyverse)) install.packages("tidyverse"); library(tidyverse)
 if(!require(factoextra)) install.packages("factoextra"); library(factoextra)
 if(!require(RColorBrewer)) install.packages("RColorBrewer"); library(RColorBrewer)
+if(!require(ggpubr)) install.packages("ggpubr"); library(ggpubr)
 if(!require(irtoys)) install.packages("irtoys"); library(irtoys)
 
 
@@ -75,24 +76,15 @@ Thiago Ferreira Miranda - nº USP: 11925711
 
 \section{Introdução}
 
-O desenvolvimento de escalas apropriadas para medir características de
-indivíduos que não podem ser medidas diretamente, as quais são comumente
-denominadas de traço latente. Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros. 
 
+Segundo Anjos e Andrade (2012) diversos pesquisadores em diferentes áreas de atuação têm direcionado esforço na busca da identificação de características que possam estar presentes em indíviduos, mas não podem ser medidas diretamente (sendo estas variáveis não observadas), as quais são comumente denominadas de traço latente, e assim desenvolver de índices, escalas apropriadas para seu enquadramento. Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros.
 
-Duas são as teorias utilizadas para este fim. A Teoria Clássica dos Testes
-– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria
-da Resposta ao Item – TRI, cujo foco principal, como bem diz o seu nome, é o
-item e não o teste como um todo.
-
-Ambas contemplam a análise de itens através
-das estimativas de seus parâmetros, e a análise do instrumento de medida como
-um todo. A TRI foi desenvolvida com o prop´osito de resolver um problema
+Neste tocante, duas teorias são apresentadas, a Teoria Clássica dos Testes
+– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria da Resposta ao Item – TRI, cujo foco principal é o item e não o teste como um todo. Tanto a TCT quanto a TRI são análises paramétricas, ou seja, a análise de itens é efetuada por meio
+das estimativas de seus parâmetros e do instrumento de medida como um todo.
+A TRI foi desenvolvida com o propósito de resolver um problema
 da TCT que é a dependência da medida de proficiência em relação ao teste
-aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes.
-Dentro do contexto da TRI, a medida de proficiência de um aluno não depende
-dos itens apresentados a ele, e os parâmetros de discriminação e de dificuldade
-do item não dependem do grupo de respondentes. Em outras palavras, um
+aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes. O que não ocorre na TRI, pois seus parâmetros (de discriminação e de dificuldade do item) não dependem do grupo de respondentes, bem como há depedência da medida de proficiência de um aluno com relação aos itens apresentados a ele. Portanto, um
 item mede determinado conhecimento, independentemente de quem o está
 respondendo, e a proficiência de um aluno não depende dos itens que estão sendo apresentados a ele.
 
@@ -101,10 +93,10 @@ Maiores detalhes sobre estas duas teorias podem ser encontrados em: Gulliksen
 (2003), Andrade, Tavares e Valle (2000), Ayala (2009), Baker e Kim (2004) e
 Embretson e Reise (2000).
 
+Este trabalho tem como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e proposta a criação de um indicador para a gestão ambiental municipal por meio da teoria da resposta ao item.
 
 
-
-\subsection{Teoria clássica dos testes}
+\subsection{Teoria clássica dos testes: parâmetros}
 
 
 \subsubsection{Coeficiente de correlação ponto-bisserial}
@@ -142,6 +134,10 @@ $p$ é a proporção de respondentes que acertaram o item;
 
 $h(p)$ é o valor da densidade da distribuição normal padrão no ponto em que a área da curva à esquerda deste ponto é igual a $p$.
 
+\vspace{0.5cm}
+\textbf{Nota: Neste trabalho o coeficiente de correlação bisserial não será avaliado.}
+
+
 \subsubsection{Coeficiente alfa de Cronbach}
 
 O coeficiente alfa de Cronbach é utilizado para medir a consistência interna do instrumento de medida, e é definido por:
@@ -163,7 +159,15 @@ Esse coeficiente varia de 0 a 1. Quanto mais próximo de 0 menor a consistência
 
 \subsection{Teoria da Resposta ao Item}
 
-Falando um pouco sobre modelos logísticos unidimensionais da TRI.
+A Teoria da Resposta ao Item possui modelos vários modelos propostos na literatura, neste trabalho serão abordados os modelos logísticos unidimensionais da TRI.
+De acordo com Andrade (2000), os modelos logísticos para itens dicotômicos são os modelos de resposta ao item mais utilizados, os quais são referidos por os modelos logísticos de 1, 2 e 3 parâmetros, que consideram, respectivamente:
+
+\begin{itemize}
+    \item somente a dificuldade do item;
+    \item a dificuldade e a discriminação;
+    \item a dificuldade, a discriminação e a probabilidade de resposta correta dada por indivíduos de baixa habilidade.
+\end{itemize}
+
 
 \subsubsection{Modelo de 3 parâmetros}
 
@@ -229,17 +233,16 @@ escrita como:
     I(\theta) = \displaystyle\sum_{i=1}^{I}{I_i(\theta)}
 \end{equation}
 
+\subsubsection{Métodos de estimação}
 
-\newpage
 
-
-\section{Aplicação}
-
-Este trabalho tem como objetivo a criação de um indicador para a gestão ambiental municipal através da teoria da resposta ao item, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC.   
+\section{Aplicação da TRI}
 
 \subsection{Pesquisa de Informações Básicas Municipais - MUNIC}
 
-A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipala. O principal interesse da Munic é a gestão pública na esfera de administração, no que se refere à organização das prefeituras, bem como o quadro funcional, estrutura e políticas públicas setoriais no âmbito das áreas pesquisadas. Em 2020, a pesquisa investigou informações sobre recursos humanos, habitação, transporte, agropecuária, meio ambiente, gestão de riscos e de desastres, e COVID-19. O questionário de meio ambiente é dividido nas seguintes seções:
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. O principal interesse da Munic é a gestão pública na esfera de administração, no que se refere à organização das prefeituras, bem como o quadro funcional, estrutura e políticas públicas setoriais no âmbito das áreas pesquisadas. Em 2020, a pesquisa investigou informações sobre recursos humanos, habitação, transporte, agropecuária, meio ambiente, gestão de riscos e de desastres, e COVID-19. O questionário de meio ambiente é dividido nas seguintes seções:
+
+\newpage
 
 1. Órgão gestor do meio ambiente;
 2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
@@ -249,6 +252,9 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 7. Programas em parceria com o Governo Federal;
 8. Pagamento de Serviços Ambientais;
 9. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
+
+
+
 
 Composto pelo seguintes itens em cada seção:
 
@@ -261,7 +267,7 @@ dicionario |>
   kable_styling(font_size=5)
 ```
 
-\newpage
+
 
 ```{r}
 dicionario |> 
@@ -271,7 +277,11 @@ dicionario |>
       caption = "Capacitação.") |> 
   kable_styling(font_size=5) |> 
   column_spec(2, width = "50em")
+```
 
+\newpage
+
+```{r}
 dicionario |> 
   filter(secao.id=="5.3") |> 
   dplyr::select(-c(1,2)) |> 
@@ -281,7 +291,7 @@ dicionario |>
   column_spec(2, width = "50em")
 ```
 
-\newpage
+
 
 ```{r}
 dicionario |> 
@@ -308,7 +318,7 @@ dicionario |>
   column_spec(2, width = "50em")
 ```
 
-\pagebreak
+
 
 ```{r anexos 3}
 dicionario |> 
@@ -333,6 +343,9 @@ dicionario |>
 
 \subsection{Avaliação dos itens pela TCT}
 
+Para uma avaliação inicial dos dos itens quem compõem o teste e também do questionário com um todo, realizou-se a análise via teoria classica dos testes para fazer a checagem do instrumento de avaliação, onde verificou-se o coeficiente de correlação ponto-bisserial e o alpha de cronbach. Nessa avaliação, itens podem ser removidos da análise TRI por terem coeficiente de correlação ponto-bisserial baixo, indicando uma baixa correlação entre as respostas do item em relação ao escore do teste (TCT), e por terem alpha de cronbach alto quando excluímos o item, indicando que a exclusão dele aumentaria a consistência do teste. Entretanto, para a análise pela TRI, não removeu-se nenhum item.
+
+Na análise pela TRI rodamos o modelo logístico unidimensional de 2 parâmetros, na planilha estão presentes tanto os parâmetros, quanto os escores gerados. Há também plots relacionados ao teste e a cada um dos itens. No R usamos o pacote irtoys para ambas as análises.
 
 
 
@@ -343,19 +356,17 @@ tct_1 <- data.frame(tct$perc) |>
   mutate(bisCorr=tct$bisCorr) |> 
   mutate(ExBisCorr=tct$ExBisCorr) 
 
-t1.1 <- tct_1[1:43,] 
+t1.1 <- tct_1[1:30,] 
 
 t1.1 <- t1.1 |>
   round(2)|>
-  kbl(format = "latex",linesep="") |> 
-  column_spec(1:6, background = ifelse(t1.1$bisCorr > 0.4 , "lightgray", "white"))
+  kbl(format = "latex",linesep="")
 
-t1.2 <- tct_1[44:86,] 
+t1.2 <- tct_1[31:60,] 
 
 t1.2 <- t1.2 |>
   round(2) |> 
-  kbl(format = "latex",linesep="") |> 
-  column_spec(1:6, background = ifelse(t1.2$bisCorr > 0.4 , "lightgray", "white"))
+  kbl(format = "latex",linesep="") 
 
 cat(c("\\begin{table}[h] \\caption{TCT - Proporção de resposta por nível e coeficientes de correlação ponto bisserial.} \\centering \\tiny", 
       t1.1,
@@ -372,20 +383,18 @@ tct_2 <- data.frame(alpha=tct$alpha) |>
 
 
 t2.1 <- tct_2 |> 
-  slice(1:44) 
+  slice(1:30) 
 
 t2.1 <- t2.1 |>
   rename(alpha=value) |> 
-  kbl(format = "latex",linesep="") |> 
-  column_spec(1:2, background = ifelse(t2.1$value < 0.8812 , "lightgray", "white"))
+  kbl(format = "latex",linesep="")
 
 t2.2 <- tct_2|> 
-  slice(45:87) 
+  slice(31:60) 
 
 t2.2 <- t2.2 |>
   rename(alpha=value) |> 
-  kbl(format = "latex",linesep="") |> 
-  column_spec(1:2, background = ifelse(t2.2$value < 0.8812 , "lightgray", "white"))
+  kbl(format = "latex",linesep="") 
 
 cat(c("\\begin{table}[h] \\caption{TCT - Alpha de Cronbach.} \\centering \\tiny", 
       t2.1,
@@ -396,17 +405,27 @@ cat(c("\\begin{table}[h] \\caption{TCT - Alpha de Cronbach.} \\centering \\tiny"
 
 \newpage
 
+\subsection{Calibração dos parâmetros dos itens}
 
-```{r Análise TRI}
-data.frame(itens_parametros$est) |> 
+```{r Análise TRI, fig.width=6,fig.height=3}
+data.frame(itens_parametros_3$est) |> 
   setNames(c("a","b","c")) |> 
   rownames_to_column("item.id") |> 
   right_join(itens_selecionados,by="item.id") |> 
   dplyr::select(item.id,item.descricao,a,b)|> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",align=c("l","l","c","c"),
-      caption = "Itens que permaneceram na análise.") |> 
+  filter(!is.na(a)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",align=c("l","l","c","c"),caption = "Itens que permaneceram na análise.") |> 
   kable_styling(font_size=5) |> 
   column_spec(2, width = "50em")
+```
+
+\newpage
+
+\subsection{Estimação dos escores dos municípios}
+
+```{r Análise TRI 2,,out.width = '80%', fig.height=6,fig.width=12,fig.cap="Distribuição dos escores."}
+ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
+
 
 ```
 
