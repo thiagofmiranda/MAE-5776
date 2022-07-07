@@ -179,7 +179,7 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 ---
 # TCT
 ```{r}
-load("../data.RData")
+load("../TRI/data.RData")
 ```
 
 * Coeficiente de Correlação Ponto-Bisserial
