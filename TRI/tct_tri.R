@@ -231,7 +231,7 @@ mun <- read_municipality(year = 2020)
 
 df_escore <- df_info |> 
   bind_cols(escores) |> 
-  select(CodMun,est)
+  dplyr::select(CodMun,est)
 
 dataset_final = left_join(mun, df_escore, by=c("code_muni"="CodMun")) 
 
@@ -242,3 +242,8 @@ plot_geo <- ggplot() +
   theme_minimal(base_size = 16)
 
 save.image("TRI/data.RData")
+
+nrow(itens_parametros_3$est)
+
+
+shapiro.test(dataset_final$est)

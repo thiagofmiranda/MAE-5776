@@ -20,7 +20,7 @@ background-position: center
 &lt;img src = "images/ime-logo.png" width="300px"/&gt;
 &lt;/p&gt;
 
-### Análise da gestão ambiental de municípios brasileiros pela Teoria da Resposta ao Item
+### Aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do Brasil
 #### MAE - 5776
 .large[Leandro Silva e Thiago Miranda | 07 Jul 2022]
 
@@ -94,7 +94,7 @@ Onde `\(a_{i}\)`, `\(b_{i}\)`, e `\(c_{i}\)`, são parâmetros dos itens e dever
 # Aplicação: MUNIC
 
 &lt;small style="font-size: 18px !important; text-align:justify"&gt;
-A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, segundo IBGE (2021), trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
 
 1. Órgão gestor do meio ambiente;
 2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
@@ -198,9 +198,16 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 ---
 # TRI
 ### Calibração dos Itens
+
+&lt;small style="font-size: 18px !important; text-align:justify"&gt;
+
 * Seleção de itens em 3 rodadas da TRI
 * Critérios de exclusão: 
-`$$a &gt; 4, ~ b &gt; 6 ~ e ~ b &lt; -6$$`
+`$$a &gt; 4, ~ b &gt; 5 ~ e ~ b &lt; -5$$`
+* Itens restantes na análise: 20
+
+&lt;/small&gt;
+
 
 
 &lt;table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;"&gt;
@@ -283,6 +290,10 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 # TRI
 ### Estimação das habilidades
 
+&lt;small style="font-size: 18px !important; text-align:justify"&gt;
+Municípios restantes na análise: 4775
+&lt;/small&gt;
+
 &lt;img src="index_files/figure-html/Análise TRI 2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
@@ -294,17 +305,24 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 
 # Referências
 
+&lt;small style="font-size: 18px !important; text-align:justify"&gt;
+
 ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
 
 ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
 Nacional de Probabilidade e Estatística, 2012. 
 
-FIGUEIREDO, Adriano Marcos Rodrigues. Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
+FIGUEIREDO, Adriano Marcos Rodrigues. __Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020__. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
 
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA . __Pesquisa de Informações Básicas Municipais__. Rio de Janeiro: IBGE, 2020.
 
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA. __Perfil dos municípios brasileiros : 2020 / IBGE, Coordenação de População e Indicadores Sociais__. Rio de Janeiro: IBGE, 2021.
 
+PARTCHEV, I.; MARIS G. __irtoys: A Collection of Functions Related to Item Response Theory (IRT)__. R package version 0.2.2, 2022 &lt;https://CRAN.R-project.org/package=irtoys&gt;.
+  
+R CORE TEAM. __R: A language and environment for statistical computing__. R Foundation for Statistical Computing, Vienna, Austria. 2022, URL https://www.R-project.org/.
 
-
+&lt;/small&gt;
 
 
 

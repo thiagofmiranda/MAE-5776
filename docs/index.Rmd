@@ -37,7 +37,7 @@ background-position: center
 <img src = "images/ime-logo.png" width="300px"/>
 </p>
 
-### Análise da gestão ambiental de municípios brasileiros pela Teoria da Resposta ao Item
+### Aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do Brasil
 #### MAE - 5776
 .large[Leandro Silva e Thiago Miranda | 07 Jul 2022]
 
@@ -163,7 +163,7 @@ sim %>%
 # Aplicação: MUNIC
 
 <small style="font-size: 18px !important; text-align:justify">
-A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
+A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, segundo IBGE (2021), trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil, o questionário de meio ambiente é formado por 107 questões dicotômicas e não-dicotômicas e dividido nas seguintes seções:
 
 1. Órgão gestor do meio ambiente;
 2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
@@ -219,9 +219,16 @@ tabela_tct |>
 ---
 # TRI
 ### Calibração dos Itens
+
+<small style="font-size: 18px !important; text-align:justify">
+
 * Seleção de itens em 3 rodadas da TRI
 * Critérios de exclusão: 
-$$a > 4, ~ b > 6 ~ e ~ b < -6$$
+$$a > 4, ~ b > 5 ~ e ~ b < -5$$
+* Itens restantes na análise: `r nrow(itens_parametros_3$est)`
+
+</small>
+
 
 
 ```{r}
@@ -345,6 +352,10 @@ ggarrange(
 # TRI
 ### Estimação das habilidades
 
+<small style="font-size: 18px !important; text-align:justify">
+Municípios restantes na análise: `r nrow(escores)`
+</small>
+
 ```{r Análise TRI 2,fig.align='center',out.width = '60%', fig.height=6,fig.width=12}
 ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
 
@@ -354,7 +365,7 @@ ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
 ---
 
 # Indicador por município
-```{r ,fig.align='center',dpi=200,out.width = '70%', fig.height=12,fig.width=18}
+```{r ,fig.align='center',dpi=300, dev.args = list(type = "cairo"),out.width = '70%', fig.height=12,fig.width=18}
 plot_geo
 ```
 
@@ -362,17 +373,24 @@ plot_geo
 
 # Referências
 
+<small style="font-size: 18px !important; text-align:justify">
+
 ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C. __Teoria da resposta ao item: conceitos e aplicações.__ São Paulo : ABE - Associação Brasileira de Estatística, 2000.
 
 ANJOS, A.; ANDRADE, D. F. __Teoria de Resposta ao Item com o uso do R.__ In: Simpósio
 Nacional de Probabilidade e Estatística, 2012. 
 
-FIGUEIREDO, Adriano Marcos Rodrigues. Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
+FIGUEIREDO, Adriano Marcos Rodrigues. __Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020__. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
 
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA . __Pesquisa de Informações Básicas Municipais__. Rio de Janeiro: IBGE, 2020.
 
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA. __Perfil dos municípios brasileiros : 2020 / IBGE, Coordenação de População e Indicadores Sociais__. Rio de Janeiro: IBGE, 2021.
 
+PARTCHEV, I.; MARIS G. __irtoys: A Collection of Functions Related to Item Response Theory (IRT)__. R package version 0.2.2, 2022 <https://CRAN.R-project.org/package=irtoys>.
+  
+R CORE TEAM. __R: A language and environment for statistical computing__. R Foundation for Statistical Computing, Vienna, Austria. 2022, URL https://www.R-project.org/.
 
-
+</small>
 
 
 
