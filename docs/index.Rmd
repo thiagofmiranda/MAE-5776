@@ -354,7 +354,7 @@ ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
 ---
 
 # Indicador por município
-```{r ,fig.align='center',out.width = '60%', fig.height=6,fig.width=9}
+```{r ,fig.align='center',dpi=300,out.width = '70%', fig.height=6,fig.width=9}
 ggarrange(plot_geo)
 ```
 
