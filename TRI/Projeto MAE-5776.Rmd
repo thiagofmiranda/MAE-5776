@@ -7,6 +7,7 @@ output:
     includes:
       in_header: preamble.tex
 geometry: columnsep=3em
+indent: true
 ---
 
 
@@ -62,9 +63,82 @@ texMatrix <- function(matrix, round = 2){
   
   paste0("\\begin{pmatrix}",tex,"\\end{pmatrix}")
 }
-```
 
-```{r}
+CTT <- function(ltm_pars,filter_item="none",leg=T,font_size = 16){
+  
+  irf_values <- irf(ltm_pars,x = seq(-6,6,0.02)) # Item Response Function - IRF
+  iif_values <- iif(ltm_pars,x = seq(-6,6,0.02)) # Item Information Function - IIF
+  
+  irf_values_f <- bind_cols(x=irf_values$x,irf_values$f) |> 
+    gather("item","irf",-x) |> 
+    dplyr::select(item,x,irf)
+  
+  iif_values_f <- bind_cols(x=irf_values$x,iif_values$f) |> 
+    gather("item","iif",-x) |> 
+    dplyr::select(item,x,iif)
+  
+  iif_max <- max(iif_values$f)
+  values <- left_join(irf_values_f,iif_values_f,by=c("item","x"))
+  
+  if(filter_item=="none"){
+    p1 <- values |>  
+      ggplot(aes(x=x,color=item,group=item))+
+      geom_line(aes(y=irf),size=1)+
+      guides(color=guide_legend(title=NULL))+
+      ylim(0,1)+
+      ggtitle("Curva Característica dos Itens")+
+      ylab("Probabilidade de acertar o item")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = font_size)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    p2 <- values |>  
+      ggplot(aes(x=x,color=item,group=item))+
+      geom_line(aes(y=iif),size=1)+
+      guides(color=guide_legend(title=NULL))+
+      ggtitle("Função de Informação dos Itens")+
+      ylab("Informação do Item")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = font_size)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    p3 <- values |>
+      group_by(x) |> 
+      summarise(iif=sum(iif)) |> 
+      ggplot(aes(x=x))+
+      geom_line(aes(y=iif),size=1)+
+      ggtitle("Função de Informação Total do Teste")+
+      ylab("Informação do Teste")+
+      xlab("Habilidade")+
+      theme_minimal(base_size = font_size)+
+      theme(plot.title = element_text(size=18,hjust = 0.5),legend.position = ifelse(leg,"bottom","none"))
+    
+    #result <- ggpubr::ggarrange(p3,p1,p2,ncol=1,common.legend = TRUE,legend = ifelse(leg,"bottom","none"))
+    result <- list("cci"=p1,"info_itens"=p2,"info_total"=p3)
+  }else{
+    
+    pars <- ltm_pars$est |> 
+      data.frame() |> 
+      rownames_to_column("item") |> 
+      setNames(c("item","a","b","c")) |> 
+      filter(item==filter_item)
+    
+    result <- values |>  
+      filter(item==filter_item) |> 
+      mutate(iif=iif/iif_max) |> 
+      ggplot(aes(x=x,y=irf))+
+      geom_line(color = "#E60278",size=1)+
+      geom_line(aes(y=iif),color = "black",size=1)+
+      scale_y_continuous("Probabilidade de acertar o Item", sec.axis = sec_axis(~ . * iif_max, name = "Informação do Item"))+
+      ggtitle(paste0(filter_item,": a=",round(pars$a,4),"; b=",round(pars$b,4)))+
+      xlab("Habilidade")+
+      theme_minimal(base_size = font_size)+
+      theme(plot.title = element_text(size=18,hjust = 0.5))
+  }
+  
+  return(result)
+}
+
 load("data.RData")
 ```
 
@@ -74,31 +148,41 @@ Leandro Alves da Silva - nº USP: 11868023
 
 Thiago Ferreira Miranda - nº USP: 11925711
 
+\renewcommand{\abstractname}{Resumo}
+\begin{abstract}
+
+Comumente são utilizados instrumentos de avaliação com o intuito de mensurar o nível de desempenho de indíviduos, grupos e/ou organizações privadas e governamentais em diversos cenários, tais como a medição do desempenho escolar de um estudante em uma determinada área do conhecimento até mesmo o grau de atendimento a um requisito legal por uma organização. Tais avaliações são realizadas também no âmbito da gestão pública. Anualmente a Pesquisa de Informações Básicas Municipais, denominada MUNIC, é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE. Trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil. Neste trabalho a metodologia da TRI é aplicada à pesquisa MUNIC do ano de 2020, onde o foco no questionário é o atendimenmto de requisitos atrelados à  gestão ambiental, sendo formado por 107 questões dicotômicas e não-dicotômicas. Os resultados oriundos da aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do Brasil são disponibilizados, bem como uma recomendação dos itens indicados para a formação do questionário MUNIC de acordo com a TRI.
+
+
+\end{abstract}
+
+\newpage
+
 \section{Introdução}
 
+Este trabalho tem como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e proposta a criação de um indicador para a gestão ambiental municipal por meio da Teoria da Resposta ao Item - TRI.
 
-Segundo Anjos e Andrade (2012) diversos pesquisadores em diferentes áreas de atuação têm direcionado esforço na busca da identificação de características que possam estar presentes em indíviduos, mas não podem ser medidas diretamente (sendo estas variáveis não observadas), as quais são comumente denominadas de traço latente, e assim desenvolver de índices, escalas apropriadas para seu enquadramento. Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros.
+Segundo Anjos e Andrade (2012) diversos pesquisadores em diferentes áreas de 
+atuação têm direcionado esforço na busca da identificação de características 
+que possam estar presentes em indíviduos, mas não podem ser medidas diretamente (sendo estas variáveis não observadas), 
+as quais são comumente denominadas de traço latente, e assim desenvolver de índices, escalas apropriadas para seu enquadramento. 
+Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros.
 
 Neste tocante, duas teorias são apresentadas, a Teoria Clássica dos Testes
-– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria da Resposta ao Item – TRI, cujo foco principal é o item e não o teste como um todo. Tanto a TCT quanto a TRI são análises paramétricas, ou seja, a análise de itens é efetuada por meio
-das estimativas de seus parâmetros e do instrumento de medida como um todo.
-A TRI foi desenvolvida com o propósito de resolver um problema
-da TCT que é a dependência da medida de proficiência em relação ao teste
-aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes. O que não ocorre na TRI, pois seus parâmetros (de discriminação e de dificuldade do item) não dependem do grupo de respondentes, bem como há depedência da medida de proficiência de um aluno com relação aos itens apresentados a ele. Portanto, um
-item mede determinado conhecimento, independentemente de quem o está
-respondendo, e a proficiência de um aluno não depende dos itens que estão sendo apresentados a ele.
+– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria da Resposta ao Item – TRI, cujo foco principal é o item e não o teste como um todo. 
+Na TRI a análise de itens é efetuada por meio das estimativas de seus parâmetros e do instrumento de medida como um todo.
+A TRI foi desenvolvida com o propósito de resolver um problema da TCT que é a dependência da medida de proficiência em relação ao teste
+aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes. 
+O que não ocorre na TRI, pois seus parâmetros (de discriminação e de dificuldade do item) não dependem do grupo de respondentes, bem como há depedência da medida de proficiência de um aluno com relação aos itens apresentados a ele. Portanto, um item mede determinado conhecimento, independentemente de quem o está respondendo, e a proficiência de um aluno não depende dos itens que estão sendo apresentados a ele.
 
 Maiores detalhes sobre estas duas teorias podem ser encontrados em: Gulliksen
 (1950), Lord e Novick (1968), Lord (1980), Vianna (1987), Pasquali
 (2003), Andrade, Tavares e Valle (2000), Ayala (2009), Baker e Kim (2004) e
 Embretson e Reise (2000).
 
-Este trabalho tem como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e proposta a criação de um indicador para a gestão ambiental municipal por meio da teoria da resposta ao item.
 
-
-\subsection{Teoria clássica dos testes: parâmetros}
-
-
+\section{Materiais e Métodos}
+\subsection{Teoria clássica dos testes}
 \subsubsection{Coeficiente de correlação ponto-bisserial}
 
 O coeficiente de correlação ponto-bisserial ($\rho_{pb}$) é a correlação de Pearson entre uma variável dicotômica e o escore do teste e é definido por:
@@ -174,37 +258,44 @@ De acordo com Andrade (2000), os modelos logísticos para itens dicotômicos sã
 O modelo logístico de 3 parâmetros é definido por:
 
 \begin{equation}
-    P(U_{ij} = 1|\theta_j, a_i, b_i, c_i) = c_i + (1-c_i)\frac{e^{a_i(\theta_j - b_i)}}{1 + e^{a_i(\theta_j - b_i)}}
+    P\left(U_{i j}=1 \mid \theta_{j}\right)=c_{i}+\left(1-c_{i}\right) \frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}
 \end{equation}
 
 em que,
 
-$P(U_{ij} = 1|\theta_j, a_i, b_i, c_i)$ é a probabilidade do indivíduo $j$ com habilidade $\theta_j$ acertar o item $i$;
+$i: 1, 2, . . . ,I$: Representa os $i$ itens propostos para avaliar o traço latente considerado;
 
-$b_i$ é o parâmetro de dificuldade (ou de posição) do item $i$, medido na mesma escala de habilidade;
+$j: 1, 2, . . . , n$: Representa os $n$ indivíduos que compõe uma amostra;
+
+$Uij$: É uma variável dicotômica que assume os valores 1, quando o indivíduo $j$ responde
+corretamente, concorda ou satisfaz as condições do item $i$, ou 0 caso contrário;
+
+$θj$: Representa o traço latente do respondente j;
+
+$P(U_{ij} = 1|\theta_j, a_i, b_i, c_i)$ é a probabilidade do indivíduo $j$ com habilidade $\theta_j$ dar uma resposta correta ao item $i$ e é denominada de Função de Resposta do Item – FRI;
+
+$b_i$ é o parâmetro de dificuldade (ou de posição) do item $i$, medido na mesma escala do traço latente;
 
 $a_i$ é o parâmetro de discriminação (ou inclinação) do item $i$, com valor proporcional à inclinação da Curva Característica do Item no ponto $b_i$;
 
 $c_i$ é o parâmetro do item que representa a probabilidade de indivíduos com baixa habilidade responderem corretamente o item $i$ (também chamado de probabilidade de acerto casual).
 
-
+$D$: É uma constante de escala igual a 1, mas se utiliza o valor 1,7 quando se quer que os valores da função logística se aproximem da função ogiva normal.
 
 \subsubsection{Modelo de 2 parâmetros}
 
 O modelo logístico de 2 parâmetros é semelhante ao modelo de 3 parâmetros, mas não inclui o parâmetro de acerto casual no modelo.
 
 \begin{equation}
-    P(U_{ij} = 1|\theta_j, a_i, b_i) = \frac{e^{a_i(\theta_j - b_i)}}{1 + e^{a_i(\theta_j - b_i)}}
+    P\left(U_{i j}=1 \mid \theta_{j}\right)=\frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}
 \end{equation}
 
 
 
 \subsubsection{Função de informação do item}
 
-A função de informação do item (item information function) permite analisar
-o quanto um item contém de informação sobre a medida de habilidade.
-Ela indica a quantidade de informação que um item apresenta dentro da escala
-de habilidade. 
+A função de informação do item (item information function) permite analisar o quanto um item contém de informação sobre a medida de habilidade.
+Ela indica a quantidade de informação que um item apresenta dentro da escala de habilidade. 
 
 Para o modelo logístico de 2 parâmetros a função de informação do item é definida como:
 
@@ -225,24 +316,73 @@ $a_i$ é o parâmetro de discriminação (ou inclinação) do item $i$.
 
 \subsubsection{Função de informação do teste}
 
-Dada a independência entre os itens, a função de informação do teste (teste
-information function) é a soma das informações fornecidas por cada item, que foram calibrados em uma mesma escala. A função de informação do teste é
-escrita como:
+Dada a independência entre os itens, a função de informação do teste (teste information function) é a soma das informações fornecidas por cada item, que foram calibrados em uma mesma escala. A função de informação do teste é escrita como:
 
 \begin{equation}
     I(\theta) = \displaystyle\sum_{i=1}^{I}{I_i(\theta)}
 \end{equation}
 
-\subsubsection{Métodos de estimação}
+\subsubsection{Estimação dos Parâmetros do Itens}
+
+O processo de estimação dos parâmetros dos itens na TRI é chamado de calibração, nessa etapa é necessário que sejam satisfeitas algumas suposições, como:
+
+* As resposta provenientes de indivíduoes diferentes são independentes;
+* Os itens são respondidos de forma independente por cada indivíduos, fixada a sua proficiência, isto é, a proficiência não é alterada no momento em que o indivíduo está
+fazendo o teste, sendo ela a única informação individual necessária para que um indivíduo acerte ou erre o item.
+
+O método da Máxima Verossimilhança Marginal consiste em obter os valores dos parâmetros que maximizam a probabilidade de obter-se o conjunto de dados observado. Ou seja, com grande probabilidade têm sido descobertos os parâmetros que geraram a base de dados.
+
+O processo é construído em duas etapas. Primeiro supõe-se alguma distribuição para as habilidades, como normal $(\mu,\sigma^2)$, por exemplo normal com $\mu = 0$ e $\sigma^2 = 1$. Tem-se a função de verossimilhança e sua log-verossimilhança:
+
+\begin{equation}
+    L(\zeta) = \prod_{j=1}^{n} \prod_{i=1}^{I} P_{ji}^{u_{ji}} Q_{ji}^{1-u_{ji}},
+\end{equation}
+
+\begin{equation}
+    log ~ L(\zeta) = \sum_{j=1}^{n} \sum_{i=1}^{I}\{u_{ji} ~ logP_{ji} + (1 + u_{ji}) ~ logQ_{ji}\}
+\end{equation}
+
+A partir de então a equação de verossimilhança fica apenas em função dos parâmetros dos itens $\zeta = (a_i, b_i, c_i)$ e segundo o desenvolvimento de Baker (1992), Andrade, Tavares & Valle (2000) e Azevedo (2003), chega-se as seguintes equações de estimação:
+
+\begin{equation}
+    a: ~ (1+c_i) \sum_{j=1}^{n} \int_{\mathbb{R}} [(u_{j.} - P_i) (\theta - b_i)] W_ig_j^*(\theta)d\theta = 0,
+\end{equation}
+
+\begin{equation}
+    b: ~ -a_i (1-c_i) \sum_{j=1}^{n} \int_{\mathbb{R}} [(u_{j.} - P_i)] W_ig_j^*(\theta)d\theta = 0,
+\end{equation}
+
+\begin{equation}
+    c: \sum_{j=1}^{n} \int_{\mathbb{R}} [(u_{j.} - P_i)] \frac{W_i}{P_i}g_j^*(\theta)d\theta
+\end{equation}
+
+onde, 
+
+\begin{equation}
+    g_j^*(\theta) = \frac{P(u_{j.}|\theta,\zeta)}{\int_{\mathbb{R}} P(u_{j.}|\theta,\eta)g(\theta|\eta) d\theta^{'}}
+\end{equation}
 
 
-\section{Aplicação da TRI}
+é a função densidade condicional que tradicionalmente fornece estimativa da habilidade, dado o vetor de respostas do indivíduo $j$.
+
+As Equações 10, 11 e 12, por não terem soluções explicitas, são maximizadas através de algum método iterativo, tais como Algoritmo EM (Esperança-Maximização), “Scoring” de
+Fisher ou Newton-Raphson para obtenção dos valores ($a_i$, $b_i$, $c_i$), para cada item, que maximizam a verossimilhança gerada pelos dados (ANDRADE, TAVARES e VALLE, 2000).
+
+
+\subsubsection{Estimação das Proficiências}
+
+A função apresentada em (13) é extremamente importante, pois ela representa a adaptação da função densidade caso seja obtido o conjunto de resposta do indivíduo j,
+representados por: $u{j.}= (u_{j1}; u_{j2}; . . . ; u_{jn})$. Em suma, cada indivíduo tem sua própria função densidade, que será usada para estimação da proficiência.
+
+A estimação de $θ_j$ pela média da posteriori (ou Esperança a posteriori) de $g^*(θj)$, consiste em obter a esperança dessa distribuição, que pode ser escrita como:
+
+\begin{equation}
+    \theta_j = E(\theta|u_{j.}, \zeta, \eta) = \int_{\mathbb{R}} \theta g_{j}^*(\theta) d\theta
+\end{equation}
 
 \subsection{Pesquisa de Informações Básicas Municipais - MUNIC}
 
 A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE desde 1999 e, conforme publicado em seu livro, trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. O principal interesse da Munic é a gestão pública na esfera de administração, no que se refere à organização das prefeituras, bem como o quadro funcional, estrutura e políticas públicas setoriais no âmbito das áreas pesquisadas. Em 2020, a pesquisa investigou informações sobre recursos humanos, habitação, transporte, agropecuária, meio ambiente, gestão de riscos e de desastres, e COVID-19. O questionário de meio ambiente é dividido nas seguintes seções:
-
-\newpage
 
 1. Órgão gestor do meio ambiente;
 2. Recursos humanos na área do meio ambiente por vínculo e capacitação;
@@ -252,8 +392,6 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 7. Programas em parceria com o Governo Federal;
 8. Pagamento de Serviços Ambientais;
 9. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
-
-
 
 
 Composto pelo seguintes itens em cada seção:
@@ -341,6 +479,10 @@ dicionario |>
 
 \newpage
 
+
+\section{Resultados}
+
+
 \subsection{Avaliação dos itens pela TCT}
 
 Para uma avaliação inicial dos dos itens quem compõem o teste e também do questionário com um todo, realizou-se a análise via teoria classica dos testes para fazer a checagem do instrumento de avaliação, onde verificou-se o coeficiente de correlação ponto-bisserial e o alpha de cronbach. Nessa avaliação, itens podem ser removidos da análise TRI por terem coeficiente de correlação ponto-bisserial baixo, indicando uma baixa correlação entre as respostas do item em relação ao escore do teste (TCT), e por terem alpha de cronbach alto quando excluímos o item, indicando que a exclusão dele aumentaria a consistência do teste. Entretanto, para a análise pela TRI, não removeu-se nenhum item.
@@ -419,25 +561,82 @@ data.frame(itens_parametros_3$est) |>
   column_spec(2, width = "50em")
 ```
 
+
+```{r,fig.align='center',out.width = '100%', fig.height=7,fig.width=18,fig.cap="Curvas Característica e Funções de Informação dos Itens e Função de Informação Total do Teste."}
+plot_geral <- CTT(itens_parametros_3,leg=F)
+ggarrange(plot_geral$cci,plot_geral$info_itens,plot_geral$info_total,ncol = 3)
+```
+
+```{r,fig.align='center',out.width = '100%', fig.height=18,fig.width=18,fig.cap="Curvas Característica e Funções de Informação dos Itens."}
+plot_01 <- CTT(itens_parametros_3,filter_item = "Mmam092", font_size = 12)
+plot_02 <- CTT(itens_parametros_3,filter_item = "Mmam111", font_size = 12)
+plot_03 <- CTT(itens_parametros_3,filter_item = "Mmam112", font_size = 12)
+plot_04 <- CTT(itens_parametros_3,filter_item = "Mmam113", font_size = 12)
+plot_05 <- CTT(itens_parametros_3,filter_item = "Mmam114", font_size = 12)
+plot_06 <- CTT(itens_parametros_3,filter_item = "Mmam1515", font_size = 12)
+plot_07 <- CTT(itens_parametros_3,filter_item = "Mmam1516", font_size = 12)
+plot_08 <- CTT(itens_parametros_3,filter_item = "Mmam1518", font_size = 12)
+plot_09 <- CTT(itens_parametros_3,filter_item = "Mmam16", font_size = 12)
+plot_10 <- CTT(itens_parametros_3,filter_item = "Mmam17", font_size = 12)
+plot_11 <- CTT(itens_parametros_3,filter_item = "Mmam18", font_size = 12)
+plot_12 <- CTT(itens_parametros_3,filter_item = "Mmam201", font_size = 12)
+plot_13 <- CTT(itens_parametros_3,filter_item = "Mmam202", font_size = 12)
+plot_14 <- CTT(itens_parametros_3,filter_item = "Mmam203", font_size = 12)
+plot_15 <- CTT(itens_parametros_3,filter_item = "Mmam204", font_size = 12)
+plot_16 <- CTT(itens_parametros_3,filter_item = "Mmam205", font_size = 12)
+plot_17 <- CTT(itens_parametros_3,filter_item = "Mmam206", font_size = 12)
+plot_18 <- CTT(itens_parametros_3,filter_item = "Mmam207", font_size = 12)
+plot_19 <- CTT(itens_parametros_3,filter_item = "Mmam2011", font_size = 12)
+plot_20 <- CTT(itens_parametros_3,filter_item = "Mmam222", font_size = 12)
+
+ggarrange(
+  plot_01,plot_02,plot_03,plot_04,
+  plot_05,plot_06,plot_07,plot_08,
+  plot_09,plot_10,plot_11,plot_12,
+  plot_13,plot_14,plot_15,plot_16,
+  plot_17,plot_18,plot_19,plot_20,nrow = 5,ncol=4)
+
+```
+
+
 \newpage
 
 \subsection{Estimação dos escores dos municípios}
 
-```{r Análise TRI 2,,out.width = '80%', fig.height=6,fig.width=12,fig.cap="Distribuição dos escores."}
+```{r Análise TRI 2,,out.width = '80%', fig.height=6,fig.width=12,fig.cap="Histograma e Q-Q Plot dos escores."}
 ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
-
-
 ```
 
 \newpage
 
+\renewcommand{\refname}{Referências Bibliográficas}
 
+\begin{thebibliography}{99}
+\bibitem{Andrade, Tavares e Valle (2000)}
+ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C \emph{Teoria da resposta ao item: conceitos e aplicações}. São Paulo : ABE - Associação Brasileira de Estatística, 2000.
 
+\bibitem{Andrade e Tavares (2012)}
+ANJOS, A.; ANDRADE, D. F. \emph{Teoria de Resposta ao Item com o uso do R}. In: Simpósio Nacional de Probabilidade e Estatística, 2012. 
 
+\bibitem{Azevedo (2003)}
+AZEVEDO, C. L. N. \emph{Métodos de estimação na teoria de resposta ao item. 2003}. Dissertação (Mestrado em Estatística) - Instituto de Matemática e Estatística, Universidade de São Paulo, São Paulo, 2003. doi:10.11606/D.45.2003.tde-05102004-163906. Acesso em: 2022-07-09.
 
+\bibitem{Figueiredo (2020)}
+FIGUEIREDO, A. M. R. \emph{Mapas em R com geobr. Campo Grande-MS,Brasil: RStudio/Rpubs, 2020}. Disponível em https://adrianofigueiredo.netlify.com/post/mapas-em-r-com-geobr/.
 
+\bibitem{IBGE (2020)}
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA . \emph{Pesquisa de Informações Básicas Municipais}. Rio de Janeiro: IBGE, 2020.
 
+\bibitem{IBGE (2021)}
+IBGE – INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA. \emph{Perfil dos municípios brasileiros : 2020 / IBGE, Coordenação de População e Indicadores Sociais}. Rio de Janeiro: IBGE, 2021.
 
+\bibitem{Partchav e Maris}
+PARTCHEV, I.; MARIS G.\emph{irtoys: A Collection of Functions Related to Item Response Theory (IRT)}. R package version 0.2.2, 2022 <https://CRAN.R-project.org/package=irtoys>.
+
+\bibitem{R (2022)}
+R CORE TEAM. \emph{R: A language and environment for statistical computing}. R Foundation for Statistical Computing, Vienna, Austria. 2022, URL https://www.R-project.org/.
+
+\end{thebibliography}
 
 
 
