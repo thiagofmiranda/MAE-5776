@@ -183,6 +183,9 @@ Embretson e Reise (2000).
 
 \section{Materiais e Métodos}
 \subsection{Teoria clássica dos testes}
+
+Como mencionado na seção introdutória, a teoria clássica dos testes tem como foco o escore obtido no teste como referência de medida utlizada na comparação entre os indíviduos participantes dos grupos observados. No entanto,na teoria clássica dos testes, além do número total de acertos podem ser utilizadas algumas medidas para se avaliar a qualidade do instrumento de medida. Algumas dessas medidas são: o coeficiente de correlação ponto-bisserial, o coeficiente de correlação bisserial e o coeficiente alfa de Cronbach.
+
 \subsubsection{Coeficiente de correlação ponto-bisserial}
 
 O coeficiente de correlação ponto-bisserial ($\rho_{pb}$) é a correlação de Pearson entre uma variável dicotômica e o escore do teste e é definido por:
