@@ -169,11 +169,11 @@ as quais são comumente denominadas de traço latente, e assim desenvolver de í
 Alguns exemplos de tais características são: nível de qualidade de vida, proficiência em matemática, grau de depressão, dentre outros.
 
 Neste tocante, duas teorias são apresentadas, a Teoria Clássica dos Testes
-– TCT, que utiliza o escore no teste como sua referência de medida, e a Teoria da Resposta ao Item – TRI, cujo foco principal é o item e não o teste como um todo. 
+– TCT, que utiliza o escore total do teste como sua referência de medida, e a Teoria da Resposta ao Item – TRI, cujo foco principal é o item e não o teste como um todo. 
 Na TRI a análise de itens é efetuada por meio das estimativas de seus parâmetros e do instrumento de medida como um todo.
 A TRI foi desenvolvida com o propósito de resolver um problema da TCT que é a dependência da medida de proficiência em relação ao teste
 aplicado e dos parâmetros dos itens em relação ao conjunto dos respondentes. 
-O que não ocorre na TRI, pois seus parâmetros (de discriminação e de dificuldade do item) não dependem do grupo de respondentes, bem como há depedência da medida de proficiência de um aluno com relação aos itens apresentados a ele. Portanto, um item mede determinado conhecimento, independentemente de quem o está respondendo, e a proficiência de um aluno não depende dos itens que estão sendo apresentados a ele.
+O que não ocorre na TRI, pois seus parâmetros (de discriminação e de dificuldade do item) não dependem do grupo de respondentes, bem como há depedência da medida de proficiência de um aluno com relação aos itens apresentados a ele. Portanto, um item mede determinada habilidade, independente de quem o está respondendo, e a proficiência de um respondente não depende dos itens que estão sendo apresentados a ele.
 
 Maiores detalhes sobre estas duas teorias podem ser encontrados em: Gulliksen
 (1950), Lord e Novick (1968), Lord (1980), Vianna (1987), Pasquali
@@ -184,11 +184,11 @@ Embretson e Reise (2000).
 \section{Materiais e Métodos}
 \subsection{Teoria clássica dos testes}
 
-Como mencionado na seção introdutória, a teoria clássica dos testes tem como foco o escore obtido no teste como referência de medida utlizada na comparação entre os indíviduos participantes dos grupos observados. No entanto,na teoria clássica dos testes, além do número total de acertos podem ser utilizadas algumas medidas para se avaliar a qualidade do instrumento de medida. Algumas dessas medidas são: o coeficiente de correlação ponto-bisserial, o coeficiente de correlação bisserial e o coeficiente alfa de Cronbach.
+Como mencionado na seção introdutória, a teoria clássica dos testes tem como foco o escore obtido no teste como referência de medida utilizada na comparação entre os indíviduos participantes dos grupos observados. No entanto, na teoria clássica dos testes, além do número total de acertos, podem ser utilizadas algumas medidas para se avaliar a qualidade do instrumento de medida. Algumas dessas medidas são: o coeficiente de correlação ponto-bisserial, o coeficiente de correlação bisserial e o coeficiente alfa de Cronbach.
 
 \subsubsection{Coeficiente de correlação ponto-bisserial}
 
-O coeficiente de correlação ponto-bisserial ($\rho_{pb}$) é a correlação de Pearson entre uma variável dicotômica e o escore do teste e é definido por:
+O coeficiente de correlação ponto-bisserial ($\rho_{pb}$) é a correlação de Pearson entre uma variável dicotômica e o escore do teste e, é definido por:
 
 \begin{equation}
 \rho_{pb} = \frac{\overline{X}_A - \overline{X}_T}{S_T}\sqrt{\frac{p}{1-p}}
@@ -207,7 +207,7 @@ $p$ é a proporção de respondentes que acertaram o item.
 
 \subsubsection{Coeficiente de correlação bisserial}
 
-O coeficiente de correlação bisserial ($\rho_{b}$) é uma medida de associação entre uma variável dicotomizada e uma variável contínua, e é definido por:
+O coeficiente de correlação bisserial ($\rho_{b}$) é uma medida de associação entre uma variável dicotomizada e uma variável contínua e, é definido por:
 
 \begin{equation}
 \rho_{b} = \rho_{pb}\frac{\sqrt{p(1-p)}}{h(p)}
@@ -227,7 +227,7 @@ $h(p)$ é o valor da densidade da distribuição normal padrão no ponto em que 
 
 \subsubsection{Coeficiente alfa de Cronbach}
 
-O coeficiente alfa de Cronbach é utilizado para medir a consistência interna do instrumento de medida, e é definido por:
+O coeficiente alfa de Cronbach é utilizado para medir a consistência interna do instrumento de medida e, é definido por:
 
 \begin{equation}
     \alpha = \frac{n}{n-1}\Big(1 -  \frac{\sum{s_{i}^{2}}}{s_{T}^{2}}\Big)
@@ -252,7 +252,7 @@ De acordo com Andrade (2000), os modelos logísticos para itens dicotômicos sã
 \begin{itemize}
     \item somente a dificuldade do item;
     \item a dificuldade e a discriminação;
-    \item a dificuldade, a discriminação e a probabilidade de resposta correta dada por indivíduos de baixa habilidade.
+    \item a dificuldade, a discriminação e a probabilidade de acerto casual.
 \end{itemize}
 
 
