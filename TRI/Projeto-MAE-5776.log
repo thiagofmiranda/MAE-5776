@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.15.0 (TeX Live 2022)  (format=lualatex 2022.7.11)  12 JUL 2022 22:03
+This is LuaHBTeX, Version 1.15.0 (TeX Live 2022)  (format=lualatex 2022.7.11)  12 JUL 2022 22:26
  restricted system commands enabled.
 **Projeto-MAE-5776.tex
 (./Projeto-MAE-5776.tex
@@ -1255,12 +1255,12 @@ Here is how much of LuaTeX's memory you used:
  125007,1648299 words of node,token memory allocated
  711 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 38 attribute, 71 glue_spec, 38 attribute_list, 1 write, 1 user_defined nodes
-   avail lists: 1:2,2:1916,3:292,4:48,5:811,6:96,7:11854,8:58,9:2498,10:30,11:747
+   avail lists: 1:2,2:1916,3:292,4:48,5:811,6:96,7:11854,8:58,9:2498,10:29,11:747
  49833 multiletter control sequences out of 65536+600000
- 65 fonts using 19358691 bytes
+ 65 fonts using 19358767 bytes
  86i,10n,121p,1294b,799s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-italic.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman5-regular.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman9-regular.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman9-bold.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.otf></home/thiago/.TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman17-regular.otf>
-Output written on Projeto-MAE-5776.pdf (16 pages, 6355364 bytes).
+Output written on Projeto-MAE-5776.pdf (16 pages, 6355379 bytes).
 
 PDF statistics: 294 PDF objects out of 1000 (max. 8388607)
  231 compressed objects within 3 object streams
