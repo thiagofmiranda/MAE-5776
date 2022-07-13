@@ -175,6 +175,8 @@ df_dic <- df_final|>
 df_info <- df_info[rowSums(df_dic) >= 5,]
 df_dic <- df_dic[rowSums(df_dic) >= 5,]
 
+df_final |> nrow()
+df_dic |> nrow()
 
 # Análises pela TCT
 tct <- descript(df_dic) # 1553
@@ -219,10 +221,11 @@ itens_parametros_3$est
 
 escores <- eap(df_dic_4,itens_parametros_3,qu=normal.qu())
 
-
+gghistogram(escores[,1])
+ggqqplot(escores[,1])
 #shapiro.test(escores[,1])
 
-
+library(geobr)
 options(timeout= 4000000)
 metadata <- download_metadata() # para ver codigos
 head(metadata)

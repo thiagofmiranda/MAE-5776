@@ -1,13 +1,15 @@
 ---
-title: "Análise da gestão ambiental de municípios brasileiros pela Teoria da Resposta ao Item"
+title: Aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do
+  Brasil
 output:
+  word_document: default
   pdf_document:
     latex_engine: lualatex
     pandoc_args: --listings
     includes:
       in_header: preamble.tex
 geometry: columnsep=3em
-indent: true
+indent: yes
 ---
 
 
@@ -151,7 +153,7 @@ Thiago Ferreira Miranda - nº USP: 11925711
 \renewcommand{\abstractname}{Resumo}
 \begin{abstract}
 
-Comumente são utilizados instrumentos de avaliação com o intuito de mensurar o nível de desempenho de indíviduos, grupos e/ou organizações privadas e governamentais em diversos cenários, tais como a medição do desempenho escolar de um estudante em uma determinada área do conhecimento até mesmo o grau de atendimento a um requisito legal por uma organização. Tais avaliações são realizadas também no âmbito da gestão pública. Anualmente a Pesquisa de Informações Básicas Municipais, denominada MUNIC, é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE. Trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil. Neste trabalho a metodologia da TRI é aplicada à pesquisa MUNIC do ano de 2020, onde o foco no questionário é o atendimenmto de requisitos atrelados à  gestão ambiental, sendo formado por 107 questões dicotômicas e não-dicotômicas. Os resultados oriundos da aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do Brasil são disponibilizados, bem como uma recomendação dos itens indicados para a formação do questionário MUNIC de acordo com a TRI.
+Comumente são utilizados instrumentos de avaliação com o intuito de mensurar o nível de desempenho de indíviduos, grupos e/ou organizações privadas e governamentais em diversos cenários, tais como a medição do desempenho escolar de um estudante em uma determinada área do conhecimento ou até mesmo o grau de atendimento a um requisito legal por uma organização. Tais avaliações são realizadas também no âmbito da gestão pública. Anualmente a Pesquisa de Informações Básicas Municipais, denominada MUNIC, é realizada pelo Instituto Brasileiro de Geografia e Estatística - IBGE. Trata-se de pesquisa institucional e de registros administrativos da gestão pública municipal. Em 2020 a pesquisa foi realizada com 5570 muncípios do Brasil. Neste trabalho a metodologia da TRI é aplicada à pesquisa MUNIC do ano de 2020, onde o foco no questionário é o atendimenmto de requisitos atrelados à gestão ambiental, sendo formado por 107 questões dicotômicas e não-dicotômicas. Os resultados oriundos da aplicação da Teoria da Resposta ao Item na gestão ambiental de municípios do Brasil são disponibilizados, bem como uma recomendação dos itens indicados para a formação do questionário MUNIC de acordo com a TRI.
 
 
 \end{abstract}
@@ -159,8 +161,6 @@ Comumente são utilizados instrumentos de avaliação com o intuito de mensurar 
 \newpage
 
 \section{Introdução}
-
-Este trabalho tem como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e proposta a criação de um indicador para a gestão ambiental municipal por meio da Teoria da Resposta ao Item - TRI.
 
 Segundo Anjos e Andrade (2012) diversos pesquisadores em diferentes áreas de 
 atuação têm direcionado esforço na busca da identificação de características 
@@ -180,6 +180,7 @@ Maiores detalhes sobre estas duas teorias podem ser encontrados em: Gulliksen
 (2003), Andrade, Tavares e Valle (2000), Ayala (2009), Baker e Kim (2004) e
 Embretson e Reise (2000).
 
+Este trabalho tem como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado a seção de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e proposta a criação de um indicador para a gestão ambiental municipal por meio da Teoria da Resposta ao Item - TRI.
 
 \section{Materiais e Métodos}
 \subsection{Teoria clássica dos testes}
@@ -261,7 +262,7 @@ De acordo com Andrade (2000), os modelos logísticos para itens dicotômicos sã
 O modelo logístico de 3 parâmetros é definido por:
 
 \begin{equation}
-    P\left(U_{i j}=1 \mid \theta_{j}\right)=c_{i}+\left(1-c_{i}\right) \frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}
+    P\left(U_{i j}=1 \mid \theta_{j}, a_i, b_i, c_i \right)=c_{i}+\left(1-c_{i}\right) \frac{1}{1+e^{-D a_{i}\left(\theta_{j}-b_{i}\right)}}
 \end{equation}
 
 em que,
@@ -397,6 +398,8 @@ A Pesquisa de Informações Básicas Municipais é realizada pelo Instituto Bras
 9. Impacto Ambiental e/ou processo/ação que resulte em impacto no ambiente.
 
 
+\newpage
+
 Composto pelo seguintes itens em cada seção:
 
 ```{r}
@@ -485,14 +488,9 @@ dicionario |>
 
 \section{Resultados}
 
+Foram adotados alguns critérios de seleção de municípios, o primeiro deles foi o de participação no questionário, algumas prefeituras obtaram por se abster da participação, o segundo foi de respostas aos itens do questionário, foram considerados os municípios com respostas "Sim" em pelo menos 5 questões. Também foram selecionados os itens que estão em acordo com os pressuposto do modelo, ou seja, foram removidos da análise itens não dicotômicos e itens que apresentavam respostas condicionais, ou seja, itens que necessitam de uma resposta prévia. Após estas remoções, restaram para a análise 4775 municípios e 60 itens.
 
-\subsection{Avaliação dos itens pela TCT}
-
-Para uma avaliação inicial dos dos itens quem compõem o teste e também do questionário com um todo, realizou-se a análise via teoria classica dos testes para fazer a checagem do instrumento de avaliação, onde verificou-se o coeficiente de correlação ponto-bisserial e o alpha de cronbach. Nessa avaliação, itens podem ser removidos da análise TRI por terem coeficiente de correlação ponto-bisserial baixo, indicando uma baixa correlação entre as respostas do item em relação ao escore do teste (TCT), e por terem alpha de cronbach alto quando excluímos o item, indicando que a exclusão dele aumentaria a consistência do teste. Entretanto, para a análise pela TRI, não removeu-se nenhum item.
-
-Na análise pela TRI rodamos o modelo logístico unidimensional de 2 parâmetros, na planilha estão presentes tanto os parâmetros, quanto os escores gerados. Há também plots relacionados ao teste e a cada um dos itens. No R usamos o pacote irtoys para ambas as análises.
-
-
+Para uma avaliação inicial dos itens e também do questionário com um todo, realizou-se a análise via teoria classica dos testes (TCT) para fazer a checagem do instrumento de avaliação, onde verificou-se o coeficiente de correlação ponto-bisserial e o alpha de cronbach. Nessa avaliação, itens podem ser removidos da análise TRI por terem coeficiente de correlação ponto-bisserial negativo, indicando uma correlação negativa entre as respostas do item em relação ao escore total do teste (TCT) e por terem alpha de cronbach alto quando excluímos o item, indicando que a exclusão dele aumentaria, de modo significativo, a consistência do teste. Portanto, para a análise pela TRI, não removeu-se nenhum item. Na tabela 9 e 10 temos as proporções de respostas e as demais estatísticas supracitadas.
 
 ```{r Análise Clássica 1, echo = FALSE, results = 'asis', warning = F}
 # Análise por scores
@@ -548,9 +546,10 @@ cat(c("\\begin{table}[h] \\caption{TCT - Alpha de Cronbach.} \\centering \\tiny"
     "\\end{table}"))
 ```
 
-\newpage
+A primeira etapa da TRI é a calibração dos parâmetros dos itens, foi executado o modelo logístico unidimensional de 2 parâmetros com o suporte computacional do softaware R, utilizando o pacote irtoys (Partchav e Maris,2022). Ao longo da etapa de calibração são feitas rodadas onde os itens são estimados e avaliados segundo seus respectivos parâmetros, em cada rodada são removidos da análise os itens que não se enquadram nos seguintes critérios de exclusão: i) apresentar parâmetro de discriminação $a > 4$ e ii) apresentar parâmetro de dificuldade $b < - 5$ e/ou $b >  5$.
 
-\subsection{Calibração dos parâmetros dos itens}
+Para a calibração realizada com os dados de gestão ambiental da MUNIC, após 3 rodadas, restaram 20 itens com os seus respectivos parâmetros apresentados na tabela 11.
+
 
 ```{r Análise TRI, fig.width=6,fig.height=3}
 data.frame(itens_parametros_3$est) |> 
@@ -559,16 +558,23 @@ data.frame(itens_parametros_3$est) |>
   right_join(itens_selecionados,by="item.id") |> 
   dplyr::select(item.id,item.descricao,a,b)|> 
   filter(!is.na(a)) |> 
-  kbl(format = "latex",escape = FALSE,booktabs = F,longtable = T,linesep="",align=c("l","l","c","c"),caption = "Itens que permaneceram na análise.") |> 
+  arrange(desc(b)) |> 
+  kbl(format = "latex",escape = FALSE,booktabs=F,longtable=T,linesep="",align=c("l","l","c","c"),caption = "Itens que permaneceram na análise.") |> 
   kable_styling(font_size=5) |> 
   column_spec(2, width = "50em")
 ```
 
 
+Uma vez definidos os itens e seus respectivos parâmetros, torna-se possível a elaboração e análise de outras características dos itens, tais informações são mostradas nos gráficos das Curvas Características dos Itens, de Funções de Informação dos Itens e de Função de Informação Total do Teste.
+
+Quando o posicionamento das Curvas Características dos Itens mostradas na Figura 1 é avaliado, percebe-se que os itens não estão bem distribuídos pela escala de habilidade, pois há ausência de itens posicionados mais próximos ao início da escala (limites inferiores da escala), este evento pode ser melhor visualizado nos gráficos de Funções de Informação dos Itens, uma vez que estas curvas são centralizadas em torno dos valores de seus respectivos parâmetros de dificuldade $b$, que por sua vez é medido na mesma escala de habilidade $\theta$.
+
 ```{r,fig.align='center',out.width = '100%', fig.height=7,fig.width=18,fig.cap="Curvas Característica e Funções de Informação dos Itens e Função de Informação Total do Teste."}
 plot_geral <- CTT(itens_parametros_3,leg=F)
 ggarrange(plot_geral$cci,plot_geral$info_itens,plot_geral$info_total,ncol = 3)
 ```
+
+Na Figura 2 temos os gráficos das Curvas Características dos Itens e de Funções de Informação dos Itens dos 20 itens que permaneceram na análise TRI apresentados um a um. Com isso é possível verificar aspectos particulares de cada item, tais como itens que possuem elevado índice de dificuldade, mas baixo potencial de discriminação como os itens Mmam092 e Mmam222. Contudo, a análise gráfica e disposição das curvas torna ainda mais evidente a ausência de itens mais próximos aos limites inferiores da escala.
 
 ```{r,fig.align='center',out.width = '100%', fig.height=18,fig.width=18,fig.cap="Curvas Característica e Funções de Informação dos Itens."}
 plot_01 <- CTT(itens_parametros_3,filter_item = "Mmam092", font_size = 12)
@@ -601,20 +607,31 @@ ggarrange(
 
 ```
 
+Em posse dos parâmetros dos itens, podemos realizar a estimação das habilidades dos municípios, esta estimação assume como premissa além da unidimensionalidade, a distribuição Normal das habilidades. A Figura 3 mostra o histograma e Q-Q Plot dos escores obtidos pela TRI, nestes constatamos que o formato da distribuição obtida é, aproximadamente, Normal, pois apresenta muitos munícipios posicionados na calda inferior esquerda da curva. Isso pode ser resultado da ausência de mais itens (questões) com baixo nível de dificuldade nesse nível da escala.
 
-\newpage
-
-\subsection{Estimação dos escores dos municípios}
-
-```{r Análise TRI 2,,out.width = '80%', fig.height=6,fig.width=12,fig.cap="Histograma e Q-Q Plot dos escores."}
+\pagebreak
+```{r Análise TRI 2, out.width = '70%',fig.height=5,fig.width=10,fig.cap="Histograma e Q-Q Plot dos escores."}
 ggarrange(gghistogram(escores[,1],binwidth = 0.2),ggqqplot(escores[,1]))
 ```
 
-\newpage
+No mapa abaixo temos ilustrado o indicador de gestão ambiental contruído para cada município, a partir da escala em verde podemos observar quais municípios tem um alto índice de gestão (verde escuro) e quais tem um baixo índice de gestão (verde claro). Com este indicador torna-se possível a aplicação de políticas públicas nos municípos com baixo índice de gestão ambiental, assim municípios com alto índice podem ser usados como refêrencias, dado suas respostas a itens chaves do questionário.
+
+
+```{r ,fig.align='center',out.width = '70%', fig.height=12,fig.width=18, fig.cap="Mapa do indicador de gestão ambiental municipal no Brasil."}
+plot_geo
+```
+
+
+\pagebreak
+
+\section{Conclusão}
+Este trabalho teve como objetivo aplicar a teoria da resposta ao item em um caso real, para isso foi utilizado o questionário de meio ambiente da Pesquisa de Informações Básicas Municipais - MUNIC e criado um indicador para a gestão ambiental municipal por meio da Teoria da Resposta ao Item - TRI. A TRI se mostrou uma boa ferramenta para a criação de indicadores, apesar do surgimento de algumas dificuldades relativas ao atendimento de alguns pressupostos, como a normalidade de escores estimados. Nota-se que uma das vantagens é relacionamento dos parâmentros dos itens e escores gerados, o que proporciona maior assertividade na orientação de políticas públicas que visem o aprimoramento da gestão ambiental nos municípios. Tendo em vista que a informação provida por cada item possibilita a formulação de iniciativas e estratégias pontuais ligadas à realidade de cada município, não estando necessariamente vinculadas ao escore geral do respondente. Mediante aos resultados obtido na estimação dos parâmetros e escores dos respondentes é percebido que se torna prematura a emissão de um parecer quanto à dimensão do instrumento (número de itens) e/ou estratificação das áreas chaves a serem incorporadas ao instrumento, visto que ainda há um vasto campo de oportunidades de análises possíveis a serem efetuados. Portanto, como trabalhos futuros podemos citar a análise TRI a partir de modelos multidimensionais, envolvendo multiplos traços latentes ou ainda modelos unidimensionais para multiplos grupos, estudando o efeito dos itens em diferentes populações.
+
+\pagebreak
 
 \renewcommand{\refname}{Referências Bibliográficas}
 
-\begin{thebibliography}{99}
+\begin{thebibliography}{9}
 \bibitem{Andrade, Tavares e Valle (2000)}
 ANDRADE, D. F.; TAVARES, H. R.; VALLE, R. C \emph{Teoria da resposta ao item: conceitos e aplicações}. São Paulo : ABE - Associação Brasileira de Estatística, 2000.
 
@@ -640,36 +657,4 @@ PARTCHEV, I.; MARIS G.\emph{irtoys: A Collection of Functions Related to Item Re
 R CORE TEAM. \emph{R: A language and environment for statistical computing}. R Foundation for Statistical Computing, Vienna, Austria. 2022, URL https://www.R-project.org/.
 
 \end{thebibliography}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
